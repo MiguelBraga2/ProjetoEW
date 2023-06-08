@@ -5,6 +5,7 @@ const passport = require('passport')
 const userModel = require('../models/user')
 const User = require('../controllers/user')
 const auth = require('../auth/auth')
+require('dotenv').config();
 
 router.get('/', auth.verificaAcesso, function (req, res) {
   User.list()
@@ -39,10 +40,10 @@ router.post('/register', function (req, res) {
         passport.authenticate("local")(req, res, () => {
           jwt.sign({
             username: req.user.username, level: req.user.level,
-            sub: 'ProjetoEW'
+            sub: 'New User'
           },
-            "ProjetoEW",
-            { expiresIn: 3600 },
+            process.env.SECRET_KEY,
+            { expiresIn: "1h" },
             function (e, token) {
               if (e) res.status(500).jsonp({ error: "Erro na geração do token: " + e })
               else res.status(201).jsonp({ token: token })
@@ -55,10 +56,10 @@ router.post('/register', function (req, res) {
 router.post('/login', passport.authenticate('local'), function (req, res) {
   jwt.sign({
     username: req.user.username, level: req.user.level,
-    sub: 'ProjetoEW'
+    sub: 'User logged in'
   },
-    "ProjetoEW",
-    { expiresIn: 3600 },
+    process.env.SECRET_KEY,
+    { expiresIn: "1h" },
     function (e, token) {
       if (e) res.status(500).jsonp({ error: "Erro na geração do token: " + e })
       else res.status(201).jsonp({ token: token })

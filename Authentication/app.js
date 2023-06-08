@@ -8,6 +8,7 @@ var session = require('express-session');
 var mongoose = require('mongoose');
 var User = require('./models/user');
 var usersRouter = require('./routes/users');
+require('dotenv').config();
 
 // DB config
 mongoose.connect('mongodb://127.0.0.1/ProjetoEW', { useNewUrlParser: true, useUnifiedTopology: true, serverSelectionTimeoutMS: 5000});
@@ -27,7 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(session({
-  secret: 'ProjetoEW',
+  secret: process.env.SESSION_KEY,
   resave: false,
   saveUninitialized: true
 }));
@@ -47,7 +48,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.jsonp({error: err});
+  res.jsonp({error: err.message});
 });
 
 module.exports = app;
