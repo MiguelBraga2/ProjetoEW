@@ -48,6 +48,41 @@ router.get('/facebook/callback',
   }
 );
 
+// Rota para iniciar o processo de autenticação com o google
+router.get('/google', passport.authenticate('google', { scope: ['profile'] }));
+
+// Rota de callback para autenticação com o Google
+router.get('/google/callback',
+  function(req, res, next) {
+    passport.authenticate('facebook', function(err, user, info) {
+      if (err) {
+        // Tratar o erro de autenticação
+        return res.jsonp({ error: err });
+      }
+      if (!user) {
+        // Tratar o cenário de autenticação falhada
+        return res.jsonp({ error: 'Authentication failed.' });
+      }
+      // Autenticação bem-sucedida, gerar o token
+      jwt.sign({
+        username: user.username,
+        level: user.level,
+        sub: 'User logged in'
+      },
+        process.env.SECRET_KEY,
+        { expiresIn: "1h" },
+        function (e, token) {
+          if (e) {
+            // Tratar o erro de geração do token
+            return res.jsonp({ error: e });
+          }
+          // Enviar o token como resposta
+          return res.jsonp({ token: token });
+        });
+    })(req, res, next);
+  }
+);
+
 router.get('/:id', auth.verificaAcesso, function (req, res) {
   User.getUser(req.params.id)
     .then(dados => res.status(200).jsonp({ dados: dados }))

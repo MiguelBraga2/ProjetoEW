@@ -5,6 +5,7 @@ var logger = require('morgan');
 var passport = require('passport')
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var session = require('express-session');
 var mongoose = require('mongoose');
 var User = require('./models/user');
@@ -15,8 +16,8 @@ require('dotenv').config();
 // DB config
 mongoose.connect('mongodb://127.0.0.1/ProjetoEW', { useNewUrlParser: true, useUnifiedTopology: true, serverSelectionTimeoutMS: 5000 });
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'Erro de conexão ao MongoDB...'));
-db.once('open', function () { console.log("Conexão ao MongoDB realizada com sucesso...") });
+db.on('error', console.error.bind(console, 'MongoDB connection error.'));
+db.once('open', function () { console.log("Connection to MongoDB successful") });
 
 // Passport config
 passport.use(new LocalStrategy(User.authenticate()));
@@ -42,6 +43,40 @@ passport.use(new FacebookStrategy({
         const newUser = new User({
           providerId: profile.id,
           provider: 'facebook',
+          username: username, 
+          name: profile.displayName,
+          email: email, 
+          level: 'consumer',
+          active: true, 
+          dateCreated: new Date().toISOString().substring(0, 19),
+          dateLastAccess: new Date().toISOString().substring(0, 19)
+        });
+        
+        UserController.addUser(newUser);
+      }
+    });
+  }
+));
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_APP_ID,
+  clientSecret: process.env.GOOGLE_APP_SECRET,
+  callbackURL: `${process.env.AUTHENTICATION_URL}/users/google/callback`
+},
+  function (accessToken, refreshToken, profile, cb) {
+    User.findOne({ providerId: profile.id, provider: 'google' }, function (err, user) {
+      if (err) {
+        return cb(err);
+      }
+      if (user) {
+        // Utilizador já existe, devolve o utilizador existente
+        return cb(null, user);
+      } else {
+        // O utilizador não existe, cria um novo utilizador com as informações do Facebook
+        const email = profile.emails ? profile.emails[0].value : ''; // Extrai o primeiro email, se disponível
+        const username = profile.displayName || email || ''; // Utiliza o username, se disponível, caso contrário usa o email ou uma string vazia
+        const newUser = new User({
+          providerId: profile.id,
+          provider: 'google',
           username: username, 
           name: profile.displayName,
           email: email, 
