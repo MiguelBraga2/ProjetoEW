@@ -1,9 +1,19 @@
 var express = require('express');
 var router = express.Router();
+var axios = require('axios')
 
 router.get('/', function(req, res) {
+  try{
+    res.status(200).render('index')
+  }
+  catch(erro){
+      res.status(520).render('error', {error: erro, message: "Erro na obtenção da pagina"})
+    }
+});
+
+router.get('/register', function(req, res) {
   var data = new Date().toISOString().substring(0, 16);
-  axios.get('http://localhost:7777/')
+  axios.get('http://localhost:8002/register')
     .then(dados => {
       res.status(200).render('index', { clist : dados.data , d: data})
     })
