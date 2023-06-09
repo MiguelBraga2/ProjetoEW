@@ -1,4 +1,4 @@
-var Judgment = require('../models/judgment')
+var Judgment = require('../models/acordao')
 
 /**
  * Retrieve all judgment from the BD
@@ -22,7 +22,7 @@ module.exports.list = () => {
  * @param {id} id the id of the judgment
  * @returns The judgment or an error
  */
-module.exports.getJudgment = id => {
+module.exports.getAcordao = id => {
     return Judgment
                    .find({_id: id})
                    .then(resp => {
@@ -33,13 +33,24 @@ module.exports.getJudgment = id => {
                    })
 } 
 
+module.exports.getAcordaosDoTribunal = tribunal => {
+  return Judgment
+        .find({tribunal: tribunal})
+        .then(resp => {
+          return resp
+        })
+        .catch(error => {
+          return error
+        })
+}
+
 /**
  * Creates a new judgment in the BD
  * CREATE
  * @param {judgment} judgment 
  * @returns the created judgment or an error
  */
-module.exports.addJudgment = judgment => {
+module.exports.addAcordao = judgment => {
   return Judgment
                  .create(judgment)
                  .then(resp => {
@@ -56,7 +67,7 @@ module.exports.addJudgment = judgment => {
  * @param {judgment} judgment 
  * @returns the updated judgment(Verificar) or an error
  */
-module.exports.updateJudgment = judgment => {
+module.exports.updateAcordao = judgment => {
   return Judgment
                  .updateOne({_id: judgment._id}, judgment)
                  .then(resp => {
@@ -74,7 +85,7 @@ module.exports.updateJudgment = judgment => {
  * @param {id} id 
  * @returns the deleted judgment(Verificar) or an error
  */
-module.exports.deleteJudgment = id => {
+module.exports.deleteAcordao = id => {
   return Judgment
                  .deleteOne({_id: id})
                  .then(resp => {
