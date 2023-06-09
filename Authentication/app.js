@@ -29,32 +29,39 @@ passport.use(new FacebookStrategy({
   callbackURL: `${process.env.AUTHENTICATION_URL}/users/facebook/callback`
 },
   function (accessToken, refreshToken, profile, cb) {
-    User.findOne({ providerId: profile.id, provider: 'facebook' }, function (err, user) {
-      if (err) {
-        return cb(err);
-      }
-      if (user) {
-        // Utilizador já existe, devolve o utilizador existente
-        return cb(null, user);
-      } else {
-        // O utilizador não existe, cria um novo utilizador com as informações do Facebook
-        const email = profile.emails ? profile.emails[0].value : ''; // Extrai o primeiro email, se disponível
-        const username = profile.displayName || email || ''; // Utiliza o username, se disponível, caso contrário usa o email ou uma string vazia
-        const newUser = new User({
-          providerId: profile.id,
-          provider: 'facebook',
-          username: username, 
-          name: profile.displayName,
-          email: email, 
-          level: 'consumer',
-          active: true, 
-          dateCreated: new Date().toISOString().substring(0, 19),
-          dateLastAccess: new Date().toISOString().substring(0, 19)
-        });
-        
-        UserController.addUser(newUser);
-      }
-    });
+    User.findOne({ providerId: profile.id, provider: 'facebook' })
+      .then(resposta => {
+        if (resposta) { 
+          // O utilizador já existe
+          return cb(null, resposta);
+        } else {
+          // O utilizador não existe, cria um novo utilizador com as informações do Facebook
+          const email = profile.emails ? profile.emails[0].value : ''; // Extrai o primeiro email, se disponível
+          const username = profile.displayName || email || ''; // Utiliza o username, se disponível, caso contrário usa o email ou uma string vazia
+          const newUser = new User({
+            providerId: profile.id,
+            provider: 'facebook',
+            username: username,
+            name: profile.displayName,
+            email: email,
+            level: 'consumer',
+            active: true,
+            dateCreated: new Date().toISOString().substring(0, 19),
+            dateLastAccess: new Date().toISOString().substring(0, 19)
+          });  
+
+          User.create(newUser)
+            .then(dados => {
+              return cb(null, dados);
+            })
+            .catch(erro => {
+              return cb(erro, null);
+            })
+        }
+      })
+      .catch(erro => {
+        return cb(erro, null)
+      });
   }
 ));
 passport.use(new GoogleStrategy({
@@ -63,32 +70,40 @@ passport.use(new GoogleStrategy({
   callbackURL: `${process.env.AUTHENTICATION_URL}/users/google/callback`
 },
   function (accessToken, refreshToken, profile, cb) {
-    User.findOne({ providerId: profile.id, provider: 'google' }, function (err, user) {
-      if (err) {
-        return cb(err);
-      }
-      if (user) {
-        // Utilizador já existe, devolve o utilizador existente
-        return cb(null, user);
-      } else {
-        // O utilizador não existe, cria um novo utilizador com as informações do Facebook
-        const email = profile.emails ? profile.emails[0].value : ''; // Extrai o primeiro email, se disponível
-        const username = profile.displayName || email || ''; // Utiliza o username, se disponível, caso contrário usa o email ou uma string vazia
-        const newUser = new User({
-          providerId: profile.id,
-          provider: 'google',
-          username: username, 
-          name: profile.displayName,
-          email: email, 
-          level: 'consumer',
-          active: true, 
-          dateCreated: new Date().toISOString().substring(0, 19),
-          dateLastAccess: new Date().toISOString().substring(0, 19)
-        });
+    User.findOne({ providerId: profile.id, provider: 'google' })
+      .then(resposta => {
         
-        UserController.addUser(newUser);
-      }
-    });
+        if (resposta) { 
+          // Utilizador já existe, devolve o utilizador existente
+          return cb(null, user);
+        } else {
+          // O utilizador não existe, cria um novo utilizador com as informações do Google
+          const email = profile.emails ? profile.emails[0].value : ''; // Extrai o primeiro email, se disponível
+          const username = profile.displayName || email || ''; // Utiliza o username, se disponível, caso contrário usa o email ou uma string vazia
+          const newUser = new User({
+            providerId: profile.id,
+            provider: 'google',
+            username: username,
+            name: profile.displayName,
+            email: email,
+            level: 'consumer',
+            active: true,
+            dateCreated: new Date().toISOString().substring(0, 19),
+            dateLastAccess: new Date().toISOString().substring(0, 19)
+          });
+
+          User.create(newUser)
+            .then(dados => {
+              return cb(null, dados);
+            })
+            .catch(erro => {
+              return cb(erro, null);
+            })
+        }
+      })
+      .catch(erro => {
+        return cb(erro, null)
+      })
   }
 ));
 
