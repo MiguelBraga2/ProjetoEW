@@ -30,10 +30,10 @@
     <h2 class="mt-5 mb-5 text-center">Autenticação:</h2>
     <div class="row justify-content-md-center">
       <div class="col-xxl-5 col-xl-6 col-lg-7 col-md-9 col-xs-10">
-        <form>
+        <form action="/login" method="POST">
           <div class="mb-3">
             <label for="Username" class="form-label">Username:</label>
-            <input type="username" class="form-control" id="username1" />
+            <input type="username" class="form-control" id="username1" name="username" />
 
             <div class="alert alert-success d-flex align-items-center mt-2" style="height: 65px;" role="alert"
               id="alert">
@@ -46,7 +46,7 @@
           </div>
           <div class="mb-3">
             <label for="Password" class="form-label">Password:</label>
-            <input type="password" class="form-control" id="password1" aria-describedby="forgotpassword" />
+            <input type="password" class="form-control" id="password1" name="password" aria-describedby="forgotpassword" />
 
             <div class="alert alert-success d-flex align-items-center mt-2 form-control" style="height: 65px;"
               role="alert" id="alert1">
