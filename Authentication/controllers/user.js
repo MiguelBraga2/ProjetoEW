@@ -23,16 +23,6 @@ module.exports.getUser = id => {
         })
 }
 
-module.exports.getByUsername = un => {
-    return User.findOne({ username: un })
-        .then(resposta => {
-            return resposta
-        })
-        .catch(erro => {
-            return erro
-        })
-}
-
 module.exports.addUser = u => {
     return User.create(u)
         .then(resposta => {
@@ -54,7 +44,7 @@ module.exports.updateUser = (id, info) => {
 }
 
 module.exports.updateUserStatus = (id, status) => {
-    return User.updateOne({ _id: id }, { active: status })
+    return User.updateOne({ _id: id }, { $set: { active: status } })
         .then(resposta => {
             return resposta
         })
