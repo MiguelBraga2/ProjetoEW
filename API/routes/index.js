@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var Judgment = require('../controllers/judgment')
+var Judgment = require('../controllers/acordao')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
 /**
  * GET all the judgments
  */
-router.get('/judgments', function(req, res) {
+router.get('/acordaos', function(req, res) {
   Judgment.list()
     .then(data => res.status(200).json(data))
     .catch(error => res.status(520).json({error: error, message: "Could not obtain the list of judgments"}))
@@ -19,8 +19,14 @@ router.get('/judgments', function(req, res) {
 /**
  * GET one judgment
  */
-router.get('/judgments/:id', (req,res) => {
-  Judgment.getJudgment(req.params.id)
+router.get('/acordaos/:id', (req,res) => {
+  Judgment.getAcordao(req.params.id)
+    .then(data => res.status(200).json(data))
+    .catch(error => res.status(521).json({error: error, message: "Could not obtain the judgment"}))
+})
+
+router.get('/acordaos/tribunais/:tribunal', (req, res) => {
+  Judgment.getAcordaosDoTribunal(req.params.tribunal)
     .then(data => res.status(200).json(data))
     .catch(error => res.status(521).json({error: error, message: "Could not obtain the judgment"}))
 })
@@ -28,8 +34,8 @@ router.get('/judgments/:id', (req,res) => {
 /**
  * POST a judgment
  */
-router.post('/judgments', (req,res) => {
-  Judgment.addJudgment(req.body)
+router.post('/acordaos', (req,res) => {
+  Judgment.addAcordao(req.body)
     .then(data => res.status(201).json(data))
     .catch(error => res.status(522).json({error: error, message: "Could not insert the judgment"}))
 })
@@ -37,8 +43,8 @@ router.post('/judgments', (req,res) => {
 /**
  * PUT a judgment
  */
-router.put('/judgments/:id', (req,res) => {
-  Judgment.updateJudgment(req.body)
+router.put('/acordaos/:id', (req,res) => {
+  Judgment.updateAcordao(req.body)
     .then(data => res.status(200).json(data))
     .catch(error => res.status(523).json({error: error, message: "Could not update the judgment"}))
 })
@@ -46,8 +52,8 @@ router.put('/judgments/:id', (req,res) => {
 /**
  * DELETE a judgment
  */
-router.delete('/judgments/:id', (req,res) => {
-  Judgment.deleteJudgment(req.params.id)
+router.delete('/acordaos/:id', (req,res) => {
+  Judgment.deleteAcordao(req.params.id)
     .then(data => res.status(200).json(data))
     .catch(error => res.status(524).json({error: error, message: "Could not delete the judgment"}))
 })
