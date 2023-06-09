@@ -138,7 +138,7 @@ router.put('/:id', auth.verificaAcesso, function (req, res) {
       res.jsonp(dados)
     })
     .catch(erro => {
-      res.render('error', { error: erro, message: "Erro na alteração do utilizador" })
+      res.jsonp('error', { error: erro, message: "Erro na alteração do utilizador" })
     })
 })
 
@@ -148,7 +148,7 @@ router.put('/:id/desativar', auth.verificaAcesso, function (req, res) {
       res.jsonp(dados)
     })
     .catch(erro => {
-      res.render('error', { error: erro, message: "Erro na alteração do utilizador" })
+      res.jsonp('error', { error: erro, message: "Erro na alteração do utilizador" })
     })
 })
 
@@ -158,7 +158,7 @@ router.put('/:id/ativar', auth.verificaAcesso, function (req, res) {
       res.jsonp(dados)
     })
     .catch(erro => {
-      res.render('error', { error: erro, message: "Erro na alteração do utilizador" })
+      res.jsonp('error', { error: erro, message: "Erro na alteração do utilizador" })
     })
 })
 
@@ -168,7 +168,7 @@ router.put('/:id/password', auth.verificaAcesso, function (req, res) {
       res.jsonp(dados)
     })
     .catch(erro => {
-      res.render('error', { error: erro, message: "Erro na alteração do utilizador" })
+      res.jsonp('error', { error: erro, message: "Erro na alteração do utilizador" })
     })
 })
 
@@ -178,7 +178,7 @@ router.delete('/:id', auth.verificaAcesso, function (req, res) {
       res.jsonp(dados)
     })
     .catch(erro => {
-      res.render('error', { error: erro, message: "Erro na remoção do utilizador" })
+      res.jsonp('error', { error: erro, message: "Erro na remoção do utilizador" })
     })
 })
 
