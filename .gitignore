@@ -2,4 +2,5 @@ package-lock.json
 API/node_modules
 Authentication/node_modules
 Authentication/.env
+Interface/.env
 Interface/node_modules
