@@ -9,7 +9,9 @@ const userSchema = new mongoose.Schema({
   level: String,
   active: Boolean,
   dateCreated: String,
-  dateLastAccess: String
+  dateLastAccess: String,
+  providerId: String,
+  provider: String
 });
 
 userSchema.plugin(passportLocalMongoose);

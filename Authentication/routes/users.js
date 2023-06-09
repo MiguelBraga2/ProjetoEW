@@ -13,6 +13,41 @@ router.get('/', auth.verificaAcesso, function (req, res) {
     .catch(e => res.status(500).jsonp({ error: e }))
 })
 
+// Rota para iniciar o processo de autenticação com o Facebook
+router.get('/facebook', passport.authenticate('facebook'));
+
+// Rota de callback para autenticação com o Facebook
+router.get('/facebook/callback',
+  function(req, res, next) {
+    passport.authenticate('facebook', function(err, user, info) {
+      if (err) {
+        // Tratar o erro de autenticação
+        return res.jsonp({ error: err });
+      }
+      if (!user) {
+        // Tratar o cenário de autenticação falhada
+        return res.jsonp({ error: 'Authentication failed.' });
+      }
+      // Autenticação bem-sucedida, gerar o token
+      jwt.sign({
+        username: user.username,
+        level: user.level,
+        sub: 'User logged in'
+      },
+        process.env.SECRET_KEY,
+        { expiresIn: "1h" },
+        function (e, token) {
+          if (e) {
+            // Tratar o erro de geração do token
+            return res.jsonp({ error: e });
+          }
+          // Enviar o token como resposta
+          return res.jsonp({ token: token });
+        });
+    })(req, res, next);
+  }
+);
+
 router.get('/:id', auth.verificaAcesso, function (req, res) {
   User.getUser(req.params.id)
     .then(dados => res.status(200).jsonp({ dados: dados }))
@@ -30,7 +65,8 @@ router.post('/register', function (req, res) {
   userModel.register(new userModel({
     username: req.body.username, name: req.body.name,
     email: req.body.email, level: req.body.level, 
-    active: true, dateCreated: d, dateLastAccess: d
+    active: true, dateCreated: d, dateLastAccess: d,
+    providerId: '', provider: ''
   }),
     req.body.password,
     (err, user) => {
