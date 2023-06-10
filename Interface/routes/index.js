@@ -37,27 +37,11 @@ router.get('/login', (req, res)=>{
 })
 
 router.get('/facebook', (req, res)=>{
-  axios.get(env.authAcessPoint + '/facebook', req.body)
-    .then(response => {
-      // colocar o token num cookie e enviar para o cliente
-      res.cookie('token', response.data.token)
-      res.redirect('/')
-    })
-    .catch(err => {
-      res.render('error', {error: err})
-    })
+  res.redirect(env.authAcessPoint + '/facebook?returnUrl=http://localhost:8003/')
 })
 
 router.get('/google', (req, res)=>{
-  axios.get(env.authAcessPoint + '/google', req.body)
-    .then(response => {
-      // colocar o token num cookie e enviar para o cliente
-      res.cookie('token', response.data.token)
-      res.redirect('/')
-    })
-    .catch(err => {
-      res.render('error', {error: err})
-    })
+  res.redirect(env.authAcessPoint + '/google?returnUrl=http://localhost:8003/')
 })
 
 router.post('/login', (req, res) => {

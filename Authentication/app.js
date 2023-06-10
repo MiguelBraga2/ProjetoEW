@@ -1,5 +1,6 @@
 // Imports
 var createError = require('http-errors');
+var cookieParser = require('cookie-parser');
 var express = require('express');
 var logger = require('morgan');
 var passport = require('passport')
@@ -76,7 +77,7 @@ passport.use(new GoogleStrategy({
         
         if (resposta) { 
           // Utilizador já existe, devolve o utilizador existente
-          return cb(null, user);
+          return cb(null, resposta);
         } else {
           // O utilizador não existe, cria um novo utilizador com as informações do Google
           const email = profile.emails ? profile.emails[0].value : ''; // Extrai o primeiro email, se disponível
@@ -114,6 +115,7 @@ var app = express();
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(passport.initialize());
 app.use(session({
   secret: process.env.SESSION_KEY,

@@ -14,7 +14,14 @@ router.get('/', auth.verificaAcesso, function (req, res) {
 })
 
 // Rota para iniciar o processo de autenticação com o Facebook
-router.get('/facebook', passport.authenticate('facebook'));
+router.get('/facebook', (req, res) => {
+  const returnUrl  = req.query.returnUrl || '/'; 
+  req.session.returnUrl = returnUrl;
+
+  // Redirecione para a autenticação do Facebook com o parâmetro returnUrl
+  passport.authenticate('facebook')(req, res);
+});
+
 
 // Rota de callback para autenticação com o Facebook
 router.get('/facebook/callback', function(req, res, next) {
@@ -37,7 +44,8 @@ router.get('/facebook/callback', function(req, res, next) {
           // Tratar o erro de criar o token
           return res.jsonp({ error: error.message });
         } else {
-          return res.jsonp({ token: token });
+          res.cookie('token', token);
+          res.redirect(req.session.returnUrl);
         }
       }
     );
@@ -46,7 +54,17 @@ router.get('/facebook/callback', function(req, res, next) {
 
 
 // Rota para iniciar o processo de autenticação com o google
-router.get('/google', passport.authenticate('google', { scope: ['profile'] }));
+router.get('/google', (req, res) => {
+  // Armazena a returnUrl na variável de sessão
+  const returnUrl = req.query.returnUrl || '/'; 
+  req.session.returnUrl = returnUrl;
+
+  // Redireciona para a autenticação do Google
+  passport.authenticate('google', { 
+    scope: ['profile']
+  })(req, res);
+});
+
 
 // Rota de callback para autenticação com o Google
 router.get('/google/callback', function(req, res, next) {
@@ -71,10 +89,13 @@ router.get('/google/callback', function(req, res, next) {
         if (e) {
           // Tratar o erro de geração do token
           return res.jsonp({ error: e });
+        } else {
+          // Enviar o token como resposta
+          res.cookie('token', token);
+          res.redirect(req.session.returnUrl);
         }
-        // Enviar o token como resposta
-        return res.jsonp({ token: token });
-      });
+      }
+    );
   })(req, res, next);
 });
 
