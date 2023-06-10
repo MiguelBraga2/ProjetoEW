@@ -93,7 +93,7 @@ router.post('/', auth.verificaAcesso, function (req, res) {
 router.post('/register', function (req, res) {
   var d = new Date().toISOString().substring(0, 19)
   userModel.register(new userModel({
-    username: req.body.username, name: req.body.name,
+    username: req.body.username, name: req.body.name, surname: req.body.surname,
     email: req.body.email, level: req.body.level, 
     active: true, dateCreated: d, dateLastAccess: d,
     providerId: '', provider: ''
