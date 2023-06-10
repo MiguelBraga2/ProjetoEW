@@ -36,6 +36,30 @@ router.get('/login', (req, res)=>{
   res.render('loginForm')
 })
 
+router.get('/facebook', (req, res)=>{
+  axios.get(env.authAcessPoint + '/facebook', req.body)
+    .then(response => {
+      // colocar o token num cookie e enviar para o cliente
+      res.cookie('token', response.data.token)
+      res.redirect('/')
+    })
+    .catch(err => {
+      res.render('error', {error: err})
+    })
+})
+
+router.get('/google', (req, res)=>{
+  axios.get(env.authAcessPoint + '/google', req.body)
+    .then(response => {
+      // colocar o token num cookie e enviar para o cliente
+      res.cookie('token', response.data.token)
+      res.redirect('/')
+    })
+    .catch(err => {
+      res.render('error', {error: err})
+    })
+})
+
 router.post('/login', (req, res) => {
   axios.post(env.authAcessPoint + '/login', req.body)
     .then(response => {
