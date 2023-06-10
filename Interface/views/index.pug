@@ -1,0 +1,72 @@
+extends layout
+
+block content
+meta(charset="UTF-8")
+meta(http-equiv="X-UA-Compatible" content="IE=edge")
+meta(name="viewport" content="width=device-width,initial-scale=1")
+title Acordãos
+link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+.navbar.navbar-inverse
+    .container-fluid
+        .row
+            .col-md-12.col-lg-12
+                .navbar-header
+                    button.navbar-toggle(data-target="#mobile_menu" data-toggle="collapse")
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                    a.navbar-brand(href="#") Acordãos
+                .navbar-collapse.collapse#mobile_menu
+                    ul.nav.navbar-nav
+                        li.active
+                            a(href="#") Home
+                        li
+                            a(href="#") Mais Informações
+                    ul.nav.navbar-nav.navbar-right
+                        li
+                            a(href="#")
+                                span.glyphicon.glyphicon-user
+                                |  Perfil do Utilizador
+                        li.dropdown
+                            a.dropdown-toggle(href="#" data-toggle="dropdown")
+                                span.glyphicon.glyphicon-log-in
+                                |  Login / Sign Up 
+                                span.caret
+                            ul.dropdown-menu
+                                li
+                                    a(href="#") Login
+                                li
+                                    a(href="#") Sign Up
+                    form.navbar-form.navbar-right.hidden-sm.hidden-xs(action)
+                        .form-group
+                            .input-group
+                                input.form-control(type="search" name="search" placeholder="Procure por alguma coisa...")
+                                span.input-group-addon
+                                    span.glyphicon.glyphicon-search
+.container
+    .row
+        .col-md-12
+            .text(style="font-size:xx-large; margin-bottom: 50px; margin-top: 30px; text-decoration: underline;").
+
+                Lista de Tribunais:
+
+            .list
+                ul.list-group.list-group-flush
+                    a
+                        li.list-group-item Tribunal 1
+                    a
+                        li.list-group-item Tribunal 2
+                    a
+                        li.list-group-item Tribunal 3
+                    a
+                        li.list-group-item Tribunal 4
+                    a
+                        li.list-group-item Tribunal 5
+    footer.bg-light.text-center.text-lg-start(style="margin-top: 30px;")
+        //  Copyright 
+        .text-center.p-3(style="background-color: rgb(255, 255, 255);")
+            span.text-dark © 2023 Copyright:
+            a.text-dark.bg-white(href="https://localhost::8003/") Acordaos
+        //  Copyright 
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js")
