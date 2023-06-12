@@ -5,7 +5,7 @@ var Judgment = require('../controllers/acordao')
 
 // Pagination 
 
-function paginatedResults(model) {
+function paginatedResults(model, queries) {
   return async (req, res, next) => {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
@@ -29,7 +29,7 @@ function paginatedResults(model) {
     }
 
     try {
-      results.results = await model.find().skip(startIndex).limit(limit).exec();
+      results.results = await model.find(queries).skip(startIndex).limit(limit).exec();
       res.paginatedResults = results;
       next();
     } catch (error) {
@@ -41,8 +41,8 @@ function paginatedResults(model) {
 /**
  * GET all the judgments
  */
-router.get('/acordaos', paginatedResults(Judgment), function(req, res) {  
-    res.json(res.paginatedResults);
+router.get('/acordaos', paginatedResults(Judgment, {}), function(req, res) {  
+  res.json(res.paginatedResults);
 });
 
 /**
@@ -57,10 +57,8 @@ router.get('/acordaos/:id', (req,res) => {
 /**
  * GET acordãos de um dado tribunal
  */
-router.get('/acordaos/tribunais/:tribunal', (req, res) => {
-  Judgment.getAcordaosDoTribunal(req.params.tribunal)
-    .then(data => res.status(200).json(data))
-    .catch(error => res.status(521).json({error: error, message: "Could not obtain the judgment"}))
+router.get('/acordaos/tribunais/:tribunal', paginatedResults(Judgment, { tribunal : req.params.tribunal}), (req, res) => {
+  res.json(res.paginatedResults);
 })
 
 /**
