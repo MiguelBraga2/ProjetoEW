@@ -1,6 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var Judgment = require('../controllers/acordao')
+var Acordao = require('../models/acordao.js')
+
+var Taxonomy = require('../queries/taxonomy')
+
+const nomeFicheiro = './queries/descriptors.txt'; // Substitua pelo caminho e nome do seu arquivo
+
+var tree = Taxonomy.lerFicheiro(nomeFicheiro)
 
 
 // Pagination 
@@ -11,7 +18,7 @@ function paginatedResults(model, queries) {
     const limit = parseInt(req.query.limit, 10) || 10;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const total = await model.countDocuments();
+    const total = await model.countDocuments({});
     const results = {};
     
     if (endIndex < total) {
@@ -41,9 +48,13 @@ function paginatedResults(model, queries) {
 /**
  * GET all the judgments
  */
-router.get('/acordaos', paginatedResults(Judgment, {}), function(req, res) {  
+router.get('/acordaos', paginatedResults(Acordao, {}), function(req, res) {  
   res.json(res.paginatedResults);
 });
+
+router.get('/acordaos/queries/desc/:termo', (req,res) => {
+  res.json(Taxonomy.getProcessos(req.params.termo, tree))
+})
 
 
 /**
@@ -65,11 +76,12 @@ router.get('/acordaos/:id', (req,res) => {
 })
 
 
+
 /**
  * GET acordãos de um dado tribunal
  */
 router.get('/acordaos/tribunais/:tribunal', (req, res) => {
-  paginatedResults(Judgment, { tribunal : req.params.tribunal});
+  paginatedResults(Acordao, { tribunal : req.params.tribunal});
   res.json(res.paginatedResults);
 })
 
