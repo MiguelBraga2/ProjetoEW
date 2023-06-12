@@ -2,22 +2,47 @@ var express = require('express');
 var router = express.Router();
 var Judgment = require('../controllers/acordao')
 
+
+// Pagination 
+
+function paginatedResults(model) {
+  return async (req, res, next) => {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await model.countDocuments();
+    const results = {};
+    
+    if (endIndex < total) {
+        results.next = { 
+          page: page + 1,
+          limit: limit
+        }      
+    }
+
+    if (startIndex > 0) {
+        results.previous = { 
+          page: page - 1,
+          limit: limit
+        }
+    }
+
+    try {
+      results.results = await model.find().skip(startIndex).limit(limit).exec();
+      res.paginatedResults = results;
+      next();
+    } catch (error) {
+      res.status(500).json({error: error, message: error.message});
+    }
+  }
+}
+
 /**
  * GET all the judgments
  */
-router.get('/acordaos', function(req, res) {
-  if (Object.keys(req.query).length > 0) {
-    Judgment.getAcordaos(req.query, {})
-    .then(data => res.status(200).json(data))
-    .catch(error => res.status(520).json({error: error, message: "Could not obtain the list of judgments"}))
-  }  
-  else{
-    console.log('no querystring')
-    Judgment.list()
-    .then(data => res.status(200).json(data))
-    .catch(error => res.status(520).json({error: error, message: "Could not obtain the list of judgments"}))
-  }
-  
+router.get('/acordaos', paginatedResults(Judgment), function(req, res) {  
+    res.json(res.paginatedResults);
 });
 
 /**
