@@ -16,7 +16,7 @@ function verificaToken(req, res, next){
 
 /* GET home page. */
 router.get('/', function(req, res){
-  axios.post(env.apiAccessPoint + '/tribunais')
+  axios.get(env.apiAccessPoint + '/acordaos/tribunais')
     .then(response => {
       if (req.cookies && req.cookies.token) {
         jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {

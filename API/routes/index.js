@@ -68,7 +68,8 @@ router.get('/acordaos/:id', (req,res) => {
 /**
  * GET acordãos de um dado tribunal
  */
-router.get('/acordaos/tribunais/:tribunal', paginatedResults(Judgment, { tribunal : req.params.tribunal}), (req, res) => {
+router.get('/acordaos/tribunais/:tribunal', (req, res) => {
+  paginatedResults(Judgment, { tribunal : req.params.tribunal});
   res.json(res.paginatedResults);
 })
 
