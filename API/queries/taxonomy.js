@@ -54,4 +54,56 @@ module.exports.lerFicheiro = (nomeFicheiro) => {
   }
 }
 
+module.exports.getProcessos = (termo, tree) => {
+  const trimmedLine = termo.trim();
+  const words = trimmedLine.split(/\s+/);
+  let processos = []
+
+  let currentLevel = tree;
+
+  for (let i = 0; i < words.length; i++) {
+    const pretext = words.slice(0, i + 1).join(' ');
+    if (currentLevel[pretext]){
+      if(currentLevel[pretext].subarvores) 
+        currentLevel = currentLevel[pretext].subarvores;
+      else if (currentLevel[pretext].processos) 
+      currentLevel = currentLevel[pretext].processos;
+    }
+    else{
+      return []
+    }
+  }
+
+  if (Array.isArray(currentLevel)){
+    return currentLevel
+  } else{
+    console.log(currentLevel)
+    var novosProcessos = acumProcessosRecursivo(currentLevel)
+    for(let novoProcesso in novosProcessos){
+      processos.push(novosProcessos[novoProcesso])
+    }
+  }
+  
+
+  return processos
+}
+
+var acumProcessosRecursivo = (tree) => {
+  var processos = []
+  for(let key in tree){
+    if (tree[key]['processos']){
+      for(let processo in tree[key]['processos']){
+        processos.push(tree[key]['processos'][processo])
+      }
+    }
+    if (tree[key]['subarvores']){
+      var novosProcessos = acumProcessosRecursivo(tree[key]['subarvores'])
+      for (let novoProcesso in novosProcessos){
+        processos.push(novosProcessos[novoProcesso])
+      }
+    }
+  }
+  return processos
+}
+
 module.exports.lerFicheiro
