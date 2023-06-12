@@ -45,6 +45,16 @@ router.get('/acordaos', paginatedResults(Judgment, {}), function(req, res) {
   res.json(res.paginatedResults);
 });
 
+
+/**
+ * GET tribunais
+ */
+router.get('/acordaos/tribunais', (req, res) => {
+  Judgment.getTribunais()
+    .then(data => res.status(200).json(data))
+    .catch(error => res.status(525).json({error: error, message: "Could not retreive the courts list"}))
+})
+
 /**
  * GET acordão com certo ID
  */
@@ -53,6 +63,7 @@ router.get('/acordaos/:id', (req,res) => {
     .then(data => res.status(200).json(data))
     .catch(error => res.status(521).json({error: error, message: "Could not obtain the judgment"}))
 })
+
 
 /**
  * GET acordãos de um dado tribunal
