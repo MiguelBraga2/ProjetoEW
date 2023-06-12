@@ -2,22 +2,26 @@ var express = require('express');
 var router = express.Router();
 var Judgment = require('../controllers/acordao')
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
 /**
  * GET all the judgments
  */
 router.get('/acordaos', function(req, res) {
-  Judgment.list()
+  if (Object.keys(req.query).length > 0) {
+    Judgment.getAcordaos(req.query, {})
     .then(data => res.status(200).json(data))
     .catch(error => res.status(520).json({error: error, message: "Could not obtain the list of judgments"}))
+  }  
+  else{
+    console.log('no querystring')
+    Judgment.list()
+    .then(data => res.status(200).json(data))
+    .catch(error => res.status(520).json({error: error, message: "Could not obtain the list of judgments"}))
+  }
+  
 });
 
 /**
- * GET one judgment
+ * GET acordão com certo ID
  */
 router.get('/acordaos/:id', (req,res) => {
   Judgment.getAcordao(req.params.id)
@@ -25,6 +29,9 @@ router.get('/acordaos/:id', (req,res) => {
     .catch(error => res.status(521).json({error: error, message: "Could not obtain the judgment"}))
 })
 
+/**
+ * GET acordãos de um dado tribunal
+ */
 router.get('/acordaos/tribunais/:tribunal', (req, res) => {
   Judgment.getAcordaosDoTribunal(req.params.tribunal)
     .then(data => res.status(200).json(data))

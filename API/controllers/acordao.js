@@ -16,6 +16,17 @@ module.exports.list = () => {
                    })
 }
 
+module.exports.getAcordaos = (filter, projection) => {
+  return Judgment
+                 .find(filter, projection)
+                 .then(resp => {
+                   return resp
+                 })
+                 .catch(error => {
+                   return error
+                 })
+}
+
 /**
  * Retrieve a judgment from the BD given its id
  * RETRIEVE
