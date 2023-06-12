@@ -2,6 +2,14 @@ var express = require('express');
 var router = express.Router();
 var Judgment = require('../controllers/acordao')
 
+var Taxonomy = require('../queries/taxonomy')
+
+const nomeFicheiro = './queries/descriptors.txt'; // Substitua pelo caminho e nome do seu arquivo
+
+var tree = Taxonomy.lerFicheiro(nomeFicheiro)
+
+console.log(tree)
+
 /**
  * GET all the judgments
  */
