@@ -8,25 +8,58 @@ const nomeFicheiro = './queries/descriptors.txt'; // Substitua pelo caminho e no
 
 var tree = Taxonomy.lerFicheiro(nomeFicheiro)
 
-console.log(tree)
+
+// Pagination 
+
+function paginatedResults(model, queries) {
+  return async (req, res, next) => {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await model.countDocuments();
+    const results = {};
+    
+    if (endIndex < total) {
+        results.next = { 
+          page: page + 1,
+          limit: limit
+        }      
+    }
+
+    if (startIndex > 0) {
+        results.previous = { 
+          page: page - 1,
+          limit: limit
+        }
+    }
+
+    try {
+      results.results = await model.find(queries).skip(startIndex).limit(limit).exec();
+      res.paginatedResults = results;
+      next();
+    } catch (error) {
+      res.status(500).json({error: error, message: error.message});
+    }
+  }
+}
 
 /**
  * GET all the judgments
  */
-router.get('/acordaos', function(req, res) {
-  if (Object.keys(req.query).length > 0) {
-    Judgment.getAcordaos(req.query, {})
-    .then(data => res.status(200).json(data))
-    .catch(error => res.status(520).json({error: error, message: "Could not obtain the list of judgments"}))
-  }  
-  else{
-    console.log('no querystring')
-    Judgment.list()
-    .then(data => res.status(200).json(data))
-    .catch(error => res.status(520).json({error: error, message: "Could not obtain the list of judgments"}))
-  }
-  
+router.get('/acordaos', paginatedResults(Judgment, {}), function(req, res) {  
+  res.json(res.paginatedResults);
 });
+
+
+/**
+ * GET tribunais
+ */
+router.get('/acordaos/tribunais', (req, res) => {
+  Judgment.getTribunais()
+    .then(data => res.status(200).json(data))
+    .catch(error => res.status(525).json({error: error, message: "Could not retreive the courts list"}))
+})
 
 /**
  * GET acordão com certo ID
@@ -37,13 +70,13 @@ router.get('/acordaos/:id', (req,res) => {
     .catch(error => res.status(521).json({error: error, message: "Could not obtain the judgment"}))
 })
 
+
 /**
  * GET acordãos de um dado tribunal
  */
 router.get('/acordaos/tribunais/:tribunal', (req, res) => {
-  Judgment.getAcordaosDoTribunal(req.params.tribunal)
-    .then(data => res.status(200).json(data))
-    .catch(error => res.status(521).json({error: error, message: "Could not obtain the judgment"}))
+  paginatedResults(Judgment, { tribunal : req.params.tribunal});
+  res.json(res.paginatedResults);
 })
 
 /**

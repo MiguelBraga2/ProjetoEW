@@ -16,19 +16,23 @@ function verificaToken(req, res, next){
 
 /* GET home page. */
 router.get('/', function(req, res){
-  if(req.cookies && req.cookies.token){
-    jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(e, payload){
-      if(e){
-        res.render('index')
-      }
-      else{
-        res.render('index', {u: payload})
+  axios.get(env.apiAccessPoint + '/acordaos/tribunais')
+    .then(response => {
+      if (req.cookies && req.cookies.token) {
+        jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+          if (err) {
+            return res.render('index', {ltribunais: response.data});
+          } else {
+            return res.render('index', {ltribunais: response.data, user: payload });
+          }
+        });
+      } else {
+        res.render('index', {ltribunais: response.data});
       }
     })
-  }
-  else {
-    res.render('index')
-  }
+    .catch(err => {
+      res.render('error', {error: err, message: err.message});
+    })
 })
 
 // Login

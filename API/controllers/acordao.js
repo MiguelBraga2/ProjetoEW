@@ -44,6 +44,17 @@ module.exports.getAcordao = id => {
                    })
 } 
 
+module.exports.getTribunais = () => {
+  return Judgment
+        .distinct('tribunal')
+        .then(resp => {
+          return resp
+        })
+        .catch(error => {
+          return error
+        })
+}
+
 module.exports.getAcordaosDoTribunal = tribunal => {
   return Judgment
         .find({tribunal: tribunal})
