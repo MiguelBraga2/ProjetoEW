@@ -18,21 +18,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// Configuração para servir os ficheiros estáticos do Bootstrap
-app.use('/css', express.static('node_modules/bootstrap/dist/css'));
-app.use('/js', express.static('node_modules/bootstrap/dist/js'));
-
-// Configuração para servir os ficheiros estáticos do FontAwesome
-app.use('/css', express.static('node_modules/@fortawesome/fontawesome-free/css'));
-app.use('/js', express.static('node_modules/@fortawesome/fontawesome-free/js'));
-app.use('/webfonts', express.static('node_modules/@fortawesome/fontawesome-free/webfonts'));
-
-// Configuração para servir os ficheiros estáticos do jquery
-app.use('/js', express.static('node_modules/jquery/dist'));
-
-// Multiselect 
-app.use('/css', express.static('public/css'));
-app.use('/js', express.static('public/js'));
+app.use('/bootstrap/css', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/css')));
+app.use('/bootstrap/js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')));
+app.use('/fontawesome/css', express.static(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free/css')));
+app.use('/fontawesome/js', express.static(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free/js')));
+app.use('/fontawesome/webfonts', express.static(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free/webfonts')));
+app.use('/jquery/js', express.static(path.join(__dirname, 'node_modules/jquery/dist')));
+app.use('/public/css', express.static(path.join(__dirname, 'public/css')));
+app.use('/public/js', express.static(path.join(__dirname, 'public/js')));
 
 
 app.use('/', indexRouter);
