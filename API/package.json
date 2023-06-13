@@ -12,6 +12,10 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "mongoose": "^7.2.2",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "typo": "^1.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }

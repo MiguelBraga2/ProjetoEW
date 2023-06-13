@@ -12,7 +12,9 @@ const userSchema = new mongoose.Schema({
   dateCreated: String,
   dateLastAccess: String,
   providerId: String,
-  provider: String
+  provider: String,
+  history: [Number],
+  favorites: [Number]
 });
 
 userSchema.plugin(passportLocalMongoose);

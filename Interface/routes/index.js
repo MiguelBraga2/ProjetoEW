@@ -111,7 +111,23 @@ router.get('/pesquisas', (req, res)=>{
 router.get('/:id', (req, res) => {
   axios.get(env.apiAccessPoint + '/acordaos/' + req.params.id)
   .then(response => {
-    res.render('processo', {processo: response.data[0]})
+    if (req.cookies && req.cookies.token) {
+      jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+        if (err) {
+          return res.render('processo', {processo: response.data[0]})
+        } else {
+          axios.put(env.authAcessPoint + '/' + payload.id + '/history', {process: req.params.id})
+          .then(responseAuth => {
+            return res.render('processo', {processo: response.data[0], user: payload })
+          })
+          .catch(err => {
+            res.render('error', {error: err, message: err.message});
+          })
+        }
+      }); 
+    } else {
+      return res.render('processo', {processo: response.data[0]})
+    }
   })
   .catch(err => {
     res.render('error', {error: err, message: err.message});

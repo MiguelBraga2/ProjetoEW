@@ -36,7 +36,7 @@ router.get('/facebook/callback', function(req, res, next) {
     }
     // Autenticação bem-sucedida, gerar o token
     jwt.sign(
-      { username: user.username, level: user.level, sub: 'User logged in' },
+      { username: user.username, level: user.level, sub: 'User logged in', id: user._id},
       process.env.SECRET_KEY,
       { expiresIn: "1h" },
       function (error, token) {
@@ -81,7 +81,8 @@ router.get('/google/callback', function(req, res, next) {
     jwt.sign({
       username: user.username,
       level: user.level,
-      sub: 'User logged in'
+      sub: 'User logged in',
+      id: user._id
     },
       process.env.SECRET_KEY,
       { expiresIn: "1h" },
@@ -127,7 +128,7 @@ router.post('/register', function (req, res) {
         passport.authenticate("local")(req, res, () => {
           jwt.sign({
             username: req.user.username, level: req.user.level,
-            sub: 'New User'
+            sub: 'New User', id: req.user._id
           },
             process.env.SECRET_KEY,
             { expiresIn: "1h" },
@@ -143,7 +144,8 @@ router.post('/register', function (req, res) {
 router.post('/login', passport.authenticate('local'), function (req, res) {
   jwt.sign({
     username: req.user.username, level: req.user.level,
-    sub: 'User logged in'
+    sub: 'User logged in',
+    id: req.user._id
   },
     process.env.SECRET_KEY,
     { expiresIn: "1h" },
@@ -185,6 +187,27 @@ router.put('/:id/ativar', auth.verificaAcesso, function (req, res) {
 
 router.put('/:id/password', auth.verificaAcesso, function (req, res) {
   User.updateUserPassword(req.params.id, req.body)
+    .then(dados => {
+      res.jsonp(dados)
+    })
+    .catch(erro => {
+      res.jsonp('error', { error: erro, message: "Erro na alteração do utilizador" })
+    })
+})
+
+router.put('/:id/history', function (req, res){
+  console.log("body: " + req.body.process)
+  User.updateHistory(req.params.id, req.body.process)
+    .then(dados => {
+      res.jsonp(dados)
+    })
+    .catch(erro => {
+      res.jsonp('error', { error: erro, message: "Erro na alteração do utilizador" })
+    })
+})
+
+router.put('/:id/favorites', auth.verificaAcesso, function (req, res){
+  User.updateFavs(req.params.id, req.body.newFav)
     .then(dados => {
       res.jsonp(dados)
     })

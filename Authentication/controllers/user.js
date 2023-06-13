@@ -43,6 +43,26 @@ module.exports.updateUser = (id, info) => {
         })
 }
 
+module.exports.updateFavs = (id, fav) => {
+    return User.updateOne({ _id: id }, { $push: { favorites: fav } })
+        .then(resposta => {
+            return resposta
+        })
+        .catch(erro => {
+            return erro
+        })
+}
+
+module.exports.updateHistory = (id, process) => {
+    return User.updateOne({ _id: id }, {$push: { history: process } })
+        .then(resposta => {
+            return resposta
+        })
+        .catch(erro => {
+            return erro
+        })
+}
+
 module.exports.updateUserStatus = (id, status) => {
     return User.updateOne({ _id: id }, { $set: { active: status } })
         .then(resposta => {
