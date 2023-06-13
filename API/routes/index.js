@@ -3,12 +3,13 @@ var router = express.Router();
 var Judgment = require('../controllers/acordao')
 var Acordao = require('../models/acordao.js')
 
-var Taxonomy = require('../queries/taxonomy')
+var Taxonomy = require('../search/taxonomy')
 
-const nomeFicheiro = './queries/descriptors.txt'; // Substitua pelo caminho e nome do seu arquivo
+const nomeFicheiro = './search/descriptors.txt';
 
 var tree = Taxonomy.lerFicheiro(nomeFicheiro)
 
+var fullTextObjects = require('../search/full-text').fullTextObjects;
 
 // Pagination 
 
@@ -52,8 +53,36 @@ router.get('/acordaos', paginatedResults(Acordao, {}), function(req, res) {
   res.json(res.paginatedResults);
 });
 
-router.get('/acordaos/queries/desc/:termo', (req,res) => {
+router.get('/acordaos/search/desc/:termo', (req,res) => {
   res.json(Taxonomy.getProcessos(req.params.termo, tree))
+})
+
+router.get('/acordaos/search/full-text/:termo/params', (req,res) => {
+  var termo = req.params.termo
+  var processos = []
+  var finalObject = {}
+  for(key in req.query){
+    var field = req.query[key]
+    //console.log(fullTextObjects[field][termo])
+
+    for(key in fullTextObjects[field][termo]){
+      if (key in finalObject){
+        finalObject[key] += fullTextObjects[field][termo][key]
+      }
+      else{
+        finalObject[key] = fullTextObjects[field][termo][key]
+      }
+    }
+  }
+
+  // Convert the object to an array of key-value pairs
+const entries = Object.entries(finalObject);
+
+// Sort the array based on the values
+entries.sort((a, b) => b[1] - a[1]);
+
+
+res.json(entries)
 })
 
 

@@ -42,13 +42,37 @@ module.exports.getAcordao = id => {
                    .catch(error => {
                      return error
                    })
-} 
+}
+
+var nomesTribunais = {
+  'atco1': 'Tribunal Constitucional',
+  'jcon': 'Tribunal dos Conflitos',
+  'jdgpj': 'Cláusulas Abusivas julgadas pelos Tribunais',
+  'jsta': 'Supremo Tribunal Administrativo',
+  'jstj': 'Supremo Tribunal de Justiça',
+  'jtca': 'Tribunal Central Administrativo Sul',
+  'jtcampca': 'Pareceres do MP do Tribunal Central Administrativo Sul - Contencioso Administrativo',
+  'jtcampct': 'Pareceres do MP do Tribunal Central Administrativo Sul - Contencioso Tributário',
+  'jtcn': 'Tribunal Central Administrativo Norte',
+  'jtrc': 'Tribunal da Relação de Coimbra',
+  'jtre': 'Tribunal da Relação de Évora',
+  'jtrg': 'Tribunal da Relação de Guimarães',
+  'jtrl': 'Tribunal da Relação de Lisboa',
+  'jtrp': 'Tribunal da Relação do Porto'
+}
 
 module.exports.getTribunais = () => {
   return Judgment
         .distinct('tribunal')
         .then(resp => {
-          return resp
+          var tribunais = []      
+
+          for(var trib in resp){
+            console.log(nomesTribunais[resp[trib]])
+            tribunais.push(nomesTribunais[resp[trib]])
+          }
+
+          return tribunais
         })
         .catch(error => {
           return error
