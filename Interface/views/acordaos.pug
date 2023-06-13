@@ -18,25 +18,27 @@ block content
                         a.nav-item.nav-link(href='/login') Login
     .container-fluid.mt-4.p-4 
         h2 Lista de Acordãos
-            table.table.table-striped.table-hover
-                thead 
-                    th Processo 
-                    th Url 
-                    th Tribunal 
-                    th Relator 
-                    th Descritores 
-                    th Data 
-                tbody 
-                    each acordao in lacordaos
-                        tr 
-                            td= acordao["Processo"]
-                            td= acordao["url"]
-                            td= acordao["tribunal"]
-                            td= acordao["Relator"]
-                            //td
-                                ul
+        table.table.table-striped.table-hover
+            thead 
+                th Processo 
+                th Url 
+                th Tribunal 
+                th Relator 
+                th Descritores 
+                th Data 
+            tbody 
+                each acordao in lacordaos
+                    tr 
+                        td= acordao["Processo"]
+                        td
+                            a(href='http://www.dgsi.pt' + acordao["url"]) Link
+                        td= acordao["tribunal"]
+                        td= acordao["Relator"]
+                        td
+                            if acordao["Descritores"] 
+                                ul  
                                     each descritor in acordao["Descritores"]
                                         li= descritor
-                            td= acordao["Data"]
+                        td= acordao["Data do Acordão"]
 
 
