@@ -24,6 +24,7 @@ app.use('/js', express.static('node_modules/bootstrap/dist/js'));
 
 // Configuração para servir os ficheiros estáticos do FontAwesome
 app.use('/css', express.static('node_modules/@fortawesome/fontawesome-free/css'));
+app.use('/js', express.static('node_modules/@fortawesome/fontawesome-free/js'));
 app.use('/webfonts', express.static('node_modules/@fortawesome/fontawesome-free/webfonts'));
 
 
