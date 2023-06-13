@@ -13,8 +13,12 @@ var fullTextObjects = require('../search/full-text').fullTextObjects;
 
 // Pagination 
 
-function paginatedResults(model, queries) {
+function paginatedResults(model, query) {
   return async (req, res, next) => {
+    const queries = {}
+    if (req.query.length > 0 && query !== '') {
+      queries[query] = req.query[query]
+    }
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
     const startIndex = (page - 1) * limit;
@@ -49,7 +53,7 @@ function paginatedResults(model, queries) {
 /**
  * GET all the judgments
  */
-router.get('/acordaos', paginatedResults(Acordao, {}), function(req, res) {  
+router.get('/acordaos', paginatedResults(Acordao, ''), function(req, res) {  
   res.json(res.paginatedResults);
 });
 
@@ -109,9 +113,8 @@ router.get('/acordaos/:id', (req,res) => {
 /**
  * GET acordãos de um dado tribunal
  */
-router.get('/acordaos/tribunais/:tribunal', (req, res) => {
-  paginatedResults(Acordao, { tribunal : req.params.tribunal});
-  res.json(res.paginatedResults);
+router.get('/acordaos/tribunais/:tribunal', paginatedResults(Acordao, 'tribunal'), (req, res) => {
+    res.json(res.paginatedResults);
 })
 
 /**
