@@ -65,13 +65,11 @@ module.exports.getTribunais = () => {
   return Judgment
         .distinct('tribunal')
         .then(resp => {
-          var tribunais = []      
+          var tribunais = {}    
 
-          for(var trib in resp){
-            console.log(nomesTribunais[resp[trib]])
-            tribunais.push(nomesTribunais[resp[trib]])
+          for(var i = 0; i < resp.length; i++) {
+            tribunais[resp[i]] = nomesTribunais[resp[i]]
           }
-
           return tribunais
         })
         .catch(error => {

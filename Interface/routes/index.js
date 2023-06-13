@@ -21,29 +21,18 @@ router.get('/', function(req, res){
       if (req.cookies && req.cookies.token) {
         jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
           if (err) {
-            return res.render('index', {ltribunais: response.data});
+            return res.render('index', {tribunais: response.data});
           } else {
-            return res.render('index', {ltribunais: response.data, user: payload });
+            return res.render('index', {tribunais: response.data, user: payload });
           }
         });
       } else {
-        res.render('index', {ltribunais: response.data});
+        res.render('index', {tribunais: response.data});
       }
     })
     .catch(err => {
       res.render('error', {error: err, message: err.message});
     })
-})
-
-router.get('/:id', (req, res) => {
-  axios.get(env.apiAccessPoint + '/acordaos/' + req.params.id)
-  .then(response => {
-    console.log(response.data[0])
-    res.render('processo', {processo: response.data[0]})
-  })
-  .catch(err => {
-    res.render('error', {error: err, message: err.message});
-  })
 })
 
 // Login
@@ -117,6 +106,16 @@ router.get('/pesquisa', (req, res)=>{
 
 router.get('/pesquisas', (req, res)=>{
    res.render('pesquisas', {ltribunais: []})
+})
+
+router.get('/:id', (req, res) => {
+  axios.get(env.apiAccessPoint + '/acordaos/' + req.params.id)
+  .then(response => {
+    res.render('processo', {processo: response.data[0]})
+  })
+  .catch(err => {
+    res.render('error', {error: err, message: err.message});
+  })
 })
 
 module.exports = router;

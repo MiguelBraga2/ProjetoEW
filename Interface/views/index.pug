@@ -20,5 +20,5 @@ block content
     .container-fluid.mx-auto.w-50.p-4
         h2.text-center Lista de Tribunais
         .list-group 
-            each tribunal in ltribunais
-                a.list-group-item.list-group-item-action(href='#')= tribunal
+            each value, key  in tribunais
+                a.list-group-item.list-group-item-action(href='#')= value

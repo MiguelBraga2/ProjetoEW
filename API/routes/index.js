@@ -11,8 +11,9 @@ var tree = Taxonomy.lerFicheiro(nomeFicheiro)
 
 var fullTextObjects = require('../search/full-text').fullTextObjects;
 
-// Pagination 
-
+/**
+ * Function for getting the results for a simgle page. 
+ */
 function paginatedResults(model, query) {
   return async (req, res, next) => {
     const queries = {}
@@ -57,10 +58,18 @@ router.get('/acordaos', paginatedResults(Acordao, ''), function(req, res) {
   res.json(res.paginatedResults);
 });
 
+
+/**
+ * GET the judgments with a specific descriptor
+ */
 router.get('/acordaos/search/desc/:termo', (req,res) => {
   res.json(Taxonomy.getProcessos(req.params.termo, tree))
 })
 
+
+/**
+ * GET the judgments with a spcecific term in certain fields 
+ */
 router.get('/acordaos/search/full-text/:termo/params', (req,res) => {
   var termo = req.params.termo
   var processos = []
@@ -80,18 +89,17 @@ router.get('/acordaos/search/full-text/:termo/params', (req,res) => {
   }
 
   // Convert the object to an array of key-value pairs
-const entries = Object.entries(finalObject);
+  const entries = Object.entries(finalObject);
 
-// Sort the array based on the values
-entries.sort((a, b) => b[1] - a[1]);
+  // Sort the array based on the values
+  entries.sort((a, b) => b[1] - a[1]);
 
-
-res.json(entries)
+  res.json(entries);
 })
 
 
 /**
- * GET tribunais
+ * GET all the courts
  */
 router.get('/acordaos/tribunais', (req, res) => {
   Judgment.getTribunais()
@@ -100,7 +108,7 @@ router.get('/acordaos/tribunais', (req, res) => {
 })
 
 /**
- * GET acordão com certo ID
+ * GET judgment given the ID
  */
 router.get('/acordaos/:id', (req,res) => {
   Judgment.getAcordao(req.params.id)
@@ -109,9 +117,8 @@ router.get('/acordaos/:id', (req,res) => {
 })
 
 
-
 /**
- * GET acordãos de um dado tribunal
+ * GET all the judgements form one court
  */
 router.get('/acordaos/tribunais/:tribunal', paginatedResults(Acordao, 'tribunal'), (req, res) => {
     res.json(res.paginatedResults);
