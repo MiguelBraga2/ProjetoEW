@@ -27,6 +27,13 @@ app.use('/css', express.static('node_modules/@fortawesome/fontawesome-free/css')
 app.use('/js', express.static('node_modules/@fortawesome/fontawesome-free/js'));
 app.use('/webfonts', express.static('node_modules/@fortawesome/fontawesome-free/webfonts'));
 
+// Configuração para servir os ficheiros estáticos do jquery
+app.use('/js', express.static('node_modules/jquery/dist'));
+
+// Multiselect 
+app.use('/css', express.static('public/css'));
+app.use('/js', express.static('public/js'));
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

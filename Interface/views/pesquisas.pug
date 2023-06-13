@@ -1,0 +1,82 @@
+extends layout
+
+block content
+    script(type="text/javascript").
+        $(document).ready(function() {
+            $('#tribunais').multiselect();
+        })
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light
+        .container-fluid
+            a.navbar-brand(href='/') Acordãos
+            button.navbar-toggler(type='button' data-bs-toggle='collapse' data-bs-target='#navbarCollapse')
+                span.navbar-toggler-icon
+            .collapse.navbar-collapse.justify-content-between#navbarCollapse
+                .navbar-nav
+                    a.nav-item.nav-link.active(href='/pesquisas') Pesquisas
+                form.d-flex(action="/pesquisa")
+                    .input-group
+                        input.form-control(type='text' placeholder='Search' name='search')
+                        button.btn.btn-secondary(type='submit')
+                            i.fa-solid.fa-magnifying-glass.fa-rotate-90
+                .navbar-nav
+                    a.nav-item.nav-link(href='/login') Iniciar sessão
+    .container.mt-5 
+        table.table
+            thead 
+                th.w-25
+                    h4
+                        i.fa-solid.fa-filter 
+                        |  Filtros 
+                th.w-75 
+                    h4 Resultados da Pesquisa
+            tbody
+                tr 
+                    td
+                        .container 
+                            form(action='/pesquisas')
+                                .mb-3
+                                    input.form-control(type='text' placeholder='Pesquisa Livre...' name='fullText')
+                                .mb-3
+                                    input.form-control(type='text' placeholder='Número do Processo...' name='processo')
+                                .mb-3
+                                    input.form-control(type='text' placeholder='Pesquisa por Relator...' name='realator')
+                                .mb-3
+                                    input.form-control(type='text' placeholder='Pesquisa por Descritores...' name='descritor')
+                                .mb-3
+                                    input.form-control(type='date' placeholder='Data de Acordão Superior a...' name='supData')
+                                .mb-3
+                                    input.form-control(type='date' placeholder='Data de Acordão Inferior a...' name='infDate')
+                                
+                                select.from-control#tribunais(name='ltribunais' multiple)
+                                    option(value="1") Mustard
+                                    option(value="2") Ketchup
+                                    option(value="3") Relish            
+                    td 
+                        table.table.table-striped.table-hover
+                            thead 
+                                th Processo 
+                                th Url 
+                                th Tribunal 
+                                th Relator 
+                                th Descritores 
+                                th Data 
+                            tbody 
+                                each acordao in lacordaos
+                                    tr 
+                                        td= acordao["Processo"]
+                                        td= acordao["url"]
+                                        td= acordao["tribunal"]
+                                        td= acordao["Relator"]
+                                        td
+                                            ul
+                                                each descritor in acordao["Descritores"]
+                                                    li= descritor
+                                        td= acordao["Data"]
+
+
+                        
+
+
+                
+        
+    

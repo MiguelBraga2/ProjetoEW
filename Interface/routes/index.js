@@ -100,9 +100,12 @@ router.post('/resetPassword', (req, res)=>{
 // pesquisas
 
 router.get('/pesquisa', (req, res)=>{
-   
+
   axios.get(env.apiAccessPoint)
 })
 
+router.get('/pesquisas', (req, res)=>{
+   res.render('pesquisas', {ltribunais: []})
+})
 
 module.exports = router;
