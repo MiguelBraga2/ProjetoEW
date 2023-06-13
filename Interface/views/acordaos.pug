@@ -1,0 +1,27 @@
+extends layout
+
+block content
+    .container 
+        h2 Lista de Acordãos
+            table.table.table-striped.table-hover
+                thead 
+                    th Processo 
+                    th Url 
+                    th Tribunal 
+                    th Relator 
+                    th Descritores 
+                    th Data 
+                tbody 
+                    each acordao in lacordaos
+                        tr 
+                            td= acordao["Processo"]
+                            td= acordao["url"]
+                            td= acordao["tribunal"]
+                            td= acordao["Relator"]
+                            td
+                                ul
+                                    each descritor in acordao["Descritores"]
+                                        li= descritor
+                            td= acordao["Data"]
+
+

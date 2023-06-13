@@ -77,8 +77,32 @@ router.post('/register', (req, res)=>{
       res.redirect('/')
     })
     .catch(err => {
-      res.render('error', {error: err})
+      res.render('error', {error: err, message: err.message})
     })
 })
+
+
+router.get('/resetPassword', (req, res)=>{
+  res.render('resetPassword')
+})
+
+router.post('/resetPassword', (req, res)=>{
+  axios.put(env.authAcessPoint + '/' + req.body._id + '/password', req.body)
+    .then(response => { 
+      res.redirect('/')
+    })
+    .catch(err => {
+      res.render('error', {error: err, message: err.message})
+    })
+
+})
+
+// pesquisas
+
+router.get('/pesquisa', (req, res)=>{
+   
+  axios.get(env.apiAccessPoint)
+})
+
 
 module.exports = router;
