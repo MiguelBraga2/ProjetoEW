@@ -1,7 +1,22 @@
 extends layout
 
 block content
-    .container 
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light
+            .container-fluid
+                a.navbar-brand(href='/') Acordãos
+                button.navbar-toggler(type='button' data-bs-toggle='collapse' data-bs-target='#navbarCollapse')
+                    span.navbar-toggler-icon
+                .collapse.navbar-collapse.justify-content-between#navbarCollapse
+                    .navbar-nav
+                        a.nav-item.nav-link.active(href='/pesquisas') Pesquisas
+                    form.d-flex(action="/pesquisa")
+                        .input-group
+                            input.form-control(type='text' placeholder='Search' name='search')
+                            button.btn.btn-secondary(type='submit')
+                                i.fa-solid.fa-magnifying-glass.fa-rotate-90
+                    .navbar-nav
+                        a.nav-item.nav-link(href='/login') Login
+    .container-fluid.mt-4.p-4 
         h2 Lista de Acordãos
             table.table.table-striped.table-hover
                 thead 
@@ -18,7 +33,7 @@ block content
                             td= acordao["url"]
                             td= acordao["tribunal"]
                             td= acordao["Relator"]
-                            td
+                            //td
                                 ul
                                     each descritor in acordao["Descritores"]
                                         li= descritor

@@ -118,4 +118,17 @@ router.get('/:id', (req, res) => {
   })
 })
 
+
+router.get('/tribunais/:tribunal', (req, res) => {
+  axios.get(env.apiAccessPoint + '/acordaos/tribunais/' + req.params.tribunal)
+  .then(response => {
+    res.render('acordaos', {lacordaos: response.data.results})
+  })
+  .catch(err => {
+    res.render('error', {error: err, message: err.message});
+  })
+})
+
+
+
 module.exports = router;

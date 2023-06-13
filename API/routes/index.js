@@ -121,7 +121,7 @@ router.get('/acordaos/:id', (req,res) => {
  * GET all the judgements form one court
  */
 router.get('/acordaos/tribunais/:tribunal', paginatedResults(Acordao, 'tribunal'), (req, res) => {
-    res.json(res.paginatedResults);
+  res.json(res.paginatedResults);
 })
 
 /**

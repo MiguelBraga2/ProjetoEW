@@ -17,8 +17,8 @@ block content
                 .navbar-nav
                     a.nav-item.nav-link(href='/login') Login
 
-    .container-fluid.mx-auto.w-50.p-4
+    .container-fluid.mx-auto.w-50.p-4.mt-4
         h2.text-center Lista de Tribunais
         .list-group 
             each value, key  in tribunais
-                a.list-group-item.list-group-item-action(href='#')= value
+                a.list-group-item.list-group-item-action(href='/tribunais/' + key)= value
