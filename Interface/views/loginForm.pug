@@ -5,7 +5,7 @@ block content
     h2.mt-5.mb-5.text-center Autenticação:
     .row.justify-content-md-center
       .col-xxl-5.col-xl-6.col-lg-7.col-md-9.col-xs-10
-        form(action='/login' method='POST')
+        form(action='/users/login' method='POST')
           .mb-3
             label.form-label(for='Username') Username:
             input.form-control#username1(type='text' name='username')
@@ -27,9 +27,9 @@ block content
         .social.text-center.mt-4
           div(style='text-decoration: solid; text-decoration-line: underline;') Outras formas de autenticação:
             .mt-3
-              a.mx-1(href="/facebook")
+              a.mx-1(href="/users/facebook")
                 i(style="color: #000000;").fa-brands.fa-facebook.fa-xl
-              a.mx-1(href="/google")
+              a.mx-1(href="/users/google")
                 i(style="color: #000000;").fa-brands.fa-google.fa-xl
         .text-center.mb-2.m-2#register.form-text.mt-5(style='font-family: \'Times New Roman\', Times, serif; text-decoration: underline; font-size: 20px;')
-          a(href="/register" style="text-decoration: none; color:black;") Ainda não possui uma conta? Registe-se!
+          a(href="/users/register" style="text-decoration: none; color:black;") Ainda não possui uma conta? Registe-se!
