@@ -14,8 +14,13 @@ function verificaToken(req, res, next){
   }
 }
 
-/* GET home page. */
-router.get('/', function(req, res){
+/*--GET's---------------------------------------------------------------------------------------------------------------------------------------------- */
+
+/**
+ * GET home page. 
+ * Apresenta todos os tribunais com acordãos
+ */
+router.get('/' || '/tribunais', function(req, res){
   axios.get(env.apiAccessPoint + '/acordaos/tribunais')
     .then(response => {
       if (req.cookies && req.cookies.token) {
@@ -35,46 +40,49 @@ router.get('/', function(req, res){
     })
 })
 
-// pesquisas
-
-router.get('/pesquisa', (req, res)=>{
-
-  axios.get(env.apiAccessPoint)
+/**
+ * GET pesquisa da nav bar
+ */
+router.get('/pesquisa', verificaToken, (req, res)=>{
+  res.render('acordaos', {lacordaos: []});
 })
 
-router.get('/pesquisas', (req, res)=>{
+/**
+ * GET página de pesquisa aprofundada
+ */
+router.get('/pesquisas', verificaToken, (req, res)=>{
    res.render('pesquisas', {lacordaos: []})
 })
 
-router.get('/:id', (req, res) => {
-  console.log('ENTROOOU')
+/**
+ * GET página de um acordão 
+ */
+router.get('/acordaos/:id', verificaToken, (req, res) => {
   axios.get(env.apiAccessPoint + '/acordaos/' + req.params.id)
   .then(response => {
-    if (req.cookies && req.cookies.token) {
-      jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
-        if (err) {
-          res.render('processo', {processo: response.data[0]});
-        } else {
-          axios.put(env.authAcessPoint + '/' + payload.id + '/history', {process: req.params.id})
-            .then(responseAuth => {
-              res.render('processo', {processo: response.data[0], user: payload });
-            })
-            .catch(err => {
-              res.render('error', {error: err, message: err.message});
-            })
-        }
-      }); 
-    } else {
-      res.render('processo', {processo: response.data[0]});
-    }
+    jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+      if (err) {
+        res.render('processo', {processo: response.data[0]});
+      } else {
+        axios.put(env.authAcessPoint + '/' + payload.id + '/history', {process: req.params.id})
+          .then(responseAuth => {
+            res.render('processo', {processo: response.data[0], user: payload });
+          })
+          .catch(err => {
+            res.render('error', {error: err, message: err.message});
+          })
+      }
+    })
   })
   .catch(err => {
     res.render('error', {error: err, message: err.message});
   })
 })
 
-
-router.get('/tribunais/:tribunal', (req, res) => {
+/**
+ * GET página com os acordãos de um tribunal 
+ */
+router.get('/tribunais/:tribunal', verificaToken, (req, res) => {
   axios.get(env.apiAccessPoint + '/acordaos/tribunais/' + req.params.tribunal)
   .then(response => {
     res.render('acordaos', {lacordaos: response.data.results})
