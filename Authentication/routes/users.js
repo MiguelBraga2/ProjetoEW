@@ -7,23 +7,38 @@ const User = require('../controllers/user')
 const auth = require('../auth/auth')
 require('dotenv').config();
 
+/*--GET's------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/**
+ * GET all the users
+ * 
+ * Verificar o acesso é necessario, rota para admin
+ */
 router.get('/', auth.verificaAcesso, function (req, res) {
   User.list()
     .then(dados => res.status(200).jsonp({ dados: dados }))
     .catch(e => res.status(500).jsonp({ error: e }))
 })
 
-// Rota para iniciar o processo de autenticação com o Facebook
+/**
+ * GET Rota para iniciar o processo de autenticação com o Facebook
+ * 
+ * Autenticação com o Facebook. Para depois ser possível voltar ao serviço que pediu a autenticação guardamos a url de volta na sessão. 
+ */
 router.get('/facebook', (req, res) => {
   const returnUrl  = req.query.returnUrl || '/'; 
   req.session.returnUrl = returnUrl;
 
-  // Redirecione para a autenticação do Facebook com o parâmetro returnUrl
+  // Redireciona para a autenticação do Facebook
   passport.authenticate('facebook')(req, res);
 });
 
-
-// Rota de callback para autenticação com o Facebook
+/**
+ * GET Rota de callback para autenticação com o Facebook
+ * 
+ * Existem três situações a lidar: Erro na autenticação, autenticação falhada na parte do Facebook e a situação de sucesso
+ * onde é gerado um token jwt para ser usado na aplicação com 1h de duração.
+ */
 router.get('/facebook/callback', function(req, res, next) {
   passport.authenticate('facebook', function(err, user, info) {
     if (err) {
@@ -44,6 +59,7 @@ router.get('/facebook/callback', function(req, res, next) {
           // Tratar o erro de criar o token
           return res.jsonp({ error: error.message });
         } else {
+          // Enviar o token como resposta
           res.cookie('token', token);
           res.redirect(req.session.returnUrl);
         }
@@ -53,20 +69,26 @@ router.get('/facebook/callback', function(req, res, next) {
 });
 
 
-// Rota para iniciar o processo de autenticação com o google
+/**
+ * GET Rota para iniciar o processo de autenticação com o google. 
+ * 
+ * Autenticação com o Google. Para depois ser possível voltar ao serviço que pediu a autenticação guardamos a url de volta na sessão. 
+ */
 router.get('/google', (req, res) => {
-  // Armazena a returnUrl na variável de sessão
   const returnUrl = req.query.returnUrl || '/'; 
   req.session.returnUrl = returnUrl;
 
   // Redireciona para a autenticação do Google
-  passport.authenticate('google', { 
-    scope: ['profile']
-  })(req, res);
+  passport.authenticate('google', { scope: ['profile']})(req, res);
 });
 
 
-// Rota de callback para autenticação com o Google
+/**
+ * GET Rota de callback para autenticação com o Google
+ * 
+ * Existem três situações a lidar: Erro na autenticação, autenticação falhada na parte do Google e a situação de sucesso
+ * onde é gerado um token jwt para ser usado na aplicação com 1h de duração.
+ */
 router.get('/google/callback', function(req, res, next) {
   passport.authenticate('google', function(err, user, info) {
     if (err) {
@@ -100,18 +122,32 @@ router.get('/google/callback', function(req, res, next) {
   })(req, res, next);
 });
 
+
+/**
+ * GET utilizador com o respetivo id, qualquer utilizador tem acesso se possuir conta
+ */
 router.get('/:id', auth.verificaAcesso, function (req, res) {
   User.getUser(req.params.id)
     .then(dados => res.status(200).jsonp({ dados: dados }))
     .catch(e => res.status(500).jsonp({ error: e }))
 })
 
+
+/*--POST's------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/**
+ * POST rota para adicionar um utilizador à base de dados, por um admin 
+ */
 router.post('/', auth.verificaAcesso, function (req, res) {
   User.addUser(req.body)
     .then(dados => res.status(201).jsonp({ dados: dados }))
     .catch(e => res.status(500).jsonp({ error: e }))
 })
 
+/**
+ * POST rota para registar um utilizador à base de dados 
+ */
 router.post('/register', function (req, res) {
   var d = new Date().toISOString().substring(0, 19)
   userModel.register(new userModel({
@@ -141,6 +177,9 @@ router.post('/register', function (req, res) {
     })
 })
 
+/**
+ * POST rota para iniciar sessão na aplicação 
+ */
 router.post('/login', passport.authenticate('local'), function (req, res) {
   jwt.sign({
     username: req.user.username, level: req.user.level,
@@ -155,6 +194,14 @@ router.post('/login', passport.authenticate('local'), function (req, res) {
     });
 })
 
+
+/*--PUT's------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/**
+ * PUT alterar um utilizador, pode ser feito por um adim ou pelo utilizador em questão
+ * 
+ */
 router.put('/:id', auth.verificaAcesso, function (req, res) {
   User.updateUser(req.params.id, req.body)
     .then(dados => {
@@ -165,6 +212,9 @@ router.put('/:id', auth.verificaAcesso, function (req, res) {
     })
 })
 
+/**
+ * PUT desativar a conta de um utilizador, pode ser feito por um adim ou pelo utilizador em questão
+ */
 router.put('/:id/desativar', auth.verificaAcesso, function (req, res) {
   User.updateUserStatus(req.params.id, false)
     .then(dados => {
@@ -175,6 +225,9 @@ router.put('/:id/desativar', auth.verificaAcesso, function (req, res) {
     })
 })
 
+/**
+ * PUT ativar a conta de um utilizador, pode ser feito por um adim ou pelo utilizador em questão
+ */
 router.put('/:id/ativar', auth.verificaAcesso, function (req, res) {
   User.updateUserStatus(req.params.id, true)
     .then(dados => {
@@ -185,6 +238,9 @@ router.put('/:id/ativar', auth.verificaAcesso, function (req, res) {
     })
 })
 
+/**
+ * PUT alterar a password de um utilizador, pode ser feito pelo utilizador em questão
+ */
 router.put('/:id/password', auth.verificaAcesso, function (req, res) {
   User.updateUserPassword(req.params.id, req.body)
     .then(dados => {
@@ -195,6 +251,9 @@ router.put('/:id/password', auth.verificaAcesso, function (req, res) {
     })
 })
 
+/**
+ * PUT adicionar um processo ao histórico, feito pelo utilizador em questão quando acessa um processo 
+ */
 router.put('/:id/history', function (req, res){
   User.updateHistory(req.params.id, req.body.process)
     .then(dados => {
@@ -205,6 +264,9 @@ router.put('/:id/history', function (req, res){
     })
 })
 
+/**
+ * PUT adicionar um processo aos favoritos, feito pelo utilizador em questão quando adiciona um processo aos favoritos 
+ */
 router.put('/:id/favorites', auth.verificaAcesso, function (req, res){
   User.updateFavs(req.params.id, req.body.newFav)
     .then(dados => {
@@ -215,6 +277,12 @@ router.put('/:id/favorites', auth.verificaAcesso, function (req, res){
     })
 })
 
+
+/*--DELETE's------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/**
+ * DELETE utilizador, feito pelo utilizador em questão quando quer apagar a conta ou pelo admin 
+ */
 router.delete('/:id', auth.verificaAcesso, function (req, res) {
   User.deleteUser(req.params.id)
     .then(dados => {
