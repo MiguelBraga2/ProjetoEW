@@ -196,7 +196,6 @@ router.put('/:id/password', auth.verificaAcesso, function (req, res) {
 })
 
 router.put('/:id/history', function (req, res){
-  console.log("body: " + req.body.process)
   User.updateHistory(req.params.id, req.body.process)
     .then(dados => {
       res.jsonp(dados)

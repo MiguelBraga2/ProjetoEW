@@ -19,7 +19,13 @@ block content
                         button.btn.btn-secondary(type='submit')
                             i.fa-solid.fa-magnifying-glass.fa-rotate-90
                 .navbar-nav
-                    a.nav-item.nav-link(href='/users/login') Iniciar sessão
+                    if user 
+                        a.nav-item.nav-link(href='/users/' + user.id) 
+                            i.fa-solid.fa-user
+                            |  Perfil
+                    else
+                        a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+
     .container.mt-5 
         table.table
             thead 

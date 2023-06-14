@@ -77,4 +77,18 @@ router.post('/resetPassword', (req, res)=>{
 
 })
 
+
+router.get('/:id', (req, res)=>{ 
+  const token = req.cookies.token ? '?token=' + req.cookies.token : '';
+
+  axios.get(env.authAcessPoint + '/' + req.params.id + token)
+    .then(response => {
+      res.render('user', {user: response});
+    })
+    .catch(err => {
+      res.render('error', {error: err, message: err.message})
+    })
+})
+
+
 module.exports = router;

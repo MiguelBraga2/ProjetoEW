@@ -15,7 +15,13 @@ block content
                             button.btn.btn-secondary(type='submit')
                                 i.fa-solid.fa-magnifying-glass.fa-rotate-90
                     .navbar-nav
-                        a.nav-item.nav-link(href='/login') Login
+                        if user 
+                            a.nav-item.nav-link(href='/users/' + user.id) 
+                                i.fa-solid.fa-user
+                                |  Perfil
+                        else
+                            a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+
     .container-fluid.mt-4.p-4 
         h2 Lista de Acordãos
         table.table.table-striped.table-hover
