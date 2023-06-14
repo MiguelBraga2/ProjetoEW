@@ -46,6 +46,15 @@ block content
                                     each descritor in acordao["Descritores"]
                                         li= descritor
                         td= acordao["Data do Acordão"]
+    .container-fluid.p-4.d-flex.justify-content-center 
+        nav
+            ul.pagination
+                if previous
+                    li.page-item
+                        a.page-link(href=url+'?page=' + previous.page + '&limit=' + previous.limit) Previous
+                if next 
+                    li.page-item
+                        a.page-link(href=url+'?page=' + next.page + '&limit=' + next.limit) Next
     .container.mt-auto
     footer
       ul.nav.justify-content-center.border-bottom.pb-3.mb-3

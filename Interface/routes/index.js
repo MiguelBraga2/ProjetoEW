@@ -21,7 +21,22 @@ function verificaToken(req, res, next){
  * Apresenta todos os tribunais com acordãos
  */
 router.get('/' || '/tribunais', function(req, res){
-  axios.get(env.apiAccessPoint + '/acordaos/tribunais')
+  var query = ''
+  if (req.query.limit) {
+    if (query.length == 0) {
+      query = '?limit=' + req.query.limit
+    }
+  }
+  if (req.query.page) {
+      if (query.length > 1) {
+        query += '&page=' + req.query.page
+      } 
+      else {
+        query += '?page=' + req.query.page
+      }
+  }
+
+  axios.get(env.apiAccessPoint + '/acordaos/tribunais' + query)
     .then(response => {
       if (req.cookies && req.cookies.token) {
         jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
@@ -44,6 +59,20 @@ router.get('/' || '/tribunais', function(req, res){
  * GET pesquisa da nav bar
  */
 router.get('/pesquisa', verificaToken, (req, res)=>{
+  var query = ''
+  if (req.query.limit) {
+    if (query.length == 0) {
+      query = '?limit=' + req.query.limit
+    }
+  }
+  if (req.query.page) {
+      if (query.length > 1) {
+        query += '&page=' + req.query.page
+      } 
+      else {
+        query += '?page=' + req.query.page
+      }
+  }
   res.render('acordaos', {lacordaos: []});
 })
 
@@ -51,7 +80,21 @@ router.get('/pesquisa', verificaToken, (req, res)=>{
  * GET página de pesquisa aprofundada
  */
 router.get('/pesquisas', verificaToken, (req, res)=>{
-   res.render('pesquisas', {lacordaos: []})
+  var query = ''
+  if (req.query.limit) {
+    if (query.length == 0) {
+      query = '?limit=' + req.query.limit
+    }
+  }
+  if (req.query.page) {
+      if (query.length > 1) {
+        query += '&page=' + req.query.page
+      } 
+      else {
+        query += '?page=' + req.query.page
+      }
+  }
+  res.render('pesquisas', {lacordaos: []})
 })
 
 /**
@@ -83,13 +126,34 @@ router.get('/acordaos/:id', verificaToken, (req, res) => {
  * GET página com os acordãos de um tribunal 
  */
 router.get('/tribunais/:tribunal', verificaToken, (req, res) => {
-  axios.get(env.apiAccessPoint + '/acordaos/tribunais/' + req.params.tribunal)
-  .then(response => {
-    res.render('acordaos', {lacordaos: response.data.results})
-  })
-  .catch(err => {
-    res.render('error', {error: err, message: err.message});
-  })
+  var query = ''
+  if (req.query.limit) {
+    if (query.length == 0) {
+      query = '?limit=' + req.query.limit
+    }
+  }
+  if (req.query.page) {
+      if (query.length > 1) {
+        query += '&page=' + req.query.page
+      } 
+      else {
+        query += '?page=' + req.query.page
+      }
+  }
+  axios.get(env.apiAccessPoint + '/acordaos/tribunais/' + req.params.tribunal + query)
+    .then(response => {
+      jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+        if (err) {
+          res.render('Error', {error : err, message : err.message})
+        } else {
+          console.log(response.data)
+          res.render('acordaos', {lacordaos: response.data.results, user: payload, next: response.data.next, previous: response.data.previous, url: '/tribunais/' + req.params.tribunal});
+        }
+      });
+    })
+    .catch(err => {
+      res.render('error', {error: err, message: err.message});
+    })
 })
 
 
