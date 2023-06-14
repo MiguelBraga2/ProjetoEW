@@ -68,9 +68,10 @@ block content
                                         td= acordao["tribunal"]
                                         td= acordao["Relator"]
                                         td
-                                            ul
-                                                each descritor in acordao["Descritores"]
-                                                    li= descritor
+                                            if acordao["Descritores"]
+                                                ul 
+                                                    each descritor in acordao["Descritores"]
+                                                        li= descritor
                                         td= acordao["Data"]
 
 

@@ -105,7 +105,7 @@ router.get('/pesquisa', (req, res)=>{
 })
 
 router.get('/pesquisas', (req, res)=>{
-   res.render('pesquisas', {ltribunais: []})
+   res.render('pesquisas', {lacordaos: []})
 })
 
 router.get('/:id', (req, res) => {
