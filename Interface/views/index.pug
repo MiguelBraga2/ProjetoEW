@@ -21,4 +21,14 @@ block content
         h2.text-center Lista de Tribunais
         .list-group 
             each value, key  in tribunais
-                a.list-group-item.list-group-item-action(href='/tribunais/' + key)= value
+                a.list-group-item.list-group-item-action(href='/tribunais/' + key)= value 
+    .container.mt-auto
+    footer
+      ul.nav.justify-content-center.border-bottom.pb-3.mb-3
+        li.nav-item
+          a.nav-link.px-2.text-muted(href='/') Acordãos
+        li.nav-item
+          a.nav-link.px-2.text-muted(href='/pesquisas') Pesquisas
+        li.nav-item
+          a.nav-link.px-2.text-muted(href='/users/login') Iniciar Sessão
+      p.text-center.text-muted © 2023 EngWeb, Acordãos
