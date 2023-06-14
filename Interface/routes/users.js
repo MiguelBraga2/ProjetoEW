@@ -78,17 +78,28 @@ router.post('/resetPassword', (req, res)=>{
 })
 
 
-router.get('/:id', (req, res)=>{ 
-  const token = req.cookies.token ? '?token=' + req.cookies.token : '';
+router.get('/:id', verificaToken, (req, res)=>{ 
+  const token = '?token=' + req.cookies.token;
 
   axios.get(env.authAcessPoint + '/' + req.params.id + token)
-    .then(response => {
-      res.render('user', {user: response});
+    .then(response => { 
+      res.render('user', {user: response.data.dados});
     })
     .catch(err => {
-      res.render('error', {error: err, message: err.message})
+      res.render('error', {error: err, message: err.message});
     })
 })
 
+router.put('/:id', verificaToken, (req, res)=>{ 
+  const token = '?token=' + req.cookies.token;
+
+  axios.put(env.authAcessPoint + '/' + req.params.id + token, req.body)
+    .then(response => { 
+      res.redirect('/' + req.params.id)
+    })
+    .catch(err => {
+      res.render('error', {error: err, message: err.message});
+    })
+})
 
 module.exports = router;

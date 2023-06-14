@@ -21,3 +21,45 @@ block content
                             |  Perfil
                     else
                         a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+    .container.rounded.bg-white.mt-5.mb-5
+        .row
+            .col-md-4.border-right
+                .d-flex.flex-column.align-items-center.text-center.p-3.py-5
+                    img.rounded-circle.mt-5(width='150px' src='https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg')
+                    span.font-weight-bold= user.name + ' ' + (user.surname || '')
+                    span.text-black-50= user.email
+                    span
+            .col-md-6.border-right
+                .p-3.py-5
+                    .d-flex.justify-content-between.align-items-center.mb-3
+                    h4.text-right Configurações do perfil
+                    form(action='/' method='POST')
+                        .mb-3
+                            label.form-label Primeiro Nome
+                            input.form-control(type='text' value=user.name placeholder='Primeiro Nome' name='name')
+                        .mb-3
+                            label.form-label Apelido
+                            input.form-control(type='text' value=user.surname placeholder='Apelido' name='surname')
+                        .mb-3
+                            label.form-label Username
+                            input.form-control(type='text' value=user.username placeholder='Username' name='username' disabled)
+                        .mb-3
+                            label.form-label Email
+                            input.form-control(type='text' value=user.email placeholder='Email' name='email')
+                        .mb-3
+                            label.form-label Função
+                            input.form-control(type='text' value=user.level disabled name='level')
+                        .mb-3
+                            label.form-label Data de Criação da Conta
+                            input.form-control(type='text' disabled value=user.dateCreated name='dateCreated')
+                        .mb-3
+                            label.labels Data do Último Acesso 
+                            input.form-control(type='text' disabled value=user.dateLastAccess name='dateLastAccess')
+                        .mb-3
+                            label.labels ID do Provedor
+                            input.form-control(type='text' disabled value=user.providerId name='providerId')
+                        .mb-3
+                            label.labels Provedor
+                            input.form-control(type='text' disabled value=user.provider name='provider')
+                        .mb-3
+                        button.btn.btn-primary.profile-button(type='submit') Guardar Alterações

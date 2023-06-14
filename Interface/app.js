@@ -27,9 +27,8 @@ app.use('/jquery/js', express.static(path.join(__dirname, 'node_modules/jquery/d
 app.use('/public/css', express.static(path.join(__dirname, 'public/css')));
 app.use('/public/js', express.static(path.join(__dirname, 'public/js')));
 
-
-app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
