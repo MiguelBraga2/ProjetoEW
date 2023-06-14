@@ -29,6 +29,10 @@ block content
                     span.font-weight-bold= user.name + ' ' + (user.surname || '')
                     span.text-black-50= user.email
                     span
+                    .mb-3
+                    a.btn.btn-primary.w-50(href='/history/' + user._id) Histórico
+                    .mb-3
+                    a.btn.btn-primary.w-50(href='/favs/' + user._id) Favoritos
             .col-md-6.border-right
                 .p-3.py-5
                     .d-flex.justify-content-between.align-items-center.mb-3
