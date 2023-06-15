@@ -98,7 +98,13 @@ router.get('/pesquisas', verificaToken, (req, res)=>{
         query += '?page=' + req.query.page
       }
   }
-  res.render('pesquisas', {lacordaos: []})
+  jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+    if (err) {
+      res.render('error', {err: err, message: "Não possui acesso a este conteúdo..."});
+    } else {
+      res.render('pesquisas', {user: payload});
+    }
+  });
 })
 
 /**
