@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "algoliasearch": "^4.17.2",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
@@ -13,6 +14,7 @@
     "jade": "~1.11.0",
     "mongoose": "^7.2.2",
     "morgan": "~1.9.1",
+    "object-sizeof": "^2.6.1",
     "typo": "^1.0.6"
   },
   "devDependencies": {
