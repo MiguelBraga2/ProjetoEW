@@ -88,6 +88,24 @@ module.exports.getAcordaosDoTribunal = tribunal => {
         })
 }
 
+module.exports.getCurrentId = () => {
+  return Judgment
+        .find({}, {_id: 1})
+        .sort({_id: -1})
+        .limit(1)
+        .then(resp => {
+          if (resp.length == 0){
+            return {_id: 0}
+          }
+          else{
+            return resp[0]
+          }
+        })
+        .catch(error => {
+          return error
+        })
+}
+
 /**
  * Creates a new judgment in the BD
  * CREATE

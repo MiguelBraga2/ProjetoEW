@@ -124,6 +124,12 @@ router.get('/acordaos/tribunais/:tribunal', paginatedResults(Acordao, 'tribunal'
   res.json(res.paginatedResults);
 })
 
+router.get('/currentId', (req, res) => {
+  Judgment.getCurrentId()
+  .then(data => res.status(200).json(data))
+  .catch(error => res.status(521).json({error: error, message: "Could not obtain the current id"}))
+}) 
+
 /**
  * POST a judgment
  */
