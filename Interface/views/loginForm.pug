@@ -1,35 +1,30 @@
 extends layout
 
 block content
-  .container
-    h2.mt-5.mb-5.text-center Autenticação:
-    .row.justify-content-md-center
-      .col-xxl-5.col-xl-6.col-lg-7.col-md-9.col-xs-10
-        form(action='/users/login' method='POST')
-          .mb-3
-            label.form-label(for='Username') Username:
-            input.form-control#username1(type='text' name='username')
-          .mb-3
-            label.form-label(for='Password') Password:
-            input.form-control#password1(type='password' name='password')
-            a#forgotpassword.form-text.mt-3(href="/resetPassword" style='color:black; text-decoration: underline; font-style: italic; font-size: 14px;').
-              Esqueceu-se da palavra-passe? Clique aqui! 
-          .row.mt-4.mb-2.m-2
-            .form-check
-              input.form-check-input#invalidCheck(type='checkbox' required)
-              label.form-check-label(for='invalidCheck')
-                .text(style='font-size: 15px;').
-                  Aceite os termos e condições.
-              .invalid-feedback.
-                Deve aceitar os termos e condições antes de continuar.
-          .text-center.mt-4.mb-2.m-2
-            button.btn.btn-primary.mt-3(type='submit' style='width: 50%') Submit
-        .social.text-center.mt-4
-          div(style='text-decoration: solid; text-decoration-line: underline;') Outras formas de autenticação:
-            .mt-3
-              a.mx-1(href="/users/facebook")
-                i(style="color: #000000;").fa-brands.fa-facebook.fa-xl
-              a.mx-1(href="/users/google")
-                i(style="color: #000000;").fa-brands.fa-google.fa-xl
-        .text-center.mb-2.m-2#register.form-text.mt-5(style='font-family: \'Times New Roman\', Times, serif; text-decoration: underline; font-size: 20px;')
-          a(href="/users/register" style="text-decoration: none; color:black;") Ainda não possui uma conta? Registe-se!
+  section.vh-100
+    .container.py-5.h-100
+      .row.d-flex.justify-content-center.align-items-center.h-100
+        .col-12.col-md-8.col-lg-6.col-xl-5
+          .card.shadow-lg
+            .card-body.p-5.text-center
+              h1.mb-5 Iniciar Sessão
+              form.text-sm-start(action="/users/login" method="POST")
+                .form-group.mb-4 
+                  label.form-label Nome de Utilizador
+                  input.form-control(type="text" placeholder="Insira o Nome de Utilizador" name="username")
+                .form-group.mb-4 
+                  label.form-label Palavra-Passe 
+                  input.form-control(type="password" placeholder="Insira a Palavra-Passe" name="password")
+                  p.text-center.small.my-3 
+                    a.text-secondary(href="/users/resetPassword") Esqueceu-se da palavra-passe?
+                .text-center
+                  button.mb-3.btn.btn-primary.w-50.mb-4(type="submit") Iniciar Sessão         
+              .text-center.mb-4 
+                p Ou inicia sessão com:
+                a.btn.btn-link.btn-floating(href="/users/facebook")
+                  i.fa-brands.fa-facebook.fa-xl 
+                a.btn.btn-link.btn-floating(href="/users/google")
+                  i.fa-brands.fa-google.fa-xl
+              .text-center 
+                p.mb-0 Não possui uma conta?  
+                  a.fw-bold.pl-2.text-secondary(href="/users/register") Registe-se
