@@ -113,6 +113,7 @@ module.exports.getCurrentId = () => {
  * @returns the created judgment or an error
  */
 module.exports.addAcordao = judgment => {
+  console.log(judgment)
   return Judgment
                  .create(judgment)
                  .then(resp => {

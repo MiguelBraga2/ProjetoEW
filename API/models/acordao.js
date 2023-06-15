@@ -6,7 +6,7 @@ var acordaoSchema = new mongoose.Schema({
     url: String,
     tribunal: String,
     'Data do Acordão': String,
-    Descritores: String,
+    Descritores: [String],
     Relator: String,
     Votação: String,
     'Meio Processual': String,

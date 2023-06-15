@@ -7,7 +7,6 @@ require('dotenv').config();
 
 var multer = require('multer')
 var upload = multer({dest: 'uploads'})
-var jsonfile = require('jsonfile')
 var fs = require('fs')
 
 function verificaToken(req, res, next){
@@ -166,18 +165,27 @@ router.get('/tribunais/:tribunal', verificaToken, (req, res) => {
 
 /*--POST's---------------------------------------------------------------------------------------------------------------------------------------------- */
 
+const fileProcessing = require('../fileProcessing/fileProcessing.js')
+
 router.post('/files', upload.single('myFile'), (req, res) => {
-  console.log('cdir: ' + __dirname)
   let oldPath = __dirname + '/../' + req.file.path
-  console.log('old: ' + oldPath)
   let newPath = __dirname + '/../fileProcessing/raw_files/' + req.file.originalname
-  console.log('new: ' + newPath)
 
   fs.rename(oldPath, newPath, erro => {
     if (erro){
       console.log(erro)
     }
   })
+  axios.get(env.apiAccessPoint + '/currentId')
+  .then(response => {
+    fileProcessing.processFile(req.file.originalname, response.data._id)
+  })
+  .catch(err => {
+    res.render('error', {error: err, message: err.message});
+  })
+
+
+
   var data = new Date().toISOString().substring(0, 19)
   res.redirect('/')
 })
