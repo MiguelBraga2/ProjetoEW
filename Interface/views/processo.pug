@@ -17,10 +17,29 @@ block content
                 .navbar-navi.fa-solid.fa-magnifying-glass.fa-rotate-90 
                     a.nav-item.nav-link(href='/login') Login
 
-    .container-fluid.mx-auto.w-50.p-4
-        h2.text-center Processo
-        .list-group 
-            ul 
-              li ID -    #{processo._id}
-    button.btn.btn-secondary(type='submit')
-        p Adicionar aos favoritos
+    .container-fluid.mt-4.p-4 
+        h2 Acordão
+            button.btn 
+                i.fa-regular.fa-star#fav-icon(style="color: #f0dd0a")
+        table.table.table-striped.table-hover
+            thead 
+                th Campo 
+                th Valor 
+            tbody 
+                each val in Object.entries(processo)  
+                    // Devolve uma lista de arrays [[campo, valor], [campo, valor]]
+                    tr 
+                        td= val[0]
+                        td= val[1]
+    script. 
+        // jQuery
+        $(document).ready(function() {
+        $('#fav-icon').hover(
+            function() {
+                $(this).attr("class","fa-star fa-solid");
+            },
+            function() {
+                $(this).attr("class","fa-star fa-regular");
+            }
+        );
+        });

@@ -111,6 +111,7 @@ router.get('/pesquisas', (req, res)=>{
 router.get('/:id', (req, res) => {
   axios.get(env.apiAccessPoint + '/acordaos/' + req.params.id)
   .then(response => {
+    console.log(Object.entries(response.data[0]))
     if (req.cookies && req.cookies.token) {
       jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
         if (err) {
