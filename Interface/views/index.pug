@@ -26,7 +26,12 @@ block content
         h2.text-center Lista de Tribunais
         .list-group 
             each value, key  in tribunais
-                a.list-group-item.list-group-item-action(href='/tribunais/' + key)= value 
+                a.list-group-item.list-group-item-action(href='/tribunais/' + key)= value
+    form.container(action='/files' method="POST" enctype="multipart/form-data")
+            label
+                b Select file
+            input(type="file" name="myFile")
+            input(type="submit", value="Send")
     .container.mt-auto
     footer
       ul.nav.justify-content-center.border-bottom.pb-3.mb-3

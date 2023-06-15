@@ -5,6 +5,11 @@ var axios = require('axios');
 var jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+var multer = require('multer')
+var upload = multer({dest: 'uploads'})
+var jsonfile = require('jsonfile')
+var fs = require('fs')
+
 function verificaToken(req, res, next){
   if(req.cookies && req.cookies.token){
     next()
@@ -159,6 +164,22 @@ router.get('/tribunais/:tribunal', verificaToken, (req, res) => {
     })
 })
 
+/*--POST's---------------------------------------------------------------------------------------------------------------------------------------------- */
 
+router.post('/files', upload.single('myFile'), (req, res) => {
+  console.log('cdir: ' + __dirname)
+  let oldPath = __dirname + '/../' + req.file.path
+  console.log('old: ' + oldPath)
+  let newPath = __dirname + '/../fileProcessing/raw_files/' + req.file.originalname
+  console.log('new: ' + newPath)
+
+  fs.rename(oldPath, newPath, erro => {
+    if (erro){
+      console.log(erro)
+    }
+  })
+  var data = new Date().toISOString().substring(0, 19)
+  res.redirect('/')
+})
 
 module.exports = router;
