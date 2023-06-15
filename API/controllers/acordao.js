@@ -208,11 +208,23 @@ module.exports.updateAcordao = judgment => {
  */
 module.exports.deleteAcordao = id => {
   return Judgment
-                 .deleteOne({_id: id})
-                 .then(resp => {
-                   return resp
-                 })
-                 .catch(error => {
-                   return error
-                 })
+        .deleteOne({_id: id})
+        .then(resp => {
+          // Se correu bem, remover da base de dados do algolia
+          const client = algoliasearch('3U240B9PZS', '5d7957d6533b2b65eeca044c5f54c6d8');
+          const index = client.initIndex('Acordaos')
+          index.deleteBy({
+            'filters': '_id:' + id
+          })
+          .then(response => {
+            return resp
+          })
+          .catch(err => {
+            console.log(err)
+          })
+          
+        })
+        .catch(error => {
+          return error
+        })
 } 
