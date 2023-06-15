@@ -19,7 +19,13 @@ block content
                         button.btn.btn-secondary(type='submit')
                             i.fa-solid.fa-magnifying-glass.fa-rotate-90
                 .navbar-nav
-                    a.nav-item.nav-link(href='/login') Iniciar sessão
+                    if user 
+                        a.nav-item.nav-link(href='/users/' + user.id) 
+                            i.fa-solid.fa-user
+                            |  Perfil
+                    else
+                        a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+
     .container.mt-5 
         table.table
             thead 
@@ -68,10 +74,21 @@ block content
                                         td= acordao["tribunal"]
                                         td= acordao["Relator"]
                                         td
-                                            ul
-                                                each descritor in acordao["Descritores"]
-                                                    li= descritor
+                                            if acordao["Descritores"]
+                                                ul 
+                                                    each descritor in acordao["Descritores"]
+                                                        li= descritor
                                         td= acordao["Data"]
+    .container.mt-auto
+    footer
+      ul.nav.justify-content-center.border-bottom.pb-3.mb-3
+        li.nav-item
+          a.nav-link.px-2.text-muted(href='/') Acordãos
+        li.nav-item
+          a.nav-link.px-2.text-muted(href='/pesquisas') Pesquisas
+        li.nav-item
+          a.nav-link.px-2.text-muted(href='/users/login') Iniciar Sessão
+      p.text-center.text-muted © 2023 EngWeb, Acordãos
 
 
                         

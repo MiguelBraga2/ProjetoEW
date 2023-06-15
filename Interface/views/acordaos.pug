@@ -15,7 +15,13 @@ block content
                             button.btn.btn-secondary(type='submit')
                                 i.fa-solid.fa-magnifying-glass.fa-rotate-90
                     .navbar-nav
-                        a.nav-item.nav-link(href='/login') Login
+                        if user 
+                            a.nav-item.nav-link(href='/users/' + user.id) 
+                                i.fa-solid.fa-user
+                                |  Perfil
+                        else
+                            a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+
     .container-fluid.mt-4.p-4 
         h2 Lista de Acordãos
         table.table.table-striped.table-hover
@@ -41,5 +47,24 @@ block content
                                     each descritor in acordao["Descritores"]
                                         li= descritor
                         td= acordao["Data do Acordão"]
+    .container-fluid.p-4.d-flex.justify-content-center 
+        nav
+            ul.pagination
+                if previous
+                    li.page-item
+                        a.page-link(href=url+'?page=' + previous.page + '&limit=' + previous.limit) Previous
+                if next 
+                    li.page-item
+                        a.page-link(href=url+'?page=' + next.page + '&limit=' + next.limit) Next
+    .container.mt-auto
+    footer
+      ul.nav.justify-content-center.border-bottom.pb-3.mb-3
+        li.nav-item
+          a.nav-link.px-2.text-muted(href='/') Acordãos
+        li.nav-item
+          a.nav-link.px-2.text-muted(href='/pesquisas') Pesquisas
+        li.nav-item
+          a.nav-link.px-2.text-muted(href='/users/login') Iniciar Sessão
+      p.text-center.text-muted © 2023 EngWeb, Acordãos
 
 

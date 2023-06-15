@@ -21,7 +21,7 @@ function paginatedResults(model, query) {
       queries[query] = req.query[query]
     }
     const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 10;
+    const limit = parseInt(req.query.limit, 10) || 15;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
     const total = await model.countDocuments({});
