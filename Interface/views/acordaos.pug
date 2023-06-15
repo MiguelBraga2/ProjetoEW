@@ -35,7 +35,8 @@ block content
             tbody 
                 each acordao in lacordaos
                     tr 
-                        td= acordao["Processo"]
+                        td
+                            a(href='/'+acordao['_id']) #{'/'+acordao['Processo']}
                         td
                             a(href='http://www.dgsi.pt' + acordao["url"]) Link
                         td= acordao["tribunal"]

@@ -5,6 +5,11 @@ var axios = require('axios');
 var jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+var multer = require('multer')
+var upload = multer({dest: 'uploads'})
+var jsonfile = require('jsonfile')
+var fs = require('fs')
+
 function verificaToken(req, res, next){
   if(req.cookies && req.cookies.token){
     next()
@@ -103,19 +108,22 @@ router.get('/pesquisas', verificaToken, (req, res)=>{
 router.get('/acordaos/:id', verificaToken, (req, res) => {
   axios.get(env.apiAccessPoint + '/acordaos/' + req.params.id)
   .then(response => {
-    jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
-      if (err) {
-        res.render('processo', {processo: response.data[0]});
-      } else {
-        axios.put(env.authAcessPoint + '/' + payload.id + '/history', {process: req.params.id})
+    console.log(Object.entries(response.data[0]))
+    if (req.cookies && req.cookies.token) {
+      jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+        if (err) {
+          return res.render('processo', {processo: response.data[0]})
+        } else {
+          axios.put(env.authAcessPoint + '/' + payload.id + '/history', {process: req.params.id})
           .then(responseAuth => {
             res.render('processo', {processo: response.data[0], user: payload });
           })
           .catch(err => {
             res.render('error', {error: err, message: err.message});
           })
-      }
-    })
+        }
+      })
+    }
   })
   .catch(err => {
     res.render('error', {error: err, message: err.message});
@@ -156,6 +164,22 @@ router.get('/tribunais/:tribunal', verificaToken, (req, res) => {
     })
 })
 
+/*--POST's---------------------------------------------------------------------------------------------------------------------------------------------- */
 
+router.post('/files', upload.single('myFile'), (req, res) => {
+  console.log('cdir: ' + __dirname)
+  let oldPath = __dirname + '/../' + req.file.path
+  console.log('old: ' + oldPath)
+  let newPath = __dirname + '/../fileProcessing/raw_files/' + req.file.originalname
+  console.log('new: ' + newPath)
+
+  fs.rename(oldPath, newPath, erro => {
+    if (erro){
+      console.log(erro)
+    }
+  })
+  var data = new Date().toISOString().substring(0, 19)
+  res.redirect('/')
+})
 
 module.exports = router;

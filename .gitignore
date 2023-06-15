@@ -5,3 +5,6 @@ Authentication/node_modules
 Authentication/.env
 Interface/.env
 Interface/node_modules
+Interface/fileProcessing/processed_files/*
+Interface/fileProcessing/raw_files/*
+Interface/uploads
