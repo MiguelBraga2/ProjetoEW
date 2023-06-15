@@ -1,28 +1,27 @@
 extends layout
 
 block content
-    nav.navbar.navbar-expand-lg.navbar-light.bg-light
-        .container-fluid
+    div(style="display:block; content:''; height: 60px;")
+    // Navbar
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.py-3.shadow.fixed-top
+        .container
             a.navbar-brand(href='/') Acordãos
-            button.navbar-toggler(type='button' data-bs-toggle='collapse' data-bs-target='#navbarCollapse')
+
+            button.navbar-toggler(type='button' data-bs-toggle='collapse' data-bs-target='#navmenu')
                 span.navbar-toggler-icon
-            .collapse.navbar-collapse.justify-content-between#navbarCollapse
-                .navbar-nav
-                    a.nav-item.nav-link.active(href='/pesquisas') Pesquisas
-                form.d-flex(action="/pesquisa")
-                    .input-group
-                        input.form-control(type='text' placeholder='Search' name='search')
-                        button.btn.btn-secondary(type='submit')
-                            i.fa-solid.fa-magnifying-glass.fa-rotate-90
-                .navbar-navi.fa-solid.fa-magnifying-glass.fa-rotate-90 
-                    a.nav-item.nav-link(href='/login') Login
-                .navbar-nav
+
+            .navbar-collapse.collapse#navmenu
+                ul.navbar-nav.ms-auto
+                    li 
+                        a.nav-item.nav-link(href='/novoDocumento') Inserir Documentos
+                    li
+                        a.nav-item.nav-link(href='/pesquisas') Pesquisas
                     if user 
-                        a.nav-item.nav-link(href='/users/' + user.id) 
-                            i.fa-solid.fa-user
-                            |  Perfil
+                        li
+                            a.nav-item.nav-link(href='/users/' + user.id) Perfil
                     else
-                        a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+                        li 
+                            a.nav-item.nav-link(href='/users/login') Iniciar Sessão
 
     .container-fluid.mt-4.p-4 
         h2 Acordão
@@ -58,12 +57,9 @@ block content
                             |  Perfil
                     else
                         a.nav-item.nav-link(href='/users/login') Iniciar Sessão
-    footer
-      ul.nav.justify-content-center.border-bottom.pb-3.mb-3
-        li.nav-item
-          a.nav-link.px-2.text-muted(href='/') Acordãos
-        li.nav-item
-          a.nav-link.px-2.text-muted(href='/pesquisas') Pesquisas
-        li.nav-item
-          a.nav-link.px-2.text-muted(href='/users/login') Iniciar Sessão
-      p.text-center.text-muted © 2023 EngWeb, Acordãos
+    // Footer
+    footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow
+        .container 
+            p.lead Copyright &copy; 2023 EngWeb, Acordãos
+            a.position-absolute.bottom-0.end-0.p-3(href="#")
+                i.fa-solid.fa-circle-arrow-up.h3(style="color: grey;")
