@@ -23,8 +23,8 @@ block content
                         li 
                             a.nav-item.nav-link(href='/users/login') Iniciar Sessão
     // Lista de tribunais
-    .container.w-50.py-5
-        h2.text-center Lista de Tribunais
+    .container.py-5
+        h2.py-5.text-center Tribunais
         .list-group 
             each value, key  in tribunais
                 a.list-group-item.list-group-item-action(href='/tribunais/' + key)= value
