@@ -1,44 +1,36 @@
 extends layout
 
 block content
-    nav.navbar.navbar-expand-lg.navbar-light.bg-light
-        .container-fluid
+    div(style="display:block; content:''; height: 60px;")
+    // Navbar
+    nav.navbar.navbar-expand-lg.navbar-light.py-3.fixed-top.bg-light.shadow
+        .container
             a.navbar-brand(href='/') Acordãos
-            button.navbar-toggler(type='button' data-bs-toggle='collapse' data-bs-target='#navbarCollapse')
-                span.navbar-toggler-icon
-            .collapse.navbar-collapse.justify-content-between#navbarCollapse
-                .navbar-nav
-                    a.nav-item.nav-link.active(href='/pesquisas') Pesquisas
-                form.d-flex(action="/pesquisa")
-                    .input-group
-                        input.form-control(type='text' placeholder='Search' name='search')
-                        button.btn.btn-secondary(type='submit')
-                            i.fa-solid.fa-magnifying-glass.fa-rotate-90
-                .navbar-nav
-                    if user 
-                        a.nav-item.nav-link(href='/users/' + user.id) 
-                            i.fa-solid.fa-user
-                            |  Perfil
-                    else
-                        a.nav-item.nav-link(href='/users/login') Login
 
-    .container-fluid.mx-auto.w-50.p-4.mt-4
+            button.navbar-toggler(type='button' data-bs-toggle='collapse' data-bs-target='#navmenu')
+                span.navbar-toggler-icon
+
+            .navbar-collapse.collapse#navmenu
+                ul.navbar-nav.ms-auto
+                    li 
+                        a.nav-item.nav-link(href='/novoDocumento') Inserir Documentos
+                    li
+                        a.nav-item.nav-link(href='/pesquisas') Pesquisas
+                    if user 
+                        li
+                            a.nav-item.nav-link(href='/users/' + user.id) Perfil
+                    else
+                        li 
+                            a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+    // Lista de tribunais
+    .container.w-50.py-5
         h2.text-center Lista de Tribunais
         .list-group 
             each value, key  in tribunais
                 a.list-group-item.list-group-item-action(href='/tribunais/' + key)= value
-    form.container(action='/files' method="POST" enctype="multipart/form-data")
-            label
-                b Select file
-            input(type="file" name="myFile")
-            input(type="submit", value="Send")
-    .container.mt-auto
-    footer
-      ul.nav.justify-content-center.border-bottom.pb-3.mb-3
-        li.nav-item
-          a.nav-link.px-2.text-muted(href='/') Acordãos
-        li.nav-item
-          a.nav-link.px-2.text-muted(href='/pesquisas') Pesquisas
-        li.nav-item
-          a.nav-link.px-2.text-muted(href='/users/login') Iniciar Sessão
-      p.text-center.text-muted © 2023 EngWeb, Acordãos
+    // Footer
+    footer.p-3.text-center.mt-auto.position-relative.bg-light.shadow
+        .container 
+            p.lead Copyright &copy; 2023 EngWeb, Acordãos
+            a.position-absolute.bottom-0.end-0.p-3(href="#")
+                i.fa-solid.fa-circle-arrow-up.h3(style="color: grey;")
