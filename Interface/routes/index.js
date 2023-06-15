@@ -15,7 +15,7 @@ function verificaToken(req, res, next){
     next()
   }
   else{
-    res.redirect('/login')
+    res.redirect('/users/login')
   }
 }
 

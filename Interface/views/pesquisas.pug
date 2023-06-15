@@ -1,6 +1,8 @@
 extends layout
 
 block content
+    script(src="https://cdn.jsdelivr.net/npm/algoliasearch@4.17.2/dist/algoliasearch-lite.umd.js" integrity="sha256-X2G+vjV8i6Jj2NSGFTvy6Z4q2AlmF5aH0HiIpWJ8eU4=" crossorigin="anonymous")
+    script(src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.56.1/dist/instantsearch.production.min.js" integrity="sha256-lz9C+x8+6w2rh56x5TrH5iYmE4Js2FiJS5h0tuMz7hQ=" crossorigin="anonymous")
     div(style="display:block; content:''; height: 60px;")
     // Navbar
     nav.navbar.navbar-expand-lg.navbar-light.bg-light.py-3.shadow.fixed-top
@@ -22,67 +24,101 @@ block content
                     else
                         li 
                             a.nav-item.nav-link(href='/users/login') Iniciar Sessão
-
-    .container.mt-5 
-        table.table
-            thead 
-                th.w-25
-                    h4
-                        i.fa-solid.fa-filter 
-                        |  Filtros 
-                th.w-75 
-                    h4 Resultados da Pesquisa
-            tbody
-                tr 
-                    td
-                        .container 
-                            form(action='/pesquisas')
-                                .mb-3
-                                    input.form-control(type='text' placeholder='Pesquisa Livre...' name='fullText')
-                                .mb-3
-                                    input.form-control(type='text' placeholder='Número do Processo...' name='processo')
-                                .mb-3
-                                    input.form-control(type='text' placeholder='Pesquisa por Relator...' name='realator')
-                                .mb-3
-                                    input.form-control(type='text' placeholder='Pesquisa por Descritores...' name='descritor')
-                                .mb-3
-                                    input.form-control(type='date' placeholder='Data de Acordão Superior a...' name='supData')
-                                .mb-3
-                                    input.form-control(type='date' placeholder='Data de Acordão Inferior a...' name='infDate')
-                                
-                                select.from-control#tribunais(name='ltribunais' multiple)
-                                    option(value="1") Mustard
-                                    option(value="2") Ketchup
-                                    option(value="3") Relish            
-                    td 
-                        table.table.table-striped.table-hover
-                            thead 
-                                th Processo 
-                                th Url 
-                                th Tribunal 
-                                th Relator 
-                                th Descritores 
-                                th Data 
-                            tbody 
-                                each acordao in lacordaos
-                                    tr 
-                                        td= acordao["Processo"]
-                                        td= acordao["url"]
-                                        td= acordao["tribunal"]
-                                        td= acordao["Relator"]
-                                        td
-                                            if acordao["Descritores"]
-                                                ul 
-                                                    each descritor in acordao["Descritores"]
-                                                        li= descritor
-                                        td= acordao["Data"]
+    // Acordãos
+    section.py-5.text-center
+        .container
+            h1.py-5 Pesquisas
+            .row
+                  .col-md-3.py-5 
+                    .d-flex.justify-content-center
+                        #searchbox.my-2
+                  .col-md-9.py-5
+                    .d-flex.justify-content-center    
+                        #hits
+                    .d-flex.justify-content-center
+                        #pagination.my-3
     // Footer
     footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow
         .container 
             p.lead Copyright &copy; 2023 EngWeb, Acordãos
             a.position-absolute.bottom-0.end-0.p-3(href="#")
                 i.fa-solid.fa-circle-arrow-up.h3(style="color: grey;")
+    script.
+        const searchClient = algoliasearch('3U240B9PZS', '2fcb4365959ca67208f80ef5792f2990');
 
+        const search = instantsearch({
+            indexName: 'Acordaos',
+            searchClient,
+        });
+
+        function truncateText(text, maxLength) {
+            if (text) {
+                if (text.length > maxLength) {
+                    return text.slice(0, maxLength) + '...';
+                }
+                return text;
+            } else {
+                return 'N/D'
+            }
+        }
+
+        search.addWidgets([
+            instantsearch.widgets.searchBox({
+                container: '#searchbox',  
+                placeholder: 'Procurar acordãos',
+                showSubmit: false,
+                showReset: false,
+                cssClasses: {
+                    root: 'input-group',
+                    input : 'form-control', 
+                }
+            }),
+            instantsearch.widgets.hits({
+                container: '#hits',
+                cssClasses: {
+                    root: 'm-0',
+                    list: 'list-group list-group-flush ',
+                    item: 'list-group-item'
+                },
+                templates: {
+                    empty: '<p>Não encontramos nenhum resultado</p> ',
+                    item: (hit, { html, components }) => html`
+                        <div class="card mb -2"> <div class="card-body">
+                        <h5 class="text-start text-primary">${components.Highlight({ hit, attribute: 'Processo' })}</h1>
+                        <div class="row pb-2">
+                            <div class="col-md-4"> 
+                                <div class="text-start"> <b>Tribunal:</b> ${components.Highlight({ hit, attribute: 'Tribunal' })}</div>
+                            </div>
+                            <div class="col-md-4"> 
+                                <div class="text-start"> <b>Relator:</b> ${components.Highlight({ hit, attribute: 'Relator' })}</div>
+                            </div>
+                            <div class="col-md-4"> 
+                                <div class="text-start"> <b>Data do Acordão:</b> ${components.Highlight({ hit, attribute: 'Data do Acordão' })}</div>
+                            </div>
+                        </div>
+                        <div class="text-start pb-2"> <b>Área Temática:</b> ${components.Highlight({ hit, attribute: 'Área Temática' })}</div>
+                        <div class="text-start pb-2"> <b>Descritores:</b> ${components.Highlight({ hit, attribute: 'Descritores' })}</div>
+                        <div class="text-start pb-2">
+                            <b>Sumário:</b> ${truncateText(hit['Sumário'], 500)}
+                        </div>
+                        </div>
+                        </div>
+                    `
+                },
+            }),
+            instantsearch.widgets.pagination({
+                container: '#pagination',
+                cssClasses: {
+                    selectedItem: 'page-item active',
+                    disabledItem: 'page-item disabled',
+                    list: 'pagination',
+                    item: 'page-item',
+                    link: 'page-link'
+                }
+            }),
+        ]);
+
+        search.start();     
 
                         
 
