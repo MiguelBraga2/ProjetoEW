@@ -1,45 +1,45 @@
 extends layout
 
 block content
-  .container
-    h2.mt-5.mb-5.text-center Registo na aplicação:
-    .row.justify-content-md-center
-      .col-xxl-5.col-xl-6.col-lg-7.col-md-9.col-xs-10
-        form(action='/users/register' method='POST')
-          .mb-3
-            label.form-label(for='Nome Próprio') Nome Próprio:
-            input.form-control#nome1(type="text" name='name')
-          .mb-3
-            label.form-label(for='Apelido') Apelido:
-            input.form-control#apelido1(type='text' name='surname')
-          .mb-3
-            label.form-label(for='Username') Username:
-            input.form-control#username1(type="text" name='username')
-          .mb-3
-            label.form-label(for='Email') Email:
-            input.form-control#email1(type="text" name='email')
-          .mb-3
-            label.form-label(for='Password') Password:
-            input.form-control#password1(type='password' name='password')
-          .mb-3
-            label.form-label(for='Função') Função:
-            select.form-control(value="level" required)
-              option(value="consumer") Consumidor 
-              option(value="producer") Produtor 
-          .row.mt-4.mb-2.m-2
-            .form-check
-              input.form-check-input#invalidCheck(type='checkbox' required)
-              label.form-check-label(for='invalidCheck')
-                .text(style='font-size: 15px;').
-                  Aceite os termos e condições.
-              .invalid-feedback.
-                Deve aceitar os termos e condições antes de continuar.
-          .text-center.mt-4.mb-2.m-2
-            button.btn.btn-primary.mt-3(type='submit' style='width: 50%') Submit
-          .social.text-center.mt-5
-            div(style='text-decoration: solid; text-decoration-line: underline;') Outras formas de registo:
-            .mt-3
-              a.mx-1(href="/users/facebook")
-                i(style="color: #000000;").fa-brands.fa-facebook.fa-xl
-              a.mx-1(href="/users/google")
-                i(style="color: #000000;").fa-brands.fa-google.fa-xl
+  section.vh-100
+    .container.py-5.h-100
+      .row.d-flex.justify-content-center.align-items-center.h-100
+        .col-12.col-md-8.col-lg-6.col-xl-5
+          .card.shadow-lg
+            .card-body.p-5.text-center
+              h1.mb-4.text-center Registo
+              form.text-sm-start(action="/users/register" method="POST")
+                .row.mb-4 
+                  .col-md-6
+                    .form-group 
+                      label.form-label Primeiro Nome
+                      input.form-control(type="text" placeholder="Insira o Primeiro Nome" name="name")
+                  .col-md-6
+                    .form-group 
+                      label.form-label Último Nome
+                      input.form-control(type="text" placeholder="Insira o Último Nome" name="surname")
+                .form-group.mb-4 
+                  label.form-label Nome de Utilizador
+                  input.form-control(type="text" placeholder="Insira o Nome de Utilizador" name="username" required)
+                .form-group.mb-4 
+                  label.form-label Email
+                  input.form-control#email1(type="email" placeholder="Insira o Email" name="email" required)
+                .form-group.mb-4 
+                  label.form-label Palavra-Passe
+                  input.form-control#password1(type="password" placeholder="Insira a Palavra-Passe" name="password" required)
+                .form-group.mb-4 
+                  label.form-label(for='Função') Função
+                  select.select.form-control(value="level" required)
+                    option(value="consumer") Consumidor 
+                    option(value="producer") Produtor 
+                .text-center
+                  button.mb-3.btn.btn-primary.w-50.mb-4(type="submit") Criar Conta
+              .text-center.mb-4
+                p Ou inicia sessão com:
+                a.btn.btn-link.btn-floating(href="/users/facebook")
+                  i.fa-brands.fa-facebook.fa-xl 
+                a.btn.btn-link.btn-floating(href="/users/google")
+                  i.fa-brands.fa-google.fa-xl
+              .text-center 
+                p.mb-0 Já possui conta?  
+                  a.fw-bold.pl-2.text-secondary(href="/users/login") Iniciar Sessão

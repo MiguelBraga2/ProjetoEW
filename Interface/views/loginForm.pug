@@ -7,14 +7,14 @@ block content
         .col-12.col-md-8.col-lg-6.col-xl-5
           .card.shadow-lg
             .card-body.p-5.text-center
-              h1.mb-5 Iniciar Sessão
+              h1.mb-4 Iniciar Sessão
               form.text-sm-start(action="/users/login" method="POST")
                 .form-group.mb-4 
                   label.form-label Nome de Utilizador
-                  input.form-control(type="text" placeholder="Insira o Nome de Utilizador" name="username")
+                  input.form-control(type="text" placeholder="Insira o Nome de Utilizador" name="username" required)
                 .form-group.mb-4 
                   label.form-label Palavra-Passe 
-                  input.form-control(type="password" placeholder="Insira a Palavra-Passe" name="password")
+                  input.form-control(type="password" placeholder="Insira a Palavra-Passe" name="password" required)
                   p.text-center.small.my-3 
                     a.text-secondary(href="/users/resetPassword") Esqueceu-se da palavra-passe?
                 .text-center
