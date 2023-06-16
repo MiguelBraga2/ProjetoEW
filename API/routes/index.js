@@ -20,6 +20,20 @@ function paginatedResults(model) {
     if (req.query && req.query.tribunal) {
       queries['tribunal'] = req.query.tribunal
     }
+  
+    if (req.query && req.query.processo) {
+      queries['processo'] = req.query.processo
+    }
+  
+    if (req.query && req.query.relator) {
+      queries['relator'] = req.query.relator
+    }
+  
+    if (req.query && req.query.descritor) {
+      queries['descritor'] = req.query.descritor
+    }
+  
+
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 15;
     const startIndex = (page - 1) * limit;
