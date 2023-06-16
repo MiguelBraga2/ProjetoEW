@@ -120,31 +120,36 @@ router.get('/acordaos/:id', verificaToken, (req, res) => {
  * GET página com os acordãos
  */
 router.get('/acordaos', verificaToken, (req, res) => {
-  var query = ''
+  var query = '';
+
   if (req.query && req.query.limit) {
-    if (query.length == 0) {
-      query = '?limit=' + req.query.limit
-    }
-  }
-  if (req.query && req.query.page) {
-      if (query.length > 1) {
-        query += '&page=' + req.query.page
-      } 
-      else {
-        query += '?page=' + req.query.page
-      }
+    query = '?limit=' + req.query.limit;
   }
 
-  var strQuery = ''
+  if (req.query && req.query.page) {
+    query += (query.length > 1 ? '&' : '?') + 'page=' + req.query.page;
+  }
+
+  var strQuery = '';
 
   if (req.query && req.query.tribunal) {
-    if (query.length > 1) {
-        query += '&tribunal=' + req.query.tribunal
-      } 
-      else {
-        query += '?tribunal=' + req.query.tribunal
-    }
-    strQuery = '?tribunal=' + req.query.tribunal
+    query += (query.length > 1 ? '&' : '?') + 'tribunal=' + req.query.tribunal;
+    strQuery = '?tribunal=' + req.query.tribunal;
+  }
+
+  if (req.query && req.query.processo) {
+    query += (query.length > 1 ? '&' : '?') + 'processo=' + req.query.proceso;
+    strQuery += (strQueryquery.length > 1 ? '&' : '?') + 'processo=' + req.query.processo;
+  }
+
+  if (req.query && req.query.relator) {
+    query += (query.length > 1 ? '&' : '?') + 'relator=' + req.query.relator;
+    strQuery += (strQuery.length > 1 ? '&' : '?') + 'relator=' + req.query.relator;
+  }
+
+  if (req.query && req.query.descritor) {
+    query += (query.length > 1 ? '&' : '?') + 'descritor=' + req.query.descritor;
+    strQuery += (strQuery.length > 1 ? '&' : '?') + 'relator=' + req.query.descritor;
   }
 
   axios.get(env.apiAccessPoint + '/acordaos' + query)
