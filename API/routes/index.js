@@ -14,11 +14,11 @@ var fullTextObjects = require('../search/full-text').fullTextObjects;
 /**
  * Function for getting the results for a simgle page. 
  */
-function paginatedResults(model, query) {
+function paginatedResults(model) {
   return async (req, res, next) => {
     const queries = {}
-    if (req.query.length > 0 && query !== '') {
-      queries[query] = req.query[query]
+    if (req.query && req.query.tribunal) {
+      queries['tribunal'] = req.query.tribunal
     }
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 15;
@@ -54,7 +54,7 @@ function paginatedResults(model, query) {
 /**
  * GET all the judgments
  */
-router.get('/acordaos', paginatedResults(Acordao, ''), function(req, res) {  
+router.get('/acordaos', paginatedResults(Acordao), function(req, res) {  
   res.json(res.paginatedResults);
 });
 
@@ -114,14 +114,6 @@ router.get('/acordaos/:id', (req,res) => {
   Judgment.getAcordao(req.params.id)
     .then(data => res.status(200).json(data))
     .catch(error => res.status(521).json({error: error, message: "Could not obtain the judgment"}))
-})
-
-
-/**
- * GET all the judgements form one court
- */
-router.get('/acordaos/tribunais/:tribunal', paginatedResults(Acordao, 'tribunal'), (req, res) => {
-  res.json(res.paginatedResults);
 })
 
 router.get('/currentId', (req, res) => {
