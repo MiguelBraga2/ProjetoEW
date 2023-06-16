@@ -31,7 +31,13 @@ block content
             .row
                   .col-md-3.py-5 
                     .d-flex.justify-content-center
-                        #searchbox.my-2
+                        #searchbox.mt-2
+                    .d-flex.justify-content-center
+                        #searchboxProcesso.mt-3
+                    .d-flex.justify-content-center
+                        #searchboxRelator.mt-3
+                    .d-flex.justify-content-center
+                        #searchboxDescritores.my-3
                   .col-md-9.py-5
                     .d-flex.justify-content-center    
                         #hits
@@ -46,7 +52,22 @@ block content
     script.
         const searchClient = algoliasearch('3U240B9PZS', '2fcb4365959ca67208f80ef5792f2990');
 
-        const search = instantsearch({
+        const search1 = instantsearch({
+            indexName: 'Acordaos',
+            searchClient,
+        });
+
+        const search2 = instantsearch({
+            indexName: 'Acordaos',
+            searchClient,
+        });
+
+        const search3 = instantsearch({
+            indexName: 'Acordaos',
+            searchClient,
+        });
+
+        const search4 = instantsearch({
             indexName: 'Acordaos',
             searchClient,
         });
@@ -62,18 +83,7 @@ block content
             }
         }
 
-        search.addWidgets([
-            instantsearch.widgets.searchBox({
-                container: '#searchbox',  
-                placeholder: 'Procurar acordãos',
-                showSubmit: false,
-                showReset: false,
-                cssClasses: {
-                    root: 'input-group',
-                    input : 'form-control', 
-                }
-            }),
-            instantsearch.widgets.hits({
+        const hits = instantsearch.widgets.hits({
                 container: '#hits',
                 cssClasses: {
                     root: 'm-0',
@@ -104,21 +114,79 @@ block content
                         </div>
                         </div>
                     `
-                },
-            }),
-            instantsearch.widgets.pagination({
-                container: '#pagination',
-                cssClasses: {
-                    selectedItem: 'page-item active',
-                    disabledItem: 'page-item disabled',
-                    list: 'pagination',
-                    item: 'page-item',
-                    link: 'page-link'
                 }
-            }),
-        ]);
+        });
 
-        search.start();     
+        const pagination = instantsearch.widgets.pagination({
+            container: '#pagination',
+            cssClasses: {
+                selectedItem: 'page-item active',
+                disabledItem: 'page-item disabled',
+                list: 'pagination',
+                item: 'page-item',
+                link: 'page-link'
+            }
+        });
+
+        
+        
+        const searchBox1 = instantsearch.widgets.searchBox({
+                container: '#searchbox',  
+                placeholder: 'Pesquisa Livre...',
+                showSubmit: false,
+                showReset: false,
+                cssClasses: {
+                    root: 'input-group',
+                    input : 'form-control', 
+                }
+        });
+        
+        const searchBox2 = instantsearch.widgets.searchBox({
+                container: '#searchboxProcesso',  
+                placeholder: 'Número do Processo...',
+                restrictSearchableAttributes: ['Processo'],
+                showSubmit: false,
+                showReset: false,
+                cssClasses: {
+                    root: 'input-group',
+                    input : 'form-control', 
+                }
+        });
+        
+        const searchBox3 = instantsearch.widgets.searchBox({
+                container: '#searchboxRelator',  
+                placeholder: 'Pesquisar por Relator...',
+                restrictSearchableAttributes: ['Relator'],
+                showSubmit: false,
+                showReset: false,
+                cssClasses: {
+                    root: 'input-group',
+                    input : 'form-control', 
+                }
+        });
+        
+        
+        const searchBox4 = instantsearch.widgets.searchBox({
+                container: '#searchboxDescritores',  
+                placeholder: 'Pesquisar por Descrtitores...',
+                restrictSearchableAttributes: ['Decritores'],
+                showSubmit: false,
+                showReset: false,
+                cssClasses: {
+                    root: 'input-group',
+                    input : 'form-control', 
+                }
+        });
+
+        search1.addWidgets([searchBox1, hits, pagination]);
+        search2.addWidgets([searchBox2, hits, pagination]);
+        search3.addWidgets([searchBox3, hits, pagination]);
+        search4.addWidgets([searchBox4, hits, pagination]);
+        search1.start();     
+        search2.start();     
+        search3.start();     
+        search4.start();     
+
 
                         
 

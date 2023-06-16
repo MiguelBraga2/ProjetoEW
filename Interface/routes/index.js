@@ -59,26 +59,6 @@ router.get('/' || '/tribunais', function(req, res){
     })
 })
 
-/**
- * GET pesquisa da nav bar
- */
-router.get('/pesquisa', verificaToken, (req, res)=>{
-  var query = ''
-  if (req.query.limit) {
-    if (query.length == 0) {
-      query = '?limit=' + req.query.limit
-    }
-  }
-  if (req.query.page) {
-      if (query.length > 1) {
-        query += '&page=' + req.query.page
-      } 
-      else {
-        query += '?page=' + req.query.page
-      }
-  }
-  res.render('acordaos', {lacordaos: []});
-})
 
 /**
  * GET página de pesquisa aprofundada
@@ -135,17 +115,18 @@ router.get('/acordaos/:id', verificaToken, (req, res) => {
   })
 })
 
+
 /**
- * GET página com os acordãos de um tribunal 
+ * GET página com os acordãos
  */
-router.get('/tribunais/:tribunal', verificaToken, (req, res) => {
+router.get('/acordaos', verificaToken, (req, res) => {
   var query = ''
-  if (req.query.limit) {
+  if (req.query && req.query.limit) {
     if (query.length == 0) {
       query = '?limit=' + req.query.limit
     }
   }
-  if (req.query.page) {
+  if (req.query && req.query.page) {
       if (query.length > 1) {
         query += '&page=' + req.query.page
       } 
@@ -153,14 +134,27 @@ router.get('/tribunais/:tribunal', verificaToken, (req, res) => {
         query += '?page=' + req.query.page
       }
   }
-  axios.get(env.apiAccessPoint + '/acordaos/tribunais/' + req.params.tribunal + query)
+
+  var strQuery = ''
+
+  if (req.query && req.query.tribunal) {
+    if (query.length > 1) {
+        query += '&tribunal=' + req.query.tribunal
+      } 
+      else {
+        query += '?tribunal=' + req.query.tribunal
+    }
+    strQuery = '?tribunal=' + req.query.tribunal
+  }
+
+  axios.get(env.apiAccessPoint + '/acordaos' + query)
     .then(response => {
       jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
         if (err) {
           res.render('Error', {error : err, message : err.message})
         } else {
           console.log(response.data)
-          res.render('acordaos', {lacordaos: response.data.results, user: payload, next: response.data.next, previous: response.data.previous, url: '/tribunais/' + req.params.tribunal});
+          res.render('acordaos', {lacordaos: response.data.results, user: payload, next: response.data.next, previous: response.data.previous, url: '/acordaos' + strQuery});
         }
       });
     })
@@ -168,6 +162,7 @@ router.get('/tribunais/:tribunal', verificaToken, (req, res) => {
       res.render('error', {error: err, message: err.message});
     })
 })
+
 
 /*--POST's---------------------------------------------------------------------------------------------------------------------------------------------- */
 

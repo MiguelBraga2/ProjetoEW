@@ -27,7 +27,7 @@ block content
         h2.py-5.text-center Tribunais
         .list-group 
             each value, key  in tribunais
-                a.list-group-item.list-group-item-action(href='/tribunais/' + key)= value
+                a.list-group-item.list-group-item-action(href='/acordaos?tribunal=' + key)= value
     // Footer
     footer.p-3.text-center.mt-auto.position-relative.bg-light.shadow
         .container 

@@ -53,11 +53,17 @@ block content
             ul.pagination
                 if previous
                     li.page-item
-                        a.page-link(href=url+'?page=' + previous.page + '&limit=' + previous.limit) Previous
+                        if url === '/acordaos'
+                            a.page-link(href=url +'?page=' + previous.page + '&limit=' + previous.limit) Previous
+                        else 
+                            a.page-link(href=url +'&page=' + previous.page + '&limit=' + previous.limit) Previous
                 if next 
                     li.page-item
-                        a.page-link(href=url+'?page=' + next.page + '&limit=' + next.limit) Next
-    // Footer
+                        if url === '/acordaos'
+                            a.page-link(href=url+'?page=' + next.page + '&limit=' + next.limit) Next
+                        else
+                            a.page-link(href=url+'&page=' + next.page + '&limit=' + next.limit) Next
+    // Footer              
     footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow
         .container 
             p.lead Copyright &copy; 2023 EngWeb, Acordãos
