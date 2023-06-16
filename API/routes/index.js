@@ -22,18 +22,22 @@ function paginatedResults(model) {
     }
   
     if (req.query && req.query.processo) {
-      queries['processo'] = req.query.processo
+      queries['Processo'] = req.query.processo
     }
   
     if (req.query && req.query.relator) {
-      queries['relator'] = req.query.relator
+      queries['Relator'] = req.query.relator
     }
   
     if (req.query && req.query.descritor) {
-      queries['descritor'] = req.query.descritor
+      queries['Descritores'] = req.query.descritor
     }
-  
 
+    if (req.query && req.query.livre) {
+    
+    }
+    console.log(queries)
+  
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 15;
     const startIndex = (page - 1) * limit;
@@ -69,6 +73,7 @@ function paginatedResults(model) {
  * GET all the judgments
  */
 router.get('/acordaos', paginatedResults(Acordao), function(req, res) {  
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.json(res.paginatedResults);
 });
 

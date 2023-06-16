@@ -1,6 +1,8 @@
 extends layout
 
 block content
+    script. 
+        var url = '#{url}';
     div(style="display:block; content:''; height: 60px;")
     // Navbar
     nav.navbar.navbar-expand-lg.navbar-light.bg-light.py-3.shadow.fixed-top
@@ -22,47 +24,33 @@ block content
                     else
                         li 
                             a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+    // Acordãos
+    section.py-5.text-center
+        .container
+            h1.py-5 Acordãos
+            .row
+                  .col-md-3.py-5 
+                    .d-flex.justify-content-center
+                        input.mt-2.mb-3.form-control(type='search' placeholder="Pesquisa Livre..." id="searchLivre")
+                    .d-flex.justify-content-center
+                        input.mb-3.form-control(type='search' placeholder="Número do Processo..." id="searchProcesso")
+                    .d-flex.justify-content-center
+                        input.mb-3.form-control(type='search' placeholder="Pesquise por Relator..." id="searchRelator")
+                    .d-flex.justify-content-center
+                        input.mb-3.form-control(type='search' placeholder="Pesquise por Descritores..." id="searchDescritores")
+                  .col-md-9.py-5
+                    .d-flex.justify-content-center    
+                        ul.list-group.list-group-flush#resultsList 
+                    .d-flex.justify-content-center
+                        // Pagination
+                        nav
+                            ul.pagination
+                                li.page-item
+                                    a.page-link#previous Previous
+                                li.page-item
+                                    a.page-link#next Next
 
-    .container.py-4 
-        h2 Lista de Acordãos
-        table.table.table-striped.table-hover
-            thead 
-                th Processo 
-                th Url 
-                th Tribunal 
-                th Relator 
-                th Descritores 
-                th Data 
-            tbody 
-                each acordao in lacordaos
-                    tr 
-                        td
-                            a(href='/'+acordao['_id']) #{'/'+acordao['Processo']}
-                        td
-                            a(href='http://www.dgsi.pt' + acordao["url"]) Link
-                        td= acordao["tribunal"]
-                        td= acordao["Relator"]
-                        td
-                            if acordao["Descritores"] 
-                                ul  
-                                    each descritor in acordao["Descritores"]
-                                        li= descritor
-                        td= acordao["Data do Acordão"]
-    .container.py-4.d-flex.justify-content-center 
-        nav
-            ul.pagination
-                if previous
-                    li.page-item
-                        if url === '/acordaos'
-                            a.page-link(href=url +'?page=' + previous.page + '&limit=' + previous.limit) Previous
-                        else 
-                            a.page-link(href=url +'&page=' + previous.page + '&limit=' + previous.limit) Previous
-                if next 
-                    li.page-item
-                        if url === '/acordaos'
-                            a.page-link(href=url+'?page=' + next.page + '&limit=' + next.limit) Next
-                        else
-                            a.page-link(href=url+'&page=' + next.page + '&limit=' + next.limit) Next
+    script(type="text/javascript" src="/public/js/myScript.js")
     // Footer              
     footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow
         .container 

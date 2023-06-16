@@ -93,7 +93,6 @@ router.get('/pesquisas', verificaToken, (req, res)=>{
 router.get('/acordaos/:id', verificaToken, (req, res) => {
   axios.get(env.apiAccessPoint + '/acordaos/' + req.params.id)
   .then(response => {
-    console.log(Object.entries(response.data[0]))
     if (req.cookies && req.cookies.token) {
       jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
         if (err) {
@@ -120,52 +119,21 @@ router.get('/acordaos/:id', verificaToken, (req, res) => {
  * GET página com os acordãos
  */
 router.get('/acordaos', verificaToken, (req, res) => {
-  var query = '';
-
-  if (req.query && req.query.limit) {
-    query = '?limit=' + req.query.limit;
-  }
-
-  if (req.query && req.query.page) {
-    query += (query.length > 1 ? '&' : '?') + 'page=' + req.query.page;
-  }
-
-  var strQuery = '';
+  var apiUrl = env.apiAccessPoint + '/acordaos';
 
   if (req.query && req.query.tribunal) {
-    query += (query.length > 1 ? '&' : '?') + 'tribunal=' + req.query.tribunal;
-    strQuery = '?tribunal=' + req.query.tribunal;
+    apiUrl += '?tribunal=' + req.query.tribunal;
   }
 
-  if (req.query && req.query.processo) {
-    query += (query.length > 1 ? '&' : '?') + 'processo=' + req.query.proceso;
-    strQuery += (strQueryquery.length > 1 ? '&' : '?') + 'processo=' + req.query.processo;
-  }
-
-  if (req.query && req.query.relator) {
-    query += (query.length > 1 ? '&' : '?') + 'relator=' + req.query.relator;
-    strQuery += (strQuery.length > 1 ? '&' : '?') + 'relator=' + req.query.relator;
-  }
-
-  if (req.query && req.query.descritor) {
-    query += (query.length > 1 ? '&' : '?') + 'descritor=' + req.query.descritor;
-    strQuery += (strQuery.length > 1 ? '&' : '?') + 'relator=' + req.query.descritor;
-  }
-
-  axios.get(env.apiAccessPoint + '/acordaos' + query)
-    .then(response => {
-      jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
-        if (err) {
-          res.render('Error', {error : err, message : err.message})
-        } else {
-          console.log(response.data)
-          res.render('acordaos', {lacordaos: response.data.results, user: payload, next: response.data.next, previous: response.data.previous, url: '/acordaos' + strQuery});
-        }
-      });
-    })
-    .catch(err => {
-      res.render('error', {error: err, message: err.message});
-    })
+  
+  jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+    if (err) {
+      res.render('Error', {error : err, message : err.message})
+    } else {
+      res.render('acordaos', {user: payload, url: apiUrl});
+    }
+  });
+  
 })
 
 
