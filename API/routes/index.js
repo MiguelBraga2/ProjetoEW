@@ -7,9 +7,18 @@ var Taxonomy = require('../search/taxonomy')
 
 const nomeFicheiro = './search/descriptors.txt';
 
-var tree = Taxonomy.lerFicheiro(nomeFicheiro)
+var tree = Taxonomy.lerFicheiro(nomeFicheiro);
 
 var fullTextObjects = require('../search/full-text').fullTextObjects;
+
+function convertStrLowerCaseMinusFristChar(str) {
+  // Extrai o primeiro caractere em maiúscula
+  const firstChar = str.charAt(0).toUpperCase();
+  // Converte o restante da string para minúsculas
+  const restOfString = str.substring(1).toLowerCase();
+  // Retorna a string resultante com o primeiro caractere em minúscula
+  return firstChar + restOfString;
+}
 
 /**
  * Function for getting the results for a simgle page. 
@@ -18,9 +27,7 @@ function paginatedResults(model) {
   return async (req, res, next) => {
     const queries = []
     const match = {
-      $match : {
-
-      }
+      $match : {}
     }
     queries.push(match)
 
@@ -37,11 +44,12 @@ function paginatedResults(model) {
     }
 
     if (req.query && req.query.descritor) {
-      match.$match['Descritores'] = { $elemMatch: { $regex: new RegExp(req.query.descritor, 'i') } };
+      const processosComDescritor = Taxonomy.getProcessos(req.query.descritor, tree);
+      queries.push({ $match: { Processo: { $in: processosComDescritor } } });
     }
 
     if (req.query && req.query.livre) {
-    
+      // Por fazer
     }
   
     const page = parseInt(req.query.page, 10) || 1;
@@ -87,15 +95,6 @@ router.get('/acordaos', paginatedResults(Acordao), function(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.json(res.paginatedResults);
 });
-
-
-/**
- * GET the judgments with a specific descriptor
- */
-router.get('/acordaos/search/desc/:termo', (req,res) => {
-  res.json(Taxonomy.getProcessos(req.params.termo, tree))
-})
-
 
 /**
  * GET the judgments with a spcecific term in certain fields 
