@@ -92,26 +92,25 @@ router.get('/pesquisas', verificaToken, (req, res)=>{
  */
 router.get('/acordaos/:id', verificaToken, (req, res) => {
   axios.get(env.apiAccessPoint + '/acordaos/' + req.params.id)
-  .then(response => {
-    if (req.cookies && req.cookies.token) {
+    .then(response => {
+      console.log(response.data);
       jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
         if (err) {
-          return res.render('processo', {processo: response.data[0]})
+          return res.render('error', {err: err, message: err.message});
         } else {
           axios.put(env.authAcessPoint + '/' + payload.id + '/history', {process: req.params.id})
-          .then(responseAuth => {
-            res.render('processo', {processo: response.data[0], user: payload });
-          })
-          .catch(err => {
-            res.render('error', {error: err, message: err.message});
-          })
-        }
+            .then(responseAuth => {
+              res.render('processo', {processo: response.data[0], user: payload });
+            })
+            .catch(err => {
+              res.render('error', {error: err, message: err.message});
+            })
+          }
       })
-    }
-  })
-  .catch(err => {
-    res.render('error', {error: err, message: err.message});
-  })
+    })
+    .catch(err => {
+      res.render('error', {error: err, message: err.message});
+    })
 })
 
 

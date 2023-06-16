@@ -23,7 +23,6 @@ function solicitation(str, page, limit) {
     fetch(str+'&page='+page+'&limit='+limit)
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             // Limpar a lista de resultados
             const resultsList = document.getElementById('resultsList');
             resultsList.innerHTML = '';
@@ -32,22 +31,22 @@ function solicitation(str, page, limit) {
                 // Criar o HTML para cada resultado
                 const listItemHTML = `<li class="list-group-item">
                 <div class="card mb -2"> <div class="card-body">
-                <h5 class="text-start text-primary">${result.Processo}</h1>
+                <h5 class="text-start text-primary"><a href="/acordaos/${result._id}">${result.Processo || 'N/A'}</a></h1>
                 <div class="row pb-2">
                     <div class="col-md-4"> 
-                        <div class="text-start"> <b>Tribunal:</b> ${result.Tribunal}</div>
+                        <div class="text-start"> <b>Tribunal:</b> ${result.Tribunal || 'N/A'}</div>
                     </div>
                     <div class="col-md-4"> 
-                        <div class="text-start"> <b>Relator:</b> ${result.Relator}</div>
+                        <div class="text-start"> <b>Relator:</b> ${result.Relator || 'N/A'}</div>
                     </div>
                     <div class="col-md-4"> 
-                        <div class="text-start"> <b>Data do Acordão:</b> ${result['Data do Acordão']}</div>
+                        <div class="text-start"> <b>Data do Acordão:</b> ${result['Data do Acordão'] || 'N/A'}</div>
                     </div>
                 </div>
-                <div class="text-start pb-2"> <b>Área Temática:</b> ${result['Área Temática']}</div>
-                <div class="text-start pb-2"> <b>Descritores:</b> ${result['Descritores']}</div>
+                <div class="text-start pb-2"> <b>Área Temática:</b> ${result['Área Temática'] || 'N/A'}</div>
+                <div class="text-start pb-2"> <b>Descritores:</b> ${result['Descritores'] || 'N/A'}</div>
                 <div class="text-start pb-2">
-                    <b>Sumário:</b> ${truncateText(result['Sumário'], 500)}
+                    <b>Sumário:</b> ${truncateText(result['Sumário'], 500) || 'N/A'}
                 </div>
                 </div>
                 </div></li>`;
