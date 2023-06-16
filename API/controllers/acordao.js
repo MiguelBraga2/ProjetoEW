@@ -1,4 +1,5 @@
 var Judgment = require('../models/acordao')
+var Algolia = require('./algolia.js')
 
 /**
  * Retrieve all judgment from the BD
@@ -106,49 +107,6 @@ module.exports.getCurrentId = () => {
         })
 }
 
-const algoliasearch = require('algoliasearch');
-
-let breakUpObject = (object, maxBytes) => {
-  const smallerObjects = [];
-  let id = object['_id']
-  let currentSize = 0;
-  let currentObject = {};
-  for (let key in object) {
-    if (object.hasOwnProperty(key)) {
-      if (typeof object[key] === 'string'){
-          const propertySize = object[key].length;
-          for(let i=0; i<propertySize; i++){
-              if (currentSize == maxBytes){
-                  currentObject._id = id
-                  smallerObjects.push(currentObject);
-                  console.log(currentObject)
-                  let newObject = {}
-                  newObject[key] = ''
-
-                  currentObject = newObject
-                  currentSize = 0;
-              }
-              else{
-                  if (!currentObject.hasOwnProperty(key)){
-                      currentObject[key] = ''
-                  }  
-                  currentObject[key] += object[key][i]
-                  currentSize++;
-              }
-              
-          }
-      } else {
-          currentObject[key] = object[key]
-      }
-    }
-      
-  }
-
-  smallerObjects.push(currentObject);
-  currentObject['_id'] = id
-  return smallerObjects
-}
-
 /**
  * Creates a new judgment in the BD
  * CREATE
@@ -160,20 +118,13 @@ module.exports.addAcordao = judgment => {
             .create(judgment)
             .then(resp => {    
               // Se correu bem, enviar para a base de dados da algolia              
-              const client = algoliasearch('3U240B9PZS', '5d7957d6533b2b65eeca044c5f54c6d8');
-              const index = client.initIndex('Acordaos')
-
-              // Só se podem guardar até 10000 carateres
-              let smallerObjects = breakUpObject(judgment, 9000) // Max size of object is 9000 bytes
-            
-              index.saveObjects(smallerObjects, {
-                autoGenerateObjectIDIfNotExist: true
-              }).then(({ objectIDs }) => {
-                console.log(objectIDs);
+              Algolia.add(judgment)
+              .then(response => {
+                return resp
               })
-              .catch(err => {
-               console.log(err)
-              });
+              .catch(error => {
+                return error
+              })
               
               return resp
             })
@@ -192,7 +143,13 @@ module.exports.updateAcordao = judgment => {
   return Judgment
                  .updateOne({_id: judgment._id}, judgment)
                  .then(resp => {
-                   return resp
+                   Algolia.update(judgment)
+                    .then(response => {
+                      return resp
+                    })
+                    .catch(error => {
+                      return error
+                    })
                  })
                   .catch(error => {
                    return error
@@ -211,16 +168,12 @@ module.exports.deleteAcordao = id => {
         .deleteOne({_id: id})
         .then(resp => {
           // Se correu bem, remover da base de dados do algolia
-          const client = algoliasearch('3U240B9PZS', '5d7957d6533b2b65eeca044c5f54c6d8');
-          const index = client.initIndex('Acordaos')
-          index.deleteBy({
-            'filters': '_id:' + id
-          })
+          Algolia.remove(id)
           .then(response => {
             return resp
           })
-          .catch(err => {
-            console.log(err)
+          .catch(error => {
+            return error
           })
           
         })

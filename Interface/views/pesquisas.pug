@@ -60,16 +60,43 @@ block content
         const search2 = instantsearch({
             indexName: 'Acordaos',
             searchClient,
+            searchFunction(helper) {
+                if (helper.state.query) {
+                    helper.setQueryParameter('restrictSearchableAttributes', ['Processo'])
+                    helper.search();
+                }
+                else{
+                    helper.setQuery('').setQueryParameter('restrictSearchableAttributes', []);
+                    helper.search();
+                }
+            },
         });
 
         const search3 = instantsearch({
             indexName: 'Acordaos',
             searchClient,
+            searchFunction(helper) {
+                if (helper.state.query) {
+                    helper.setQueryParameter('restrictSearchableAttributes', ['Relator'])
+                    helper.search();
+                }
+                else{
+                    helper.setQuery('').setQueryParameter('restrictSearchableAttributes', []);
+                    helper.search();
+                }
+                
+            },
         });
 
         const search4 = instantsearch({
             indexName: 'Acordaos',
             searchClient,
+            searchFunction(helper) {
+                if (helper.state.query) {
+                    helper.setQueryParameter('restrictSearchableAttributes', ['Descritores'])
+                    helper.search();
+                }
+            },
         });
 
         function truncateText(text, maxLength) {
@@ -144,7 +171,6 @@ block content
         const searchBox2 = instantsearch.widgets.searchBox({
                 container: '#searchboxProcesso',  
                 placeholder: 'Número do Processo...',
-                restrictSearchableAttributes: ['Processo'],
                 showSubmit: false,
                 showReset: false,
                 cssClasses: {
@@ -156,7 +182,10 @@ block content
         const searchBox3 = instantsearch.widgets.searchBox({
                 container: '#searchboxRelator',  
                 placeholder: 'Pesquisar por Relator...',
-                restrictSearchableAttributes: ['Relator'],
+                queryHook(query, search) {
+
+                    search(query);
+                },
                 showSubmit: false,
                 showReset: false,
                 cssClasses: {
@@ -182,9 +211,11 @@ block content
         search2.addWidgets([searchBox2, hits, pagination]);
         search3.addWidgets([searchBox3, hits, pagination]);
         search4.addWidgets([searchBox4, hits, pagination]);
+        
         search1.start();     
         search2.start();     
         search3.start();     
+        console.log(search3)
         search4.start();     
 
 
