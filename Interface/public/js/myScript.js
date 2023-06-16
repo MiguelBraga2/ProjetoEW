@@ -23,6 +23,7 @@ function solicitation(str, page, limit) {
     fetch(str+'&page='+page+'&limit='+limit)
         .then(response => response.json())
         .then(data => {
+            console.log(data);
             // Limpar a lista de resultados
             const resultsList = document.getElementById('resultsList');
             resultsList.innerHTML = '';

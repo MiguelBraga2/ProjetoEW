@@ -16,52 +16,63 @@ var fullTextObjects = require('../search/full-text').fullTextObjects;
  */
 function paginatedResults(model) {
   return async (req, res, next) => {
-    const queries = {}
+    const queries = []
+    const match = {
+      $match : {
+
+      }
+    }
+    queries.push(match)
+
     if (req.query && req.query.tribunal) {
-      queries['tribunal'] = req.query.tribunal
+      match.$match['tribunal'] = req.query.tribunal
     }
   
     if (req.query && req.query.processo) {
-      queries['Processo'] = req.query.processo
+      match.$match['Processo'] = { $regex : new RegExp('^' + req.query.processo, 'i') };
     }
-  
+    
     if (req.query && req.query.relator) {
-      queries['Relator'] = req.query.relator
+      match.$match['Relator'] = { $regex : new RegExp('^' + req.query.relator, 'i') };
     }
-  
+
     if (req.query && req.query.descritor) {
-      queries['Descritores'] = req.query.descritor
+      match.$match['Descritores'] = { $elemMatch: { $regex: new RegExp(req.query.descritor, 'i') } };
     }
 
     if (req.query && req.query.livre) {
     
     }
-    console.log(queries)
   
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 15;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const total = await model.countDocuments({});
     const results = {};
     
-    if (endIndex < total) {
-        results.next = { 
-          page: page + 1,
-          limit: limit
-        }      
-    }
-
-    if (startIndex > 0) {
-        results.previous = { 
-          page: page - 1,
-          limit: limit
-        }
-    }
-
+    
     try {
-      results.results = await model.find(queries).skip(startIndex).limit(limit).exec();
       res.paginatedResults = results;
+
+      const aggregation = model.aggregate(queries);
+      var total = await model.aggregate([...queries, { $count: 'count' }]).exec();
+      total = total.length > 0 ? total[0].count : 0
+      results.results = await aggregation.skip(startIndex).limit(limit).exec();
+      
+      if (endIndex < total) {
+          results.next = { 
+            page: page + 1,
+            limit: limit
+          }      
+      }
+
+      if (startIndex > 0) {
+          results.previous = { 
+            page: page - 1,
+            limit: limit
+          }
+      }
+
       next();
     } catch (error) {
       res.status(500).json({error: error, message: error.message});
