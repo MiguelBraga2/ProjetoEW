@@ -93,10 +93,9 @@ router.get('/pesquisas', verificaToken, (req, res)=>{
 router.get('/acordaos/:id', verificaToken, (req, res) => {
   axios.get(env.apiAccessPoint + '/acordaos/' + req.params.id)
     .then(response => {
-      console.log(response.data);
       jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
         if (err) {
-          return res.render('error', {err: err, message: err.message});
+          return res.render('error', {err: err, message: "Error verifying the token."});
         } else {
           axios.put(env.authAcessPoint + '/' + payload.id + '/history', {process: req.params.id})
             .then(responseAuth => {
@@ -105,7 +104,7 @@ router.get('/acordaos/:id', verificaToken, (req, res) => {
             .catch(err => {
               res.render('error', {error: err, message: err.message});
             })
-          }
+        }
       })
     })
     .catch(err => {
