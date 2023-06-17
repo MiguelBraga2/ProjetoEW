@@ -3,7 +3,7 @@ extends layout
 block content
     script. 
         var url = '#{url}';
-    div(style="display:block; content:''; height: 60px;")
+    div(style="display:block; content:''; height: 60px;")#topo
     // Navbar
     nav.navbar.navbar-expand-lg.navbar-light.bg-light.py-3.shadow.fixed-top
         .container
@@ -46,9 +46,9 @@ block content
                         nav
                             ul.pagination
                                 li.page-item
-                                    a.page-link#previous Previous
+                                    a(href="#topo").page-link#previous Previous
                                 li.page-item
-                                    a.page-link#next Next
+                                    a(href="#topo").page-link#next Next
 
     script(type="text/javascript" src="/public/js/myScript.js")
     // Footer              

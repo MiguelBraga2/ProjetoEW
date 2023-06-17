@@ -1,7 +1,7 @@
 extends layout
 
 block content
-    div(style="display:block; content:''; height: 60px;")
+    div(style="display:block; content:''; height: 60px;")#topo
     // Navbar
     nav.navbar.navbar-expand-lg.navbar-light.bg-light.py-3.shadow.fixed-top
         .container
@@ -22,33 +22,54 @@ block content
                     else
                         li 
                             a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+    section.py-5.text-center
+        .container
+            h1.py-5 Acordão
+                button.btn 
+                    i.fa-regular.fa-star.fa-lg#fav-icon(style="color: #f0dd0a")
+            .row
+                  .col-md-3.py-5.text-start
+                        .d-flex.justify-content-center.mb-3
+                            a.list-group-item.list-group-item-action(href="#descritores") Descritores
+                        .d-flex.justify-content-center.mb-3
+                            a.list-group-item.list-group-item-action(href="#sumario") Sumário
+                        .d-flex.justify-content-center.mb-3    
+                            a.list-group-item.list-group-item-action(href="#parcial") Decisão Parcial 
+                        .d-flex.justify-content-center.mb-3
+                            a.list-group-item.list-group-item-action(href="#integral") Decisão Integral
+                        .d-flex.justify-content-center.mb-3
+                            a.list-group-item.list-group-item-action(href="#topo") Voltar ao topo
+                  .col-md-9.py-5
+                    section.text-start#descritores 
+                        h1.text-warning= processo.Processo
+                        hr.text-warning
+                        p #[b Relator:] #{processo.Relator}
+                        p #[b Descritores:] #{processo.Descritores}
+                        p #[b Processo:] #{processo.Processo}
+                        p #[b Nº Convencional:] #{processo['Nº Convencional']}
+                        p #[b Data do Acordão:] #{processo['Data do Acordão']}
+                        p #[b Votação:] #{processo['Votação']}
+                        p #[b Texto Integral:] #{processo['Texto Integral']}
+                        p #[b Nível de acesso:] #{processo['Nível de acesso']}
+                        p #[b Meio Processual:] #{processo['Meio Processual']}
+                        p #[b Decisão:] #{processo['Decisão']}
+                        p #[b Indicações eventuais:] #{processo['Indicações eventuais']}         
+                        each val in Object.entries(processo).filter(([key]) => !['_id', 'Relator', 'Descritores', 'Processo', 'Nº Convencional', 'Data do Acordão', 'Votação', 'Texto Integral', 'Nível de acesso', 'Meio Processual', 'Decisão', 'Indicações eventuais', 'Sumário', 'Decisão Texto Parcial', 'Decisão Texto Integral' ].includes(key))  
+                                p #[b #{val[0]}:]  #{val[1]}
 
-    .container-fluid.mt-4.p-4 
-        h2 Acordão
-            button.btn 
-                i.fa-regular.fa-star#fav-icon(style="color: #f0dd0a")
-        table.table.table-striped.table-hover
-            thead 
-                th Campo 
-                th Valor 
-            tbody 
-                each val in Object.entries(processo)  
-                    // Devolve uma lista de arrays [[campo, valor], [campo, valor]]
-                    tr 
-                        td= val[0]
-                        td= val[1]
-    script. 
-        // jQuery
-        $(document).ready(function() {
-        $('#fav-icon').hover(
-            function() {
-                $(this).attr("class","fa-star fa-solid");
-            },
-            function() {
-                $(this).attr("class","fa-star fa-regular");
-            }
-        );
-        });
+                    section.text-start#sumario.mt-2 
+                        h1.text-warning Sumário
+                        hr.text-warning
+                        p #{processo['Sumário']}
+                    section.text-start#parcial.mt-2 
+                        h1.text-warning Decisão Texto Parcial 
+                        hr.text-warning
+                        p #{processo['Decisão Texto Parcial']}
+                    section.text-start#integral.mt-2 
+                        h1.text-warning Decisão Texto Integral
+                        hr.text-warning
+                        p #{processo['Decisão Texto Integral']}
+                
     // Footer
     footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow
         .container 
