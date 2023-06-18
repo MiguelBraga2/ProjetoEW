@@ -52,6 +52,8 @@ block content
                         #searchboxRelator.mt-3
                     .d-flex.justify-content-center
                         #searchboxDescritores.my-3
+                    .d-flex.justify-content-center
+                        #refinement-list.my-3
                   .col-md-9.py-5
                     .d-flex.justify-content-center    
                         #hits
@@ -221,10 +223,17 @@ block content
                 }
         });
 
-        search1.addWidgets([searchBox1, hits, pagination]);
-        search2.addWidgets([searchBox2, hits, pagination]);
-        search3.addWidgets([searchBox3, hits, pagination]);
-        search4.addWidgets([searchBox4, hits, pagination]);
+        	
+
+        const refinementList = instantsearch.widgets.refinementList({
+            container: '#refinement-list',
+            attribute: 'Relator',
+        });
+
+        search1.addWidgets([searchBox1, refinementList, hits, pagination]);
+        search2.addWidgets([searchBox2, refinementList, hits, pagination]);
+        search3.addWidgets([searchBox3, refinementList, hits, pagination]);
+        search4.addWidgets([searchBox4, refinementList, hits, pagination]);
         
         search1.start();     
         search2.start();     

@@ -38,11 +38,9 @@ passport.use(new FacebookStrategy({
         } else {
           // O utilizador não existe, cria um novo utilizador com as informações do Facebook
           const email = profile.emails ? profile.emails[0].value : ''; // Extrai o primeiro email, se disponível
-          const username = profile.displayName || email ; // Utiliza o username, se disponível, caso contrário usa o email ou uma string vazia
           const newUser = new User({
             providerId: profile.id,
             provider: 'facebook',
-            username: username,
             name: profile.name.givenName,
             surname: profile.name.familyName,
             email: email,
@@ -81,11 +79,9 @@ passport.use(new GoogleStrategy({
         } else {
           // O utilizador não existe, cria um novo utilizador com as informações do Google
           const email = profile.emails ? profile.emails[0].value : ''; // Extrai o primeiro email, se disponível
-          const username = profile.displayName || email || ''; // Utiliza o username, se disponível, caso contrário usa o email ou uma string vazia
           const newUser = new User({
             providerId: profile.id,
             provider: 'google',
-            username: username,
             name: profile.name.givenName,
             surname: profile.name.familyName,
             email: email,

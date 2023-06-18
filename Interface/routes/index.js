@@ -142,7 +142,6 @@ const fileProcessing = require('../fileProcessing/fileProcessing.js')
 router.post('/files', upload.single('myFile'), (req, res) => {
   let oldPath = __dirname + '/../' + req.file.path
   let newPath = __dirname + '/../fileProcessing/raw_files/' + req.file.originalname
-
   fs.rename(oldPath, newPath, erro => {
     if (erro){
       console.log(erro)
