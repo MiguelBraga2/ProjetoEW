@@ -37,10 +37,10 @@ block content
                         li 
                             a.nav-item.nav-link(href='/users/login') Iniciar Sessão
                             
-    .container.rounded.bg-white.mt-5.mb-5
+    .container.my-5
         .row
-            .col-md-4.border-right
-                .d-flex.flex-column.align-items-center.text-center.p-3.py-5
+            .col-md-4.m-5.card.shadow
+                .d-flex.flex-column.align-items-center.text-center.p-3.py-5.card-body
                     img.rounded-circle.mt-5(width='150px' src='https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg')
                     span.font-weight-bold= user.name + ' ' + (user.surname || '')
                     span.text-black-50= user.email
@@ -49,8 +49,8 @@ block content
                     a.btn.btn-primary.w-50(href='/users/history/' + user._id) Histórico
                     .mb-3
                     a.btn.btn-primary.w-50(href='/users/favs/' + user._id) Favoritos
-            .col-md-6.border-right
-                .p-3.py-5
+            .col-md-6.m-5.card.shadow
+                .p-3.py-5.card-body
                     .d-flex.justify-content-between.align-items-center.mb-3
                     h4.text-center Configurações do perfil
                     .mb-3
