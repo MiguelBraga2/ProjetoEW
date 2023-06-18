@@ -37,23 +37,21 @@ block content
                         li 
                             a.nav-item.nav-link(href='/users/login') Iniciar Sessão
                             
-    .container.my-5
+    .container
         .row
             .col-md-4.m-5.card.shadow
-                .d-flex.flex-column.align-items-center.text-center.p-3.py-5.card-body
+                .text-center.align-items-center.p-5.card-body
                     img.rounded-circle.mt-5(width='150px' src='https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg')
-                    span.font-weight-bold= user.name + ' ' + (user.surname || '')
-                    span.text-black-50= user.email
-                    span
+                    p= user.name + ' ' + (user.surname || '')
+                    p= user.email
                     .mb-3
-                    a.btn.btn-primary.w-50(href='/users/history/' + user._id) Histórico
+                    a.btn.btn-primary.w-50(href='#history') Histórico
                     .mb-3
-                    a.btn.btn-primary.w-50(href='/users/favs/' + user._id) Favoritos
-            .col-md-6.m-5.card.shadow
-                .p-3.py-5.card-body
-                    .d-flex.justify-content-between.align-items-center.mb-3
-                    h4.text-center Configurações do perfil
-                    .mb-3
+                    a.btn.btn-primary.w-50(href='#favs') Favoritos
+            .col-md-6.m-5.p-5.card.shadow
+                .card-tittle.text-center 
+                    h4 Configurações do perfil
+                .text-start.align-items-center.card-body
                     form(action='/' method='POST')
                         .mb-3
                             label.form-label Primeiro Nome
@@ -84,6 +82,19 @@ block content
                             input.form-control(type='text' disabled value=user.provider name='provider')
                         .mb-3
                         button.btn.btn-primary.profile-button(type='submit') Guardar Alterações
+    .container.py-5#history 
+        h2.text-center Histórico
+        ul.list-group
+            each aid in user.history 
+                li.list-group-item 
+                    a.btn(href="https://localhost:8003/acordaos/" + aid) aid 
+    .container.py-5#favs
+        h2.text-center Favoritos
+        ul.list-group
+            each aid in user.favorites 
+                li.list-group-item 
+                    a.btn(href="https://localhost:8003/acordaos/" + aid) aid 
+                
     // Footer
     footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow
         .container 
