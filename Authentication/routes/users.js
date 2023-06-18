@@ -30,7 +30,9 @@ router.get('/facebook', (req, res) => {
   req.session.returnUrl = returnUrl;
 
   // Redireciona para a autenticação do Facebook
-  passport.authenticate('facebook')(req, res);
+  passport.authenticate('facebook', {
+    scope: ['email']
+  })(req, res);
 });
 
 /**
@@ -79,7 +81,7 @@ router.get('/google', (req, res) => {
   req.session.returnUrl = returnUrl;
 
   // Redireciona para a autenticação do Google
-  passport.authenticate('google', { scope: ['profile']})(req, res);
+  passport.authenticate('google', { scope: ['profile', 'email']})(req, res);
 });
 
 

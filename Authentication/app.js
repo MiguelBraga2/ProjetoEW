@@ -38,7 +38,7 @@ passport.use(new FacebookStrategy({
         } else {
           // O utilizador não existe, cria um novo utilizador com as informações do Facebook
           const email = profile.emails ? profile.emails[0].value : ''; // Extrai o primeiro email, se disponível
-          const username = profile.displayName || email || ''; // Utiliza o username, se disponível, caso contrário usa o email ou uma string vazia
+          const username = profile.displayName || email ; // Utiliza o username, se disponível, caso contrário usa o email ou uma string vazia
           const newUser = new User({
             providerId: profile.id,
             provider: 'facebook',
