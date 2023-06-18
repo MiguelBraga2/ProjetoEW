@@ -2,6 +2,19 @@ extends layout
 
 block content 
     div(style="display:block; content:''; height: 60px;")
+    // Modal
+    #docModal.modal.fade(tabindex='-1', aria-labelledby='exampleModalLabel', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h1#exampleModalLabel.modal-title.fs-5 Insira Documento
+                    button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')
+                form(action='/files' method="POST" enctype="multipart/form-data")
+                    .modal-body
+                        input(type="file" name="myFile")
+                    .modal-footer
+                        button.btn.btn-secondary(type='button', data-bs-dismiss='modal') Fechar
+                        button.btn.btn-primary(value='send' type='submit') Submeter Documento
     // Navbar
     nav.navbar.navbar-expand-lg.navbar-light.bg-light.py-3.shadow.fixed-top
         .container
@@ -13,7 +26,8 @@ block content
             .navbar-collapse.collapse#navmenu
                 ul.navbar-nav.ms-auto
                     li 
-                        a.nav-item.nav-link(href='/novoDocumento') Inserir Documentos
+                        // Button trigger modal 
+                        a.nav-item.nav-link(type='button', data-bs-toggle='modal', data-bs-target='#docModal') Inserir Documento
                     li
                         a.nav-item.nav-link(href='/pesquisas') Pesquisas
                     if user 
