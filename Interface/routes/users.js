@@ -133,7 +133,7 @@ router.post('/:id', verificaToken, (req, res)=>{
 
   axios.put(env.authAcessPoint + '/' + req.params.id + token, req.body)
     .then(response => { 
-      res.redirect('/' + req.params.id);
+      res.redirect('/users/' + req.params.id);
     })
     .catch(err => {
       res.render('error', {error: err, message: err.message});
