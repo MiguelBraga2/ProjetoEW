@@ -13,7 +13,6 @@ let breakUpObject = (object, maxBytes) => {
                 if (currentSize == maxBytes){
                     currentObject._id = id
                     smallerObjects.push(currentObject);
-                    console.log(currentObject)
                     let newObject = {}
                     newObject[key] = ''
   
@@ -67,7 +66,6 @@ module.exports.update = doc => {
     "params":"numericFilters=_id="+doc._id
   })
   .then(response => {
-    console.log(response)
     let smallerObjects = breakUpObject(doc, 9000) // Max size of object is 9000 bytes
 
     return index
@@ -95,7 +93,6 @@ module.exports.remove = id => {
       return response;
     })
     .catch(err => {
-      console.log(err)
       return err
     });
 }

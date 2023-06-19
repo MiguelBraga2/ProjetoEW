@@ -99,7 +99,7 @@ module.exports.getCurrentId = () => {
             return {_id: 0}
           }
           else{
-            return resp[0]+1
+            return {_id: resp[0]._id+1}
           }
         })
         .catch(error => {
@@ -113,22 +113,24 @@ module.exports.getCurrentId = () => {
  * @param {judgment} judgment 
  * @returns the created judgment or an error
  */
-module.exports.addAcordao = judgment => {
+module.exports.addAcordao = (judgment) => {
   return Judgment
             .create(judgment)
-            .then(resp => {    
+            .then(resp => {   
               // Se correu bem, enviar para a base de dados da algolia              
               Algolia.add(judgment)
               .then(response => {
+                console.log(response)
                 return resp
               })
               .catch(error => {
+                //console.log(error)
                 return error
               })
               
-              return resp
             })
             .catch(error => {
+              console.log(error)
               return error
             })
 }

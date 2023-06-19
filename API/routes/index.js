@@ -147,7 +147,9 @@ router.get('/acordaos/:id', (req,res) => {
 
 router.get('/currentId', (req, res) => {
   Judgment.getCurrentId()
-  .then(data => res.status(200).json(data))
+  .then(data => {
+    res.status(200).json(data)
+  })
   .catch(error => res.status(521).json({error: error, message: "Could not obtain the current id"}))
 }) 
 
@@ -156,7 +158,9 @@ router.get('/currentId', (req, res) => {
  */
 router.post('/acordaos', (req,res) => {
   Judgment.addAcordao(req.body)
-    .then(data => res.status(201).json(data))
+    .then(data => {
+      res.status(201).json(data)
+    })
     .catch(error => res.status(522).json({error: error, message: "Could not insert the judgment"}))
 })
 
