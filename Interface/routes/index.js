@@ -155,9 +155,6 @@ router.post('/files', upload.single('myFile'), (req, res) => {
     res.render('error', {error: err, message: err.message});
   })
 
-
-
-  var data = new Date().toISOString().substring(0, 19)
   res.redirect('/')
 })
 
