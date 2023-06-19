@@ -139,23 +139,33 @@ router.get('/acordaos', verificaToken, (req, res) => {
 
 const fileProcessing = require('../fileProcessing/fileProcessing.js')
 
-router.post('/files', upload.single('myFile'), (req, res) => {
-  let oldPath = __dirname + '/../' + req.file.path
-  let newPath = __dirname + '/../fileProcessing/raw_files/' + req.file.originalname
-  fs.rename(oldPath, newPath, erro => {
-    if (erro){
-      console.log(erro)
-    }
-  })
-  axios.get(env.apiAccessPoint + '/currentId')
-  .then(response => {
-    fileProcessing.processFile(req.file.originalname, response.data._id)
-  })
-  .catch(err => {
-    res.render('error', {error: err, message: err.message});
-  })
+router.post('/files', verificaToken, upload.single('myFile'), (req, res) => {
+  jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+    if (err) {
+      res.render('Error', {error : err, message : err.message})
+    } else if (payload.level !== 'admin') {
+      res.render('error', {message : "You don't have permission to insert this file"});
+    } else {
+      let oldPath = __dirname + '/../' + req.file.path
+      let newPath = __dirname + '/../fileProcessing/raw_files/' + req.file.originalname
+      fs.rename(oldPath, newPath, erro => {
+        if (erro){
+          console.log(erro)
+        }
+      })
+      axios.get(env.apiAccessPoint + '/currentId')
+      .then(response => {
+        fileProcessing.processFile(req.file.originalname, response.data._id)
+      })
+      .catch(err => {
+        res.render('error', {error: err, message: err.message});
+      })
 
-  res.redirect('/')
+      res.redirect('/')
+    }
+  });
+  
+  
 })
 
 module.exports = router;

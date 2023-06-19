@@ -96,12 +96,12 @@ router.post('/login', (req, res) => {
 
 /**
  * POST /register 
- * Envia pedido ao serviço de autenticação para fazer o registo de um novo utilizador e gerar token jwt em caso de sucesso
+ * Envia pedido ao serviço de autenticação para fazer o registo de um novo utilizador
  */
 router.post('/register', (req, res)=>{
   axios.post(env.authAcessPoint + '/register', req.body)
     .then(response => {
-      res.redirect('/')
+      res.redirect('/users/login')
     })
     .catch(err => {
       res.render('error', {error: err, message: err.message})
