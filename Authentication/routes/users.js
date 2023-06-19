@@ -156,7 +156,8 @@ router.post('/register', function (req, res) {
     username: req.body.username, name: req.body.name, surname: req.body.surname,
     email: req.body.email, level: req.body.level, 
     active: true, dateCreated: d, dateLastAccess: d,
-    providerId: '', provider: ''
+    providerId: '', provider: '',history: [],
+    favorites: []
   }),
     req.body.password,
     (err, user) => {

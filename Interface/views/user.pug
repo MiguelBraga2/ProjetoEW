@@ -52,7 +52,7 @@ block content
                 .card-tittle.text-center 
                     h4 Configurações do perfil
                 .text-start.align-items-center.card-body
-                    form(action='/users/:id' method='PUT')
+                    form(action='/users/' + user._id method='POST')
                         .mb-3
                             label.form-label Primeiro Nome
                             input.form-control(type='text' value=user.name placeholder='Primeiro Nome' name='name')

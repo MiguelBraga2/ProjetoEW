@@ -34,7 +34,7 @@ module.exports.addUser = u => {
 }
 
 module.exports.updateUser = (id, info) => {
-    return User.updateOne({ _id: id }, info)
+    return User.updateOne({ _id: id }, { $set: info })
         .then(resposta => {
             return resposta
         })

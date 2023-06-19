@@ -47,7 +47,9 @@ passport.use(new FacebookStrategy({
             level: 'consumer',
             active: true,
             dateCreated: new Date().toISOString().substring(0, 19),
-            dateLastAccess: new Date().toISOString().substring(0, 19)
+            dateLastAccess: new Date().toISOString().substring(0, 19),
+            history: [],
+            favorites: []
           });  
 
           User.create(newUser)
@@ -88,7 +90,9 @@ passport.use(new GoogleStrategy({
             level: 'consumer',
             active: true,
             dateCreated: new Date().toISOString().substring(0, 19),
-            dateLastAccess: new Date().toISOString().substring(0, 19)
+            dateLastAccess: new Date().toISOString().substring(0, 19),
+            history: [],
+            favorites: []
           });
 
           User.create(newUser)
