@@ -139,7 +139,7 @@ block content
                 }
                 return text;
             } else {
-                return 'N/D'
+                return 'N/A'
             }
         }
 
@@ -152,9 +152,13 @@ block content
                 },
                 templates: {
                     empty: '<p>Não encontramos nenhum resultado</p> ',
-                    item: (hit, { html, components }) => html`
+                    item: (hit, { html, components }) =>{
+                        if (hit._highlightResult['Sumário']) 
+                            hit._highlightResult['Sumário'].value = truncateText(hit._highlightResult['Sumário'].value, 500);
+                        
+                        return html`
                         <div class="card mb -2"> <div class="card-body">
-                        <h5 class="text-start text-primary">${components.Highlight({ hit, attribute: 'Processo' })}</h1>
+                        <h5 class="text-start text-primary"><a href="/acordaos/${hit._id}">${components.Highlight({ hit, attribute: 'Processo' })}</a></h1>
                         <div class="row pb-2">
                             <div class="col-md-4"> 
                                 <div class="text-start"> <b>Tribunal:</b> ${components.Highlight({ hit, attribute: 'Tribunal' })}</div>
@@ -169,11 +173,12 @@ block content
                         <div class="text-start pb-2"> <b>Área Temática:</b> ${components.Highlight({ hit, attribute: 'Área Temática' })}</div>
                         <div class="text-start pb-2"> <b>Descritores:</b> ${components.Highlight({ hit, attribute: 'Descritores' })}</div>
                         <div class="text-start pb-2">
-                            <b>Sumário:</b> ${truncateText(hit['Sumário'], 500)}
+                            <b>Sumário:</b> ${components.Highlight({ hit, attribute: 'Sumário' })}
                         </div>
                         </div>
                         </div>
                     `
+                    }
                 }
         });
 
