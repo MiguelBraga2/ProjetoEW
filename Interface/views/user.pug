@@ -88,13 +88,13 @@ block content
         ul.list-group
             each aid in user.history 
                 li.list-group-item 
-                    a.btn(href="https://localhost:8003/acordaos/" + aid) aid 
+                    a.btn(href="https://localhost:8003/acordaos/" + aid)= aid 
     .container.py-5#favs
         h2.text-center Favoritos
         ul.list-group
             each aid in user.favorites 
                 li.list-group-item 
-                    a.btn(href="https://localhost:8003/acordaos/" + aid) aid 
+                    a.btn(href="https://localhost:8003/acordaos/" + aid)= aid 
                 
     // Footer
     footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow

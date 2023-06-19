@@ -44,16 +44,33 @@ block content
             h1.py-5 Pesquisas
             .row
                   .col-md-3.py-5 
-                    .d-flex.justify-content-center
-                        #searchbox.mt-2
-                    .d-flex.justify-content-center
-                        #searchboxProcesso.mt-3
-                    .d-flex.justify-content-center
-                        #searchboxRelator.mt-3
-                    .d-flex.justify-content-center
-                        #searchboxDescritores.my-3
-                    .d-flex.justify-content-center
-                        #refinement-list.my-3
+                    .d-flex.justify-content-center.mb-3.mt-2 
+                        #searchbox
+                    .d-flex.justify-content-center.mb-3    
+                        #searchboxProcesso
+                    .d-flex.justify-content-center.mb-3  
+                        #searchboxRelator
+                    .d-flex.justify-content-center.mb-3  
+                        #searchboxDescritores
+                    .accordion.w-100#refAccordion
+                            .accordion-item 
+                                h2.accordion-header#headingOne 
+                                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne") Relator
+                                #collapseOne.accordion-collapse.collapse.show(aria-labelledby='headingOne' data-bs-parent='#refAccordion')
+                                    .accordion-body
+                                        #refinement-list1
+                            .accordion-item 
+                                h2.accordion-header#headingTwo 
+                                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo") Tribunal
+                                #collapseOne.accordion-collapse.collapse.show(aria-labelledby='headingTwo' data-bs-parent='#refAccordion')
+                                    .accordion-body
+                                        #refinement-list2
+                            .accordion-item 
+                                h2.accordion-header#headingThree 
+                                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree") Requerente
+                                #collapseOne.accordion-collapse.collapse.show(aria-labelledby='headingThree' data-bs-parent='#refAccordion')
+                                    .accordion-body
+                                        #refinement-list3
                   .col-md-9.py-5
                     .d-flex.justify-content-center    
                         #hits
@@ -160,6 +177,43 @@ block content
                 }
         });
 
+        const refinementList1 = instantsearch.widgets.refinementList({
+            container: '#refinement-list1',
+            attribute: 'Relator',
+            cssClasses : {
+                root : 'text-start m-0 p-0',
+                list : 'm-0 p-0',
+                item : 'list-group-item',   
+                checkbox : 'form-check-input me-2',
+                label : 'form-check-label',
+                count: 'badge bg-secondary rounded-pill ms-2'
+            }
+        });
+
+        const refinementList2 = instantsearch.widgets.refinementList({
+            container: '#refinement-list2',
+            attribute: 'tribunal',
+            cssClasses : {
+                root : 'text-start',
+                item : 'list-group-item',   
+                checkbox : 'form-check-input me-2',
+                label : 'form-check-label',
+                count: 'badge bg-secondary rounded-pill ms-2'
+            }
+        });
+
+        const refinementList3 = instantsearch.widgets.refinementList({
+            container: '#refinement-list3',
+            attribute: 'Requerente',
+            cssClasses : {
+                root : 'text-start',
+                item : 'list-group-item',   
+                checkbox : 'form-check-input me-2',
+                label : 'form-check-label',
+                count: 'badge bg-secondary rounded-pill ms-2'
+            }
+        });
+
         const pagination = instantsearch.widgets.pagination({
             container: '#pagination',
             cssClasses: {
@@ -179,7 +233,7 @@ block content
                 showSubmit: false,
                 showReset: false,
                 cssClasses: {
-                    root: 'input-group',
+                    root: 'input-group',    
                     input : 'form-control', 
                 }
         });
@@ -223,22 +277,14 @@ block content
                 }
         });
 
-        	
-
-        const refinementList = instantsearch.widgets.refinementList({
-            container: '#refinement-list',
-            attribute: 'Relator',
-        });
-
-        search1.addWidgets([searchBox1, refinementList, hits, pagination]);
-        search2.addWidgets([searchBox2, refinementList, hits, pagination]);
-        search3.addWidgets([searchBox3, refinementList, hits, pagination]);
-        search4.addWidgets([searchBox4, refinementList, hits, pagination]);
+        search1.addWidgets([searchBox1, refinementList1, refinementList2, refinementList3, hits, pagination]);
+        search2.addWidgets([searchBox2, refinementList1, refinementList2, refinementList3, hits, pagination]);
+        search3.addWidgets([searchBox3, refinementList1, refinementList2, refinementList3, hits, pagination]);
+        search4.addWidgets([searchBox4, refinementList1, refinementList2, refinementList3, hits, pagination]);
         
         search1.start();     
         search2.start();     
         search3.start();     
-        console.log(search3)
         search4.start();     
 
 
