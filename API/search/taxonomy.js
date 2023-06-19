@@ -77,13 +77,11 @@ module.exports.getProcessos = (termo, tree) => {
   if (Array.isArray(currentLevel)){
     return currentLevel
   } else{
-    console.log(currentLevel)
     var novosProcessos = acumProcessosRecursivo(currentLevel)
     for(let novoProcesso in novosProcessos){
       processos.push(novosProcessos[novoProcesso])
     }
   }
-  
 
   return processos
 }

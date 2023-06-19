@@ -45,7 +45,9 @@ function paginatedResults(model) {
 
     if (req.query && req.query.descritor) {
       const processosComDescritor = Taxonomy.getProcessos(req.query.descritor, tree);
+      console.log(processosComDescritor)
       queries.push({ $match: { Processo: { $in: processosComDescritor } } });
+      console.log(queries)
     }
 
     if (req.query && req.query.livre) {
