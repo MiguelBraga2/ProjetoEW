@@ -1,5 +1,9 @@
 var Judgment = require('../models/acordao')
 var Algolia = require('./algolia.js')
+const fs = require('fs');
+const JSONStream = require('JSONStream');
+const { Mutex } = require('async-mutex');
+let lock = new Mutex();
 
 /**
  * Retrieve all judgment from the BD
@@ -103,6 +107,7 @@ module.exports.getCurrentId = () => {
           }
         })
         .catch(error => {
+          console.log(error.message)
           return error
         })
 }
@@ -120,11 +125,10 @@ module.exports.addAcordao = (judgment) => {
               // Se correu bem, enviar para a base de dados da algolia              
               Algolia.add(judgment)
               .then(response => {
-                console.log(response)
                 return resp
               })
               .catch(error => {
-                //console.log(error)
+                console.log(error)
                 return error
               })
               
@@ -184,8 +188,6 @@ module.exports.deleteAcordao = id => {
         })
 } 
 
-const fs = require('fs')
-
 var postDocuments = (documents) => {
   return Judgment
   .insertMany(documents)
@@ -193,11 +195,10 @@ var postDocuments = (documents) => {
     // Se correu bem, enviar para a base de dados da algolia              
     Algolia.add(documents)
     .then(response => {
-      //console.log(response)
       return resp
     })
     .catch(error => {
-      //console.log(error)
+      console.log(error)
       return error
     })
     
@@ -313,38 +314,35 @@ let synonyms = {
   'Data da Decisão Singular': 'Data da Decisão Singular',
 }
 
-const JSONStream = require('JSONStream');
-
 exports.processFile = (file_name, current_id) => {
   const inputStream = fs.createReadStream('../Interface/fileProcessing/raw_files/' + file_name, 'utf8');
   const parser = JSONStream.parse('*'); // Parse each JSON object
-  console.log(current_id)
   inputStream.pipe(parser);
   let batch = [];
 
   parser.on('data', async document => {
     processDocument(document);
-    document['_id'] = await current_id++; // Increment the ID
-    await batch.push(document);
-    if (batch.length == 5) {
+    let release = await lock.acquire();
+    document['_id'] = current_id++; // Increment the ID
+    batch.push(document);
+    if (batch.length == 500) {
       postDocuments(batch);
       batch = [];
     }
+    release();
   });
 
-  parser.on('end', () => {
+  parser.on('end', async () => {
     // Send the remaining documents in the batch
+    let release = await lock.acquire();
     if (batch.length > 0) {
       postDocuments(batch);
     }
+    release();
   });
 
   parser.on('error', err => {
     console.error('Error parsing JSON:', err);
-  });
-
-  outputStream.on('error', err => {
-    console.error('Error writing file:', err);
   });
 };
 
@@ -378,7 +376,6 @@ let processDocument = (document) => {
           document[key] = d.toISOString();
         }
         catch(err){
-          console.log(value)
           delete document[key]
         }
       }
