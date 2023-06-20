@@ -151,7 +151,19 @@ router.get('/currentId', (req, res) => {
     res.status(200).json(data)
   })
   .catch(error => res.status(521).json({error: error, message: "Could not obtain the current id"}))
-}) 
+})
+
+router.get('/postFile/:file_name', (req, res) => {
+  Judgment.getCurrentId()
+  .then(data => {
+    Judgment.processFile(req.params.file_name, data._id)
+    .then(data => {
+      res.status(200).json(data)
+    })
+    .catch(error => res.status(521).json({error: error, message: "Could not post the file"}))
+  })
+  .catch(error => res.status(521).json({error: error, message: error}))
+})
 
 /**
  * POST a judgment

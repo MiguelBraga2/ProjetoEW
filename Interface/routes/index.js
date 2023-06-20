@@ -147,9 +147,9 @@ router.post('/files', upload.single('myFile'), (req, res) => {
       console.log(erro)
     }
   })
-  axios.get(env.apiAccessPoint + '/currentId')
+  axios.get(env.apiAccessPoint + '/postFile/' + req.file.originalname)
   .then(response => {
-    fileProcessing.processFile(req.file.originalname, response.data._id)
+    // Confirm page
   })
   .catch(err => {
     res.render('error', {error: err, message: err.message});

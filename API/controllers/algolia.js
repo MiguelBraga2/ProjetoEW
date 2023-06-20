@@ -40,19 +40,30 @@ let breakUpObject = (object, maxBytes) => {
     return smallerObjects
 }
 
-module.exports.add = doc => {
+module.exports.add = documents => {
   const client = algoliasearch('3U240B9PZS', '5d7957d6533b2b65eeca044c5f54c6d8');
   const index = client.initIndex('Acordaos')
-  
+  let smallerObjects = []
   // Só se podem guardar até 10000 carateres
-  let smallerObjects = breakUpObject(doc, 9000) // Max size of object is 9000 bytes
+  for(let i=0; i<documents.length; i++){
+    let breakUpObjects = breakUpObject(documents[i], 7000);
+    for(let j=0; j<breakUpObjects.length; j++){
+      smallerObjects.push(breakUpObjects[j]) // Max size of object is 9000 bytes
+    }
+    
+    //console.log(breakUpObject(documents[i], 9000))
+  }
 
+  //console.log(smallerObjects)
+  
   return index
   .saveObjects(smallerObjects, { autoGenerateObjectIDIfNotExist: true})
   .then(response => {
+    //console.log(response)
     return response
   })
   .catch(err => {
+    console.log(err)
     return err
   });
 }
