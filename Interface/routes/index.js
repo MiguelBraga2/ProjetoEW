@@ -154,22 +154,31 @@ router.get('/acordaos', verificaToken, (req, res) => {
 
 const fileProcessing = require('../fileProcessing/fileProcessing.js')
 
-router.post('/files', upload.single('myFile'), (req, res) => {
-  let oldPath = __dirname + '/../' + req.file.path
-  let newPath = __dirname + '/../fileProcessing/raw_files/' + req.file.originalname
-  fs.rename(oldPath, newPath, erro => {
-    if (erro){
-      console.log(erro)
+router.post('/files', verificaToken, upload.single('myFile'), (req, res) => {
+  jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+    if (err) {
+      res.render('error', {error : err, message : err.message})
+    } else if (payload.level === 'admin'){
+      let oldPath = __dirname + '/../' + req.file.path
+      let newPath = __dirname + '/../fileProcessing/raw_files/' + req.file.originalname
+      fs.rename(oldPath, newPath, erro => {
+        if (erro){
+          console.log(erro)
+        }
+      })
+      axios.get(env.apiAccessPoint + '/postFile/' + req.file.originalname)
+      .then(response => {
+        res.redirect('/')
+      })
+      .catch(err => {
+        res.render('error', {error: err, message: err.message});
+      })
+    
+    } else {
+      res.render('error', {error : {} , message : "Não tem acesso a este conteúdo"});
     }
-  })
-  axios.get(env.apiAccessPoint + '/postFile/' + req.file.originalname)
-  .then(response => {
-    // Confirm page
-  })
-  .catch(err => {
-    res.render('error', {error: err, message: err.message});
-  })
-  res.redirect('/')
+  });
+
 })
 
 
