@@ -88,6 +88,21 @@ router.get('/pesquisas', verificaToken, (req, res)=>{
 })
 
 /**
+ * GET página de criar um acordão 
+ */
+router.get('/acordaos/novo', verificaToken, (req, res) => {
+  jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+    if (err) {
+      res.render('error', {error: err, message: "Não possui acesso a este conteúdo..."});
+    } else if (payload.level === 'producer') {
+      res.render('novoAcordao', {user: payload});
+    } else {
+      res.render('error', {error : {} , message : "Não possui acesso a este conteúdo..."});
+    }
+  });  
+})
+
+/**
  * GET página de um acordão 
  */
 router.get('/acordaos/:id', verificaToken, (req, res) => {
@@ -95,7 +110,7 @@ router.get('/acordaos/:id', verificaToken, (req, res) => {
     .then(response => {
       jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
         if (err) {
-          return res.render('error', {err: err, message: "Error verifying the token."});
+          res.render('error', {error: err, message: "Error verifying the token."});
         } else {
           axios.put(env.authAcessPoint + '/' + payload.id + '/history', {process: req.params.id})
             .then(responseAuth => {
@@ -154,8 +169,8 @@ router.post('/files', upload.single('myFile'), (req, res) => {
   .catch(err => {
     res.render('error', {error: err, message: err.message});
   })
-
   res.redirect('/')
 })
+
 
 module.exports = router;

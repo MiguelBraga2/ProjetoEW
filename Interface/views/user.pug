@@ -25,9 +25,13 @@ block content
 
             .navbar-collapse.collapse#navmenu
                 ul.navbar-nav.ms-auto
-                    li 
-                        // Button trigger modal 
-                        a.nav-item.nav-link(type='button', data-bs-toggle='modal', data-bs-target='#docModal') Inserir Documento
+                    if user && user.level === 'admin' || user.level === 'producer'
+                        li  
+                            a.nav-item.nav-link(href="/acordaos/novo") Criar Acordão
+                    if user && user.level === 'admin'
+                        li 
+                            // Button trigger modal 
+                            a.nav-item.nav-link(type='button', data-bs-toggle='modal', data-bs-target='#docModal') Inserir Documento
                     li
                         a.nav-item.nav-link(href='/pesquisas') Pesquisas
                     if user 
@@ -36,6 +40,8 @@ block content
                     else
                         li 
                             a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+                        li 
+                            a.nav-item.nav-link(href='/users/register') Criar Conta
                             
     .container
         .row
@@ -88,13 +94,13 @@ block content
         ul.list-group
             each aid in user.history 
                 li.list-group-item 
-                    a.btn(href="https://localhost:8003/acordaos/" + aid) aid 
+                    a.btn(href="https://localhost:8003/acordaos/" + aid)= aid 
     .container.py-5#favs
         h2.text-center Favoritos
         ul.list-group
             each aid in user.favorites 
                 li.list-group-item 
-                    a.btn(href="https://localhost:8003/acordaos/" + aid) aid 
+                    a.btn(href="https://localhost:8003/acordaos/" + aid)= aid 
                 
     // Footer
     footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow

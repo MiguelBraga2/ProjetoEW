@@ -27,9 +27,13 @@ block content
 
             .navbar-collapse.collapse#navmenu
                 ul.navbar-nav.ms-auto
-                    li 
-                        // Button trigger modal 
-                        a.nav-item.nav-link(type='button', data-bs-toggle='modal', data-bs-target='#docModal') Inserir Documento
+                    if user && user.level === 'admin' || user.level === 'producer'
+                        li  
+                            a.nav-item.nav-link(href="/acordaos/novo") Criar Acordão
+                    if user && user.level === 'admin'
+                        li 
+                            // Button trigger modal 
+                            a.nav-item.nav-link(type='button', data-bs-toggle='modal', data-bs-target='#docModal') Inserir Documento
                     li
                         a.nav-item.nav-link(href='/pesquisas') Pesquisas
                     if user 
@@ -38,6 +42,8 @@ block content
                     else
                         li 
                             a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+                        li 
+                            a.nav-item.nav-link(href='/users/register') Criar Conta
     // Acordãos
     section.py-5.text-center
         .container

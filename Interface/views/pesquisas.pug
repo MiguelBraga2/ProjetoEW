@@ -27,9 +27,13 @@ block content
 
             .navbar-collapse.collapse#navmenu
                 ul.navbar-nav.ms-auto
-                    li 
-                        // Button trigger modal 
-                        a.nav-item.nav-link(type='button', data-bs-toggle='modal', data-bs-target='#docModal') Inserir Documento
+                    if user && user.level === 'admin' || user.level === 'producer'
+                        li  
+                            a.nav-item.nav-link(href="/acordaos/novo") Criar Acordão
+                    if user && user.level === 'admin'
+                        li 
+                            // Button trigger modal 
+                            a.nav-item.nav-link(type='button', data-bs-toggle='modal', data-bs-target='#docModal') Inserir Documento
                     li
                         a.nav-item.nav-link(href='/pesquisas') Pesquisas
                     if user 
@@ -38,22 +42,41 @@ block content
                     else
                         li 
                             a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+                        li 
+                            a.nav-item.nav-link(href='/users/register') Criar Conta
     // Acordãos
     section.py-5.text-center
         .container
             h1.py-5 Pesquisas
             .row
                   .col-md-3.py-5 
-                    .d-flex.justify-content-center
-                        #searchbox.mt-2
-                    .d-flex.justify-content-center
-                        #searchboxProcesso.mt-3
-                    .d-flex.justify-content-center
-                        #searchboxRelator.mt-3
-                    .d-flex.justify-content-center
-                        #searchboxDescritores.my-3
-                    .d-flex.justify-content-center
-                        #refinement-list.my-3
+                    .d-flex.justify-content-center.mb-3.mt-2 
+                        #searchbox
+                    .d-flex.justify-content-center.mb-3    
+                        #searchboxProcesso
+                    .d-flex.justify-content-center.mb-3  
+                        #searchboxRelator
+                    .d-flex.justify-content-center.mb-3  
+                        #searchboxDescritores
+                    .accordion.w-100#refAccordion
+                            .accordion-item 
+                                h2.accordion-header#headingOne 
+                                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne") Relator
+                                #collapseOne.accordion-collapse.collapse.show(aria-labelledby='headingOne' data-bs-parent='#refAccordion')
+                                    .accordion-body
+                                        #refinement-list1
+                            .accordion-item 
+                                h2.accordion-header#headingTwo 
+                                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo") Tribunal
+                                #collapseOne.accordion-collapse.collapse.show(aria-labelledby='headingTwo' data-bs-parent='#refAccordion')
+                                    .accordion-body
+                                        #refinement-list2
+                            .accordion-item 
+                                h2.accordion-header#headingThree 
+                                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree") Requerente
+                                #collapseOne.accordion-collapse.collapse.show(aria-labelledby='headingThree' data-bs-parent='#refAccordion')
+                                    .accordion-body
+                                        #refinement-list3
                   .col-md-9.py-5
                     .d-flex.justify-content-center    
                         #hits
@@ -122,7 +145,7 @@ block content
                 }
                 return text;
             } else {
-                return 'N/D'
+                return 'N/A'
             }
         }
 
@@ -135,9 +158,13 @@ block content
                 },
                 templates: {
                     empty: '<p>Não encontramos nenhum resultado</p> ',
-                    item: (hit, { html, components }) => html`
+                    item: (hit, { html, components }) =>{
+                        if (hit._highlightResult['Sumário']) 
+                            hit._highlightResult['Sumário'].value = truncateText(hit._highlightResult['Sumário'].value, 500);
+                        
+                        return html`
                         <div class="card mb -2"> <div class="card-body">
-                        <h5 class="text-start text-primary">${components.Highlight({ hit, attribute: 'Processo' })}</h1>
+                        <h5 class="text-start text-primary"><a href="/acordaos/${hit._id}">${components.Highlight({ hit, attribute: 'Processo' })}</a></h1>
                         <div class="row pb-2">
                             <div class="col-md-4"> 
                                 <div class="text-start"> <b>Tribunal:</b> ${components.Highlight({ hit, attribute: 'Tribunal' })}</div>
@@ -152,12 +179,50 @@ block content
                         <div class="text-start pb-2"> <b>Área Temática:</b> ${components.Highlight({ hit, attribute: 'Área Temática' })}</div>
                         <div class="text-start pb-2"> <b>Descritores:</b> ${components.Highlight({ hit, attribute: 'Descritores' })}</div>
                         <div class="text-start pb-2">
-                            <b>Sumário:</b> ${truncateText(hit['Sumário'], 500)}
+                            <b>Sumário:</b> ${components.Highlight({ hit, attribute: 'Sumário' })}
                         </div>
                         </div>
                         </div>
                     `
+                    }
                 }
+        });
+
+        const refinementList1 = instantsearch.widgets.refinementList({
+            container: '#refinement-list1',
+            attribute: 'Relator',
+            cssClasses : {
+                root : 'text-start m-0 p-0',
+                list : 'm-0 p-0',
+                item : 'list-group-item',   
+                checkbox : 'form-check-input me-2',
+                label : 'form-check-label',
+                count: 'badge bg-secondary rounded-pill ms-2'
+            }
+        });
+
+        const refinementList2 = instantsearch.widgets.refinementList({
+            container: '#refinement-list2',
+            attribute: 'tribunal',
+            cssClasses : {
+                root : 'text-start',
+                item : 'list-group-item',   
+                checkbox : 'form-check-input me-2',
+                label : 'form-check-label',
+                count: 'badge bg-secondary rounded-pill ms-2'
+            }
+        });
+
+        const refinementList3 = instantsearch.widgets.refinementList({
+            container: '#refinement-list3',
+            attribute: 'Requerente',
+            cssClasses : {
+                root : 'text-start',
+                item : 'list-group-item',   
+                checkbox : 'form-check-input me-2',
+                label : 'form-check-label',
+                count: 'badge bg-secondary rounded-pill ms-2'
+            }
         });
 
         const pagination = instantsearch.widgets.pagination({
@@ -179,7 +244,7 @@ block content
                 showSubmit: false,
                 showReset: false,
                 cssClasses: {
-                    root: 'input-group',
+                    root: 'input-group',    
                     input : 'form-control', 
                 }
         });
@@ -223,22 +288,14 @@ block content
                 }
         });
 
-        	
-
-        const refinementList = instantsearch.widgets.refinementList({
-            container: '#refinement-list',
-            attribute: 'Relator',
-        });
-
-        search1.addWidgets([searchBox1, refinementList, hits, pagination]);
-        search2.addWidgets([searchBox2, refinementList, hits, pagination]);
-        search3.addWidgets([searchBox3, refinementList, hits, pagination]);
-        search4.addWidgets([searchBox4, refinementList, hits, pagination]);
+        search1.addWidgets([searchBox1, refinementList1, refinementList2, refinementList3, hits, pagination]);
+        search2.addWidgets([searchBox2, refinementList1, refinementList2, refinementList3, hits, pagination]);
+        search3.addWidgets([searchBox3, refinementList1, refinementList2, refinementList3, hits, pagination]);
+        search4.addWidgets([searchBox4, refinementList1, refinementList2, refinementList3, hits, pagination]);
         
         search1.start();     
         search2.start();     
         search3.start();     
-        console.log(search3)
         search4.start();     
 
 

@@ -1,7 +1,9 @@
 extends layout
 
 block content
-    div(style="display:block; content:''; height: 60px;")
+    script. 
+        var url = '#{url}';
+    div(style="display:block; content:''; height: 60px;")#topo
     // Modal
     #docModal.modal.fade(tabindex='-1', aria-labelledby='exampleModalLabel', aria-hidden='true')
         .modal-dialog
@@ -42,14 +44,13 @@ block content
                             a.nav-item.nav-link(href='/users/login') Iniciar Sessão
                         li 
                             a.nav-item.nav-link(href='/users/register') Criar Conta
-    // Lista de tribunais
-    .container.py-5
-        h2.py-5.text-center Tribunais
-        .list-group 
-            each value, key  in tribunais
-                a.list-group-item.list-group-item-action(href='/acordaos?tribunal=' + key)= value
-    // Footer
-    footer.p-3.text-center.mt-auto.position-relative.bg-light.shadow
+    section.py-5 
+        .container 
+            h1.text-center Novo acordão 
+
+    script(type="text/javascript" src="/public/js/myScript.js")
+    // Footer              
+    footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow
         .container 
             p.lead Copyright &copy; 2023 EngWeb, Acordãos
             a.position-absolute.bottom-0.end-0.p-3(href="#")

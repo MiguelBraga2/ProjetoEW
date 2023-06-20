@@ -26,9 +26,13 @@ block content
 
             .navbar-collapse.collapse#navmenu
                 ul.navbar-nav.ms-auto
-                    li 
-                        // Button trigger modal 
-                        a.nav-item.nav-link(type='button', data-bs-toggle='modal', data-bs-target='#docModal') Inserir Documento
+                    if user && user.level === 'admin' || user.level === 'producer'
+                        li  
+                            a.nav-item.nav-link(href="/acordaos/novo") Criar Acordão
+                    if user && user.level === 'admin'
+                        li 
+                            // Button trigger modal 
+                            a.nav-item.nav-link(type='button', data-bs-toggle='modal', data-bs-target='#docModal') Inserir Documento
                     li
                         a.nav-item.nav-link(href='/pesquisas') Pesquisas
                     if user 
@@ -37,6 +41,8 @@ block content
                     else
                         li 
                             a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+                        li 
+                            a.nav-item.nav-link(href='/users/register') Criar Conta
     section.py-5.text-center
         .container
             h1.py-5 Acordão
@@ -68,8 +74,11 @@ block content
                         p #[b Nível de acesso:] #{processo['Nível de acesso']}
                         p #[b Meio Processual:] #{processo['Meio Processual']}
                         p #[b Decisão:] #{processo['Decisão']}
-                        p #[b Indicações eventuais:] #{processo['Indicações eventuais']}         
-                        each val in Object.entries(processo).filter(([key]) => !['_id', 'Relator', 'Descritores', 'Processo', 'Nº Convencional', 'Data do Acordão', 'Votação', 'Texto Integral', 'Nível de acesso', 'Meio Processual', 'Decisão', 'Indicações eventuais', 'Sumário', 'Decisão Texto Parcial', 'Decisão Texto Integral' ].includes(key))  
+                        p #[b Indicações eventuais:] #{processo['Indicações eventuais']}  
+                        p #[b Url:] 
+                            a(href='http://www.dgsi.pt' + processo['url']) #{processo['url']}  
+                               
+                        each val in Object.entries(processo).filter(([key]) => !['url', '_id', 'Relator', 'Descritores', 'Processo', 'Nº Convencional', 'Data do Acordão', 'Votação', 'Texto Integral', 'Nível de acesso', 'Meio Processual', 'Decisão', 'Indicações eventuais', 'Sumário', 'Decisão Texto Parcial', 'Decisão Texto Integral' ].includes(key))  
                                 p #[b #{val[0]}:]  #{val[1]}
 
                     section.text-start#sumario.mt-2 

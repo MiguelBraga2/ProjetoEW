@@ -34,7 +34,7 @@ function solicitation(str, page, limit) {
                 <h5 class="text-start text-primary"><a href="/acordaos/${result._id}">${result.Processo || 'N/A'}</a></h1>
                 <div class="row pb-2">
                     <div class="col-md-4"> 
-                        <div class="text-start"> <b>Tribunal:</b> ${result.Tribunal || 'N/A'}</div>
+                        <div class="text-start"> <b>Tribunal:</b> ${result.tribunal || 'N/A'}</div>
                     </div>
                     <div class="col-md-4"> 
                         <div class="text-start"> <b>Relator:</b> ${result.Relator || 'N/A'}</div>
