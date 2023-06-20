@@ -25,7 +25,7 @@ block content
 
             .navbar-collapse.collapse#navmenu
                 ul.navbar-nav.ms-auto
-                    if user && user.level === 'admin' || user.level === 'producer'
+                    if user && (user.level === 'admin' || user.level === 'producer')
                         li  
                             a.nav-item.nav-link(href="/acordaos/novo") Criar Acordão
                     if user && user.level === 'admin'
