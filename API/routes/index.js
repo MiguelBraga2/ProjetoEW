@@ -45,8 +45,10 @@ function paginatedResults(model) {
 
     if (req.query && req.query.descritor) {
       const processosComDescritor = Taxonomy.getProcessos(req.query.descritor, tree);
+
       console.log(processosComDescritor)
-      queries.push({ $match: { Processo: { $in: processosComDescritor } } });
+
+      queries.push({ $match: { _id: { $in: processosComDescritor } } });
       console.log(queries)
     }
 
@@ -103,6 +105,7 @@ router.get('/acordaos', paginatedResults(Acordao), function(req, res) {
  */
 router.get('/acordaos/search/full-text/:termo/params', (req,res) => {
   var termo = req.params.termo
+  console.log(termo)
   var processos = []
   var finalObject = {}
   for(key in req.query){

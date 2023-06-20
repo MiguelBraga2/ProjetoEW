@@ -320,28 +320,27 @@ exports.processFile = (file_name, current_id) => {
   const parser = JSONStream.parse('*'); // Parse each JSON object
   console.log(current_id)
   inputStream.pipe(parser);
-  let documentCount = 0;
   let batch = [];
 
-  parser.on('data', document => {
+  parser.on('data', async document => {
     processDocument(document);
-    document['_id'] = current_id++; // Increment the ID
-    batch.push(document);
+    document['_id'] = await current_id++; // Increment the ID
+    await batch.push(document);
     if (batch.length == 5) {
       postDocuments(batch);
       batch = [];
-      documentCount = 0;
     }
-    documentCount++;
+  });
+
+  parser.on('end', () => {
+    // Send the remaining documents in the batch
+    if (batch.length > 0) {
+      postDocuments(batch);
+    }
   });
 
   parser.on('error', err => {
     console.error('Error parsing JSON:', err);
-  });
-
-  parser.on('finish', () => {
-    console.log(batch)
-    postDocuments(batch);
   });
 
   outputStream.on('error', err => {
@@ -371,6 +370,17 @@ let processDocument = (document) => {
       }
       if (value == ""){ // Remover os valores nulos
         delete document[key]
+        continue;
+      }
+      if (key.startsWith('Data')){
+        const d = new Date(value)
+        try{
+          document[key] = d.toISOString();
+        }
+        catch(err){
+          console.log(value)
+          delete document[key]
+        }
       }
       // Parsing de cada descritor (Separar por ;)
       if (key === 'Descritores'){
