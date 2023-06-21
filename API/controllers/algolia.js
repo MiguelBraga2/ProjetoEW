@@ -1,44 +1,41 @@
 const algoliasearch = require('algoliasearch');
 
-let breakUpObject = (object, maxBytes) => {
-    const smallerObjects = [];
-    let id = object['_id']
-    let currentSize = 0;
-    let currentObject = {};
-    for (let key in object) {
-      if (object.hasOwnProperty(key)) {
-        if (typeof object[key] === 'string'){
-            const propertySize = object[key].length;
-            for(let i=0; i<propertySize; i++){
-                if (currentSize == maxBytes){
-                    currentObject._id = id
-                    smallerObjects.push(currentObject);
-                    let newObject = {}
-                    newObject[key] = ''
-  
-                    currentObject = newObject
-                    currentSize = 0;
-                }
-                else{
-                    if (!currentObject.hasOwnProperty(key)){
-                        currentObject[key] = ''
-                    }  
-                    currentObject[key] += object[key][i]
-                    currentSize++;
-                }
-                
-            }
-        } else {
-            currentObject[key] = object[key]
+let breakUpObject = (object, maxSize) => {
+  const smallerObjects = [];
+  let id = object['_id'];
+  let currentSize = 0;
+  let currentObject = {};
+
+  for (let key in object) {
+    if (typeof object[key] === 'string') {
+      let fieldValue = object[key];
+      let fieldSize = fieldValue.length;
+
+      for (let i = 0; i < fieldSize; ) {
+        let chunkSize = Math.min(maxSize - currentSize, fieldSize - i);
+        let chunk = fieldValue.slice(i, i + chunkSize);
+
+        currentObject[key] = chunk;
+        currentSize += chunkSize;
+        i += chunkSize;
+
+        if (currentSize === maxSize) {
+          currentObject['_id'] = id;
+          smallerObjects.push(currentObject);
+          currentSize = 0;
+          currentObject = {};
         }
       }
-        
     }
-  
+  }
+
+  if (Object.keys(currentObject).length !== 0) {
+    currentObject['_id'] = id;
     smallerObjects.push(currentObject);
-    currentObject['_id'] = id
-    return smallerObjects
-}
+  }
+
+  return smallerObjects;
+};
 
 module.exports.add = documents => {
   const client = algoliasearch('3U240B9PZS', '5d7957d6533b2b65eeca044c5f54c6d8');

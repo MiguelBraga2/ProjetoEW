@@ -171,7 +171,7 @@ router.post('/files', verificaToken, upload.single('myFile'), (req, res) => {
         res.redirect('/')
       })
       .catch(err => {
-        res.render('error', {error: err, message: err.message});
+        res.status(500).render('error', {error: err, message: err.message});
       })
     
     } else {

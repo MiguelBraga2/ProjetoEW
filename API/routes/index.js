@@ -45,7 +45,11 @@ function paginatedResults(model) {
 
     if (req.query && req.query.descritor) {
       const processosComDescritor = Taxonomy.getProcessos(req.query.descritor, tree);
+
+      console.log(processosComDescritor)
+
       queries.push({ $match: { _id: { $in: processosComDescritor } } });
+      console.log(queries)
     }
 
     if (req.query && req.query.livre) {
@@ -101,6 +105,7 @@ router.get('/acordaos', paginatedResults(Acordao), function(req, res) {
  */
 router.get('/acordaos/search/full-text/:termo/params', (req,res) => {
   var termo = req.params.termo
+  console.log(termo)
   var processos = []
   var finalObject = {}
   for(key in req.query){
@@ -150,19 +155,19 @@ router.get('/currentId', (req, res) => {
   .then(data => {
     res.status(200).json(data)
   })
-  .catch(error => res.status(521).json({error: error, message: "Could not obtain the current id"}))
+  .catch(error => res.status(522).json({error: error, message: "Could not obtain the current id"}))
 })
 
 router.get('/postFile/:file_name', (req, res) => {
   Judgment.getCurrentId()
   .then(data => {
-    Judgment.processFile(req.params.file_name, data._id)
-    .then(data => {
-      res.status(200).json(data)
-    })
-    .catch(error => res.status(521).json({error: error, message: "Could not post the file"}))
+    Judgment.processFile(req.params.file_name, data._id);
+    res.status(200).json(data);
   })
-  .catch(error => res.status(521).json({error: error, message: error}))
+  .catch(error => {
+    console.log(error.message)
+    res.status(524).json({error: error, message: error.message})
+  })
 })
 
 /**
@@ -173,7 +178,7 @@ router.post('/acordaos', (req,res) => {
     .then(data => {
       res.status(201).json(data)
     })
-    .catch(error => res.status(522).json({error: error, message: "Could not insert the judgment"}))
+    .catch(error => res.status(526).json({error: error, message: "Could not insert the judgment"}))
 })
 
 /**
@@ -182,7 +187,7 @@ router.post('/acordaos', (req,res) => {
 router.put('/acordaos/:id', (req,res) => {
   Judgment.updateAcordao(req.body)
     .then(data => res.status(200).json(data))
-    .catch(error => res.status(523).json({error: error, message: "Could not update the judgment"}))
+    .catch(error => res.status(527).json({error: error, message: "Could not update the judgment"}))
 })
 
 /**
@@ -191,7 +196,7 @@ router.put('/acordaos/:id', (req,res) => {
 router.delete('/acordaos/:id', (req,res) => {
   Judgment.deleteAcordao(req.params.id)
     .then(data => res.status(200).json(data))
-    .catch(error => res.status(524).json({error: error, message: "Could not delete the judgment"}))
+    .catch(error => res.status(528).json({error: error, message: "Could not delete the judgment"}))
 })
 
 module.exports = router;

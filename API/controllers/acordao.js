@@ -1,5 +1,9 @@
 var Judgment = require('../models/acordao')
 var Algolia = require('./algolia.js')
+const fs = require('fs');
+const JSONStream = require('JSONStream');
+const { Mutex } = require('async-mutex');
+let lock = new Mutex();
 
 /**
  * Retrieve all judgment from the BD
@@ -103,6 +107,7 @@ module.exports.getCurrentId = () => {
           }
         })
         .catch(error => {
+          console.log(error.message)
           return error
         })
 }
@@ -120,11 +125,10 @@ module.exports.addAcordao = (judgment) => {
               // Se correu bem, enviar para a base de dados da algolia              
               Algolia.add(judgment)
               .then(response => {
-                console.log(response)
                 return resp
               })
               .catch(error => {
-                //console.log(error)
+                console.log(error)
                 return error
               })
               
@@ -184,8 +188,6 @@ module.exports.deleteAcordao = id => {
         })
 } 
 
-const fs = require('fs')
-
 var postDocuments = (documents) => {
   return Judgment
   .insertMany(documents)
@@ -193,11 +195,10 @@ var postDocuments = (documents) => {
     // Se correu bem, enviar para a base de dados da algolia              
     Algolia.add(documents)
     .then(response => {
-      //console.log(response)
       return resp
     })
     .catch(error => {
-      //console.log(error)
+      console.log(error)
       return error
     })
     
@@ -313,39 +314,35 @@ let synonyms = {
   'Data da Decisão Singular': 'Data da Decisão Singular',
 }
 
-const JSONStream = require('JSONStream');
-
 exports.processFile = (file_name, current_id) => {
   const inputStream = fs.createReadStream('../Interface/fileProcessing/raw_files/' + file_name, 'utf8');
   const parser = JSONStream.parse('*'); // Parse each JSON object
-  console.log(current_id)
   inputStream.pipe(parser);
-  let documentCount = 0;
   let batch = [];
 
-  parser.on('data', document => {
+  parser.on('data', async document => {
     processDocument(document);
+    let release = await lock.acquire();
     document['_id'] = current_id++; // Increment the ID
     batch.push(document);
-    if (batch.length == 5) {
+    if (batch.length == 500) {
       postDocuments(batch);
       batch = [];
-      documentCount = 0;
     }
-    documentCount++;
+    release();
+  });
+
+  parser.on('end', async () => {
+    // Send the remaining documents in the batch
+    let release = await lock.acquire();
+    if (batch.length > 0) {
+      postDocuments(batch);
+    }
+    release();
   });
 
   parser.on('error', err => {
     console.error('Error parsing JSON:', err);
-  });
-
-  parser.on('finish', () => {
-    console.log(batch)
-    postDocuments(batch);
-  });
-
-  outputStream.on('error', err => {
-    console.error('Error writing file:', err);
   });
 };
 
@@ -371,6 +368,16 @@ let processDocument = (document) => {
       }
       if (value == ""){ // Remover os valores nulos
         delete document[key]
+        continue;
+      }
+      if (key.startsWith('Data')){
+        const d = new Date(value)
+        try{
+          document[key] = d.toISOString();
+        }
+        catch(err){
+          delete document[key]
+        }
       }
       // Parsing de cada descritor (Separar por ;)
       if (key === 'Descritores'){

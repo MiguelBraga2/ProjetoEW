@@ -8,3 +8,4 @@ Interface/node_modules
 Interface/fileProcessing/processed_files/*
 Interface/fileProcessing/raw_files/*
 Interface/uploads
+.vscode
