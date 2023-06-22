@@ -15,7 +15,15 @@ var usersRouter = require('./routes/users');
 require('dotenv').config();
 
 // DB config
-mongoose.connect('mongodb://127.0.0.1/ProjetoEW', { useNewUrlParser: true, useUnifiedTopology: true, serverSelectionTimeoutMS: 5000 });
+
+if (process.env.MONGODB_URL){
+  var mongoDB = process.env.MONGODB_URL;
+}
+else{
+  var mongoDB = 'mongodb://localhost:27017/ProjetoEW';
+}
+
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true, serverSelectionTimeoutMS: 5000 });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error.'));
 db.once('open', function () { console.log("Connection to MongoDB successful") });

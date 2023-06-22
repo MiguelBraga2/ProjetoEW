@@ -5,7 +5,13 @@ var logger = require('morgan');
 
 // Conexão à BD
 var mongoose = require('mongoose');
-var mongoDB = 'mongodb://127.0.0.1/ProjetoEW';
+if (process.env.MONGODB_URL){
+  var mongoDB = process.env.MONGODB_URL;
+}
+else{
+  var mongoDB = 'mongodb://localhost:27017/ProjetoEW';
+}
+
 mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error...'));

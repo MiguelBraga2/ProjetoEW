@@ -120,7 +120,6 @@ module.exports.addAcordao = (judgment) => {
               // Se correu bem, enviar para a base de dados da algolia              
               Algolia.add(judgment)
               .then(response => {
-                console.log(response)
                 return resp
               })
               .catch(error => {
@@ -130,7 +129,6 @@ module.exports.addAcordao = (judgment) => {
               
             })
             .catch(error => {
-              console.log(error)
               return error
             })
 }
@@ -141,10 +139,11 @@ module.exports.addAcordao = (judgment) => {
  * @param {judgment} judgment 
  * @returns the updated judgment(Verificar) or an error
  */
-module.exports.updateAcordao = judgment => {
+module.exports.updateAcordao = (judgment, id) => {
   return Judgment
-                 .updateOne({_id: judgment._id}, judgment)
+                 .updateOne({_id: id}, judgment)
                  .then(resp => {
+                  judgment._id = id
                    Algolia.update(judgment)
                     .then(response => {
                       return resp
@@ -187,26 +186,22 @@ module.exports.deleteAcordao = id => {
 const fs = require('fs')
 
 var postDocuments = (documents) => {
-  return Judgment
-  .insertMany(documents)
-  .then(resp => {   
-    // Se correu bem, enviar para a base de dados da algolia              
-    Algolia.add(documents)
-    .then(response => {
-      //console.log(response)
-      return resp
+  return Judgment.insertMany(documents)
+    .then(resp => {
+      return Algolia.add(documents)
+        .then(response => {
+          return resp;
+        })
+        .catch(error => {
+          console.log(error);
+          throw error;
+        });
     })
     .catch(error => {
-      //console.log(error)
-      return error
-    })
-    
-  })
-  .catch(error => {
-    console.log(error)
-    return error
-  })
-}
+      console.log(error);
+      throw error;
+    });
+};
 
 let synonyms = {
   'Processo': 'Processo',
@@ -313,39 +308,36 @@ let synonyms = {
   'Data da Decisão Singular': 'Data da Decisão Singular',
 }
 
-const JSONStream = require('JSONStream');
-
 exports.processFile = (file_name, current_id) => {
-  const inputStream = fs.createReadStream('../Interface/fileProcessing/raw_files/' + file_name, 'utf8');
-  const parser = JSONStream.parse('*'); // Parse each JSON object
-  console.log(current_id)
-  inputStream.pipe(parser);
-  let batch = [];
+  const StreamArray = require('stream-json/streamers/StreamArray');
+  const stream = fs.createReadStream('../Interface/fileProcessing/raw_files/' + file_name).pipe(StreamArray.withParser());
+  let chunks = [];
 
-  parser.on('data', async document => {
-    processDocument(document);
-    document['_id'] = await current_id++; // Increment the ID
-    await batch.push(document);
-    if (batch.length == 5) {
-      postDocuments(batch);
-      batch = [];
-    }
-  });
-
-  parser.on('end', () => {
-    // Send the remaining documents in the batch
-    if (batch.length > 0) {
-      postDocuments(batch);
-    }
-  });
-
-  parser.on('error', err => {
-    console.error('Error parsing JSON:', err);
-  });
-
-  outputStream.on('error', err => {
-    console.error('Error writing file:', err);
-  });
+  stream
+    .on('data', ({ value }) => {
+      processDocument(value)
+      value._id = current_id;
+      current_id++;
+      chunks.push(value);
+      if (chunks.length === 10000) {
+        stream.pause();
+        postDocuments(chunks)
+          .then(() => {
+            chunks = [];
+            stream.resume();
+          })
+          .catch(error => {
+            console.log(error);
+            stream.resume();
+          });
+      }
+    })
+    .on('end', () => {
+      if (chunks.length) {
+        postDocuments(chunks)
+          .catch(error => console.log(error));
+      }
+    });
 };
 
 
@@ -378,7 +370,6 @@ let processDocument = (document) => {
           document[key] = d.toISOString();
         }
         catch(err){
-          console.log(value)
           delete document[key]
         }
       }

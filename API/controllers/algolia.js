@@ -39,31 +39,25 @@ let breakUpObject = (object, maxSize) => {
 
 module.exports.add = documents => {
   const client = algoliasearch('3U240B9PZS', '5d7957d6533b2b65eeca044c5f54c6d8');
-  const index = client.initIndex('Acordaos')
-  let smallerObjects = []
-  // Só se podem guardar até 10000 carateres
-  for(let i=0; i<documents.length; i++){
+  const index = client.initIndex('Acordaos');
+  let smallerObjects = [];
+
+  for (let i = 0; i < documents.length; i++) {
     let breakUpObjects = breakUpObject(documents[i], 7000);
-    for(let j=0; j<breakUpObjects.length; j++){
-      smallerObjects.push(breakUpObjects[j]) // Max size of object is 9000 bytes
+    for (let j = 0; j < breakUpObjects.length; j++) {
+      smallerObjects.push(breakUpObjects[j]);
     }
-    
-    //console.log(breakUpObject(documents[i], 9000))
   }
 
-  //console.log(smallerObjects)
-  
-  return index
-  .saveObjects(smallerObjects, { autoGenerateObjectIDIfNotExist: true})
-  .then(response => {
-    //console.log(response)
-    return response
-  })
-  .catch(err => {
-    console.log(err)
-    return err
-  });
-}
+  return index.saveObjects(smallerObjects, { autoGenerateObjectIDIfNotExist: true })
+    .then(response => {
+      return response;
+    })
+    .catch(err => {
+      console.log(err);
+      throw err;
+    });
+};
 
 module.exports.update = doc => {
   const client = algoliasearch('3U240B9PZS', '5d7957d6533b2b65eeca044c5f54c6d8');
@@ -74,6 +68,7 @@ module.exports.update = doc => {
     "params":"numericFilters=_id="+doc._id
   })
   .then(response => {
+    console.log(response)
     let smallerObjects = breakUpObject(doc, 9000) // Max size of object is 9000 bytes
 
     return index
@@ -82,10 +77,12 @@ module.exports.update = doc => {
       return response
     })
     .catch(err => {
+      console.log(err)
       return err
     });
   })
   .catch(err => {
+    console.log(err)
     return err
   });
 }
