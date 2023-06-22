@@ -106,6 +106,7 @@ router.get('/acordaos/novo', verificaToken, (req, res) => {
  * GET página de um acordão 
  */
 router.get('/acordaos/:id', verificaToken, (req, res) => {
+  const token = '?token=' + req.cookies.token;
   axios.get(env.apiAccessPoint + '/acordaos/' + req.params.id)
     .then(response => {
       jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
@@ -114,7 +115,14 @@ router.get('/acordaos/:id', verificaToken, (req, res) => {
         } else {
           axios.put(env.authAcessPoint + '/' + payload.id + '/history', {process: req.params.id})
             .then(responseAuth => {
-              res.render('processo', {processo: response.data[0], user: payload });
+              axios.get(env.authAcessPoint + '/' + payload.id + '/favorites' + token)
+              .then(response2 => {
+                console.log(response2.data.dados.favorites)
+                res.render('processo', {processo: response.data[0], user: payload, favoritos: response2.data.dados.favorites});
+              })
+              .catch(err => {
+                res.render('error', {error: err, message: "Erro a receber os favoritos."});
+              })
             })
             .catch(err => {
               res.render('error', {error: err, message: err.message});
@@ -179,6 +187,18 @@ router.post('/files', verificaToken, upload.single('myFile'), (req, res) => {
     }
   });
 
+})
+
+router.post('/description/:user_id/:acordao_id', verificaToken, (req, res) => {
+  req.body.id = req.params.acordao_id
+  axios.put(env.authAcessPoint + '/' + req.params.user_id + '/favorites', req.body)
+  .then(resp => {
+    res.redirect('/acordaos/'+req.params.acordao_id)
+  })
+  .catch(error => {
+    res.render('error', {error : {} , message : "Erro a atualizar os favoritos"});
+  })
+  
 })
 
 

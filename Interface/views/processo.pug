@@ -1,6 +1,11 @@
 extends layout
 
 block content
+    script(src='https://unpkg.com/axios/dist/axios.min.js')
+    script. 
+        const user = !{JSON.stringify(user)}
+        const favoritos = !{JSON.stringify(favoritos)};
+        const acordaoId = !{processo._id}
     div(style="display:block; content:''; height: 60px;")#topo
     // Navbar
     // Modal
@@ -46,8 +51,12 @@ block content
     section.py-5.text-center
         .container
             h1.py-5 Acordão
-                button.btn 
-                    i.fa-regular.fa-star.fa-lg#fav-icon(style="color: #f0dd0a")
+                button.btn#fav-button
+                    i#fav-icon(style="color: #e8e117")
+                .description
+                    form(action='/description/'+user.id+'/'+processo._id method="POST")
+                        input.description-input#description(name="description" type="text" placeholder="Adicione uma descrição")
+                        button.add-description-button(value='send' type='submit') Adicionar Descrição
             .row
                   .col-md-3.py-5.text-start
                         .d-flex.justify-content-center.mb-3
@@ -93,10 +102,11 @@ block content
                         h1.text-warning Decisão Texto Integral
                         hr.text-warning
                         p #{processo['Decisão Texto Integral']}
-                
+    script(type="text/javascript" src="/public/js/favoritos.js")
     // Footer
     footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow
         .container 
             p.lead Copyright &copy; 2023 EngWeb, Acordãos
             a.position-absolute.bottom-0.end-0.p-3(href="#")
                 i.fa-solid.fa-circle-arrow-up.h3(style="color: grey;")
+

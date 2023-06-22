@@ -3,6 +3,7 @@ var router = express.Router();
 var env = require('../config/env');
 var axios = require('axios');
 var jwt = require('jsonwebtoken');
+const { query } = require('express');
 require('dotenv').config();
 
 function verificaToken(req, res, next){
@@ -69,7 +70,45 @@ router.get('/:id', verificaToken, (req, res)=>{
 
   axios.get(env.authAcessPoint + '/' + req.params.id + token)
     .then(response => { 
+      console.log(response.data.dados)
       res.render('user', {user: response.data.dados});
+    })
+    .catch(err => {
+      res.render('error', {error: err, message: err.message});
+    })
+})
+
+/**
+ * GET histórico de um utilizador
+ */
+router.get('/history/:id', verificaToken, (req, res)=>{
+  const token = '?token=' + req.cookies.token;
+  axios.get(env.authAcessPoint + '/' + req.params.id + '/history' + token)
+    .then(response => { 
+      const processIds = response.data.dados.history;
+      // Construir a URL da API com os parâmetros da query string
+      const queryParams = `?ids=${processIds.join(',')}`;
+      var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
+      res.render('historico', {user: response.data.dados, url: apiUrl});
+    })
+    .catch(err => {
+      res.render('error', {error: err, message: err.message});
+    })
+})
+
+/**
+ * GET favoritos de um utilizador
+ */
+router.get('/favorites/:id', verificaToken, (req, res)=>{
+  const token = '?token=' + req.cookies.token;
+  axios.get(env.authAcessPoint + '/' + req.params.id + '/favorites' + token)
+    .then(response => { 
+      const processIds = response.data.dados.favorites;
+      console.log(processIds)
+      // Construir a URL da API com os parâmetros da query string
+      const queryParams = `?ids=${processIds.join(',')}`;
+      var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
+      res.render('favoritos', {user: response.data.dados, url: apiUrl});
     })
     .catch(err => {
       res.render('error', {error: err, message: err.message});

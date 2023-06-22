@@ -1,6 +1,8 @@
 extends layout 
 
 block content 
+    script. 
+        var url = ''
     div(style="display:block; content:''; height: 60px;")
     // Modal
     #docModal.modal.fade(tabindex='-1', aria-labelledby='exampleModalLabel', aria-hidden='true')
@@ -51,10 +53,10 @@ block content
                     p= user.name + ' ' + (user.surname || '')
                     p= user.email
                     .mb-3
-                    a.btn.btn-primary.w-50(href='#history') Histórico
+                    a.btn.btn-primary.w-50(href='/users/history/'+user._id) Histórico
                     #resultsList
                     .mb-3
-                    a.btn.btn-primary.w-50(href='#favs') Favoritos
+                    a.btn.btn-primary.w-50(href='/users/favorites/'+user._id) Favoritos
             .col-md-6.m-5.p-5.card.shadow
                 .card-tittle.text-center 
                     h4 Configurações do perfil
@@ -90,18 +92,6 @@ block content
                             input.form-control(type='text' disabled value=user.provider name='provider')
                         .mb-3
                         button.btn.btn-primary.profile-button(type='submit') Guardar Alterações
-    .container.py-5#history 
-        h2.text-center Histórico
-        ul.list-group
-            each aid in user.history 
-                li.list-group-item 
-                    a.btn(href="https://localhost:8003/acordaos/" + aid)= aid 
-    .container.py-5#favs
-        h2.text-center Favoritos
-        ul.list-group
-            each aid in user.favorites 
-                li.list-group-item 
-                    a.btn(href="https://localhost:8003/acordaos/" + aid)= aid 
                 
     // Footer
     footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow

@@ -2,8 +2,6 @@ var Judgment = require('../models/acordao')
 var Algolia = require('./algolia.js')
 const fs = require('fs');
 const JSONStream = require('JSONStream');
-const { Mutex } = require('async-mutex');
-let lock = new Mutex();
 
 /**
  * Retrieve all judgment from the BD

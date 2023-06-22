@@ -7,6 +7,8 @@ const User = require('../controllers/user')
 const auth = require('../auth/auth')
 require('dotenv').config();
 
+
+
 /*--GET's------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 /**
@@ -128,12 +130,29 @@ router.get('/google/callback', function(req, res, next) {
 /**
  * GET utilizador com o respetivo id, qualquer utilizador tem acesso se possuir conta
  */
+router.get('/:id/history', auth.verificaAcesso, function (req, res) {
+  User.getUserHistory(req.params.id)
+    .then(dados => res.status(200).jsonp({ dados: dados }))
+    .catch(e => res.status(500).jsonp({ error: e }))
+})
+
+/**
+ * GET utilizador com o respetivo id, qualquer utilizador tem acesso se possuir conta
+ */
+router.get('/:id/favorites', auth.verificaAcesso, function (req, res) {
+  User.getUserFavorites(req.params.id)
+    .then(dados => res.status(200).jsonp({ dados: dados }))
+    .catch(e => res.status(500).jsonp({ error: e }))
+})
+
+/**
+ * GET histórico de um utilizador
+ */
 router.get('/:id', auth.verificaAcesso, function (req, res) {
   User.getUser(req.params.id)
     .then(dados => res.status(200).jsonp({ dados: dados }))
     .catch(e => res.status(500).jsonp({ error: e }))
 })
-
 
 /*--POST's------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -270,15 +289,28 @@ router.put('/:id/history', function (req, res){
 /**
  * PUT adicionar um processo aos favoritos, feito pelo utilizador em questão quando adiciona um processo aos favoritos 
  */
-router.put('/:id/favorites', auth.verificaAcesso, function (req, res){
-  User.updateFavs(req.params.id, req.body.newFav)
+router.put('/:id/favorites',  function (req, res){
+  User.updateFavs(req.params.id, req.body)
+    .then(dados => {
+      res.jsonp(dados)
+      console.log("Respost:" + dados);
+    })
+    .catch(erro => {
+      console.log("Erro: " + erro.message);
+      res.jsonp('error', { error: erro, message: "Erro na alteração do utilizador" })
+    })
+})
+
+router.put('/:id/removeFavorite', function (req, res) {
+  User.removeFavs(req.params.id, req.body)
     .then(dados => {
       res.jsonp(dados)
     })
     .catch(erro => {
+      console.log("Erro: " + erro.message);
       res.jsonp('error', { error: erro, message: "Erro na alteração do utilizador" })
     })
-})
+});
 
 
 /*--DELETE's------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/

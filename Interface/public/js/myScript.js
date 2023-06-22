@@ -1,9 +1,8 @@
 
-document.getElementById('searchLivre').addEventListener('input', search);
-document.getElementById('searchProcesso').addEventListener('input', search);
-document.getElementById('searchRelator').addEventListener('input', search);
-document.getElementById('searchDescritores').addEventListener('input', search);
-
+if (document.getElementById('searchLivre')) document.getElementById('searchLivre').addEventListener('input', search);
+if (document.getElementById('searchProcesso')) document.getElementById('searchProcesso').addEventListener('input', search);
+if (document.getElementById('searchRelator')) document.getElementById('searchRelator').addEventListener('input', search);
+if (document.getElementById('searchDescritores')) document.getElementById('searchDescritores').addEventListener('input', search);
 
 function truncateText(text, maxLength) {
     if (text) {
