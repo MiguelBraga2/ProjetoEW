@@ -68,10 +68,12 @@ router.get('/resetPassword', verificaToken, (req, res)=>{
 router.get('/:id', verificaToken, (req, res)=>{ 
   const token = '?token=' + req.cookies.token;
 
+  const changed = req.query?.changed ? req.query.changed : false;
+
   axios.get(env.authAcessPoint + '/' + req.params.id + token)
     .then(response => { 
       console.log(response.data.dados)
-      res.render('user', {user: response.data.dados});
+      res.render('user', {user: response.data.dados, change: changed});
     })
     .catch(err => {
       res.render('error', {error: err, message: err.message});
@@ -172,7 +174,7 @@ router.post('/:id', verificaToken, (req, res)=>{
 
   axios.put(env.authAcessPoint + '/' + req.params.id + token, req.body)
     .then(response => { 
-      res.redirect('/users/' + req.params.id);
+      res.redirect('/users/' + req.params.id + "?changed=true");
     })
     .catch(err => {
       res.render('error', {error: err, message: err.message});

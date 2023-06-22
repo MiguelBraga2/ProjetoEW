@@ -65,69 +65,147 @@ block content
                         #textBoxContainer(style="display: none; margin-top:10px; margin-bottom:30px")
                           input#textBox.form-control.custom-input(type="text" oninput="updateSelectionResult()")
                       .col-auto
-                        button.btn.btn-primary(type="button" onclick="handleButtonClick()") Submit
+                        button.btn.btn-primary(type="button" onclick="handleButtonClick()") Submit 
                 .col-md-4.text-left
                   #selectionResult(style="text-align: left; padding-top: 10px;")
                   //#previousSelections(style="text-align: center; border-style: double")
 
-        script.
-          let selectedValues = {}; // Armazena os valores selecionados
+                button.align-items-center.btn.btn-primary(type="button" onclick="handleButtonSend()" style="margin-top: 30px") Enviar Acordão 
         
-          function showTextBox(value) {
-            let textBoxContainer = document.getElementById("textBoxContainer");
-        
-            if (value !== "") {
-              textBoxContainer.style.display = "block";
-            } else {
-              textBoxContainer.style.display = "none";
-            }
-          }
-        
-          function handleButtonClick() {
-            let selectBox = document.getElementById("inlineFormCustomSelectPref");
-            let selectedOption = selectBox.options[selectBox.selectedIndex].text;
-            let textBox = document.getElementById("textBox");
-            let selectionResult = document.getElementById("selectionResult");
-        
-            selectedValues[selectedOption] = textBox.value;
-        
-            let selectedText = JSON.stringify(selectedValues, null, 2);
-        
-            selectionResult.innerText = selectedText;
+        .modal.fade#errorModal(tabindex="-1", role="dialog", aria-labelledby="errorModalLabel", aria-hidden="true")
+            .modal-dialog(role="document")
+              .modal-content
+                .modal-header
+                  h5.modal-title#errorModalLabel Erro
+                  button.close(type="button", data-dismiss="modal", aria-label="Fechar")
+                    span(aria-hidden="true") ×
+                .modal-body
+                  p#errorText
+                .modal-footer
 
-            console.log(selectedText)
-        
-            textBox.value = "";
-            document.getElementById("textBoxContainer").style.display = "none";
-          }
-        
-          // Atualiza o texto selecionado ao trocar a opção selecionada
-          document.getElementById("inlineFormCustomSelectPref").addEventListener("change", function() {
-            let selectBox = document.getElementById("inlineFormCustomSelectPref");
-            let selectedOption = selectBox.options[selectBox.selectedIndex].text;
-            let selectionResult = document.getElementById("selectionResult");
-            let valueOption = document.getElementById("textBox").value;
-        
-            selectedValues[selectedOption] = valueOption;
-        
-            let selectedText = JSON.stringify(selectedValues, null, 2);
-        
-            selectionResult.innerText = selectedText;
-          });
-        
-          // Atualiza o texto selecionado ao modificar o campo de entrada
-          function updateSelectionResult() {
-            let selectBox = document.getElementById("inlineFormCustomSelectPref");
-            let selectedOption = selectBox.options[selectBox.selectedIndex].text;
-            let selectionResult = document.getElementById("selectionResult");
-            let valueOption = document.getElementById("textBox").value;
-        
-            selectedValues[selectedOption] = valueOption;
-        
-            let selectedText = JSON.stringify(selectedValues, null, 2);
-        
-            selectionResult.innerText = selectedText;
-          }
+        script.
+            let selectedValues = {}; // Armazena os valores selecionados
+
+            function showTextBox(value) {
+                let textBoxContainer = document.getElementById("textBoxContainer");
+
+                if (value !== "") {
+                textBoxContainer.style.display = "block";
+                } else {
+                textBoxContainer.style.display = "none";
+                }
+            }
+
+            function handleButtonClick() {
+                let selectBox = document.getElementById("inlineFormCustomSelectPref");
+                let selectedOption = selectBox.options[selectBox.selectedIndex].text;
+                let textBox = document.getElementById("textBox");
+                let selectionResult = document.getElementById("selectionResult");
+
+                let value = textBox.value;
+
+                if (selectedOption === "Descritores" || selectedOption === "Áreas Temáticas" || selectedOption === "Recorridos" || selectedOption === "Referências de Publicação") {
+                    // Verifica se o valor inserido está vazio ou não
+                    if (value.trim() !== "") {
+                        // Separa o valor em uma lista usando vírgulas como delimitador
+                        value = value.split(",").map(item => item.trim());
+                    } else {
+                        // Define o valor como uma lista vazia se o campo estiver vazio
+                        value = [];
+                    }
+                }
+
+                if (selectedOption.startsWith("Data")) {
+                    // Verifica se o valor inserido está vazio ou não
+                    if (value.trim() !== "") {
+                      // Verifica se o valor está no formato "DD/MM/AAAA"
+                      if (isValidDateFormat(value)) {
+                        // Define o valor conforme o formato desejado "DD/MM/AAAA"
+                        value = formatDate(value);
+                      } else {
+                        // Valor inválido, exibe uma mensagem de erro em um modal
+                        showErrorModal("Formato de data inválido. Utilize o formato DD/MM/AAAA.");
+                        return;
+                      }
+                    }
+                }
+
+                if (selectedOption !== "Escolher...") {
+                    selectedValues[selectedOption] = value;
+                }
+
+                let selectedText = JSON.stringify(selectedValues, null, 2);
+
+                selectionResult.innerText = selectedText;
+
+                console.log(selectedText);
+
+                textBox.value = "";
+                selectBox.selectedIndex = 0; // Redefinir para a opção "Escolher..."
+                showTextBox(""); // Ocultar a caixa de texto
+            }
+
+            function handleButtonSend() {
+                console.log(selectedValues);
+
+                fetch("http://localhost:8003/acordaos/novo", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(selectedValues),
+                })
+            }
+
+            // Atualiza o texto selecionado ao trocar a opção selecionada
+            document.getElementById("inlineFormCustomSelectPref").addEventListener("change", function() {
+                let selectBox = document.getElementById("inlineFormCustomSelectPref");
+                let selectedOption = selectBox.options[selectBox.selectedIndex].text;
+                let selectionResult = document.getElementById("selectionResult");
+                let valueOption = document.getElementById("textBox").value;
+
+                selectedValues[selectedOption] = valueOption;
+
+                let selectedText = JSON.stringify(selectedValues, null, 2);
+
+                selectionResult.innerText = selectedText;
+            });
+
+            // Atualiza o texto selecionado ao modificar o campo de entrada
+            function updateSelectionResult() {
+                let selectBox = document.getElementById("inlineFormCustomSelectPref");
+                let selectedOption = selectBox.options[selectBox.selectedIndex].text;
+                let selectionResult = document.getElementById("selectionResult");
+                let valueOption = document.getElementById("textBox").value;
+
+                selectedValues[selectedOption] = valueOption;
+
+                let selectedText = JSON.stringify(selectedValues, null, 2);
+
+                selectionResult.innerText = selectedText;
+            }
+
+            function isValidDateFormat(value) {
+            // Verifica se o valor está no formato "DD/MM/AAAA"
+            let pattern = /^\d{2}\/\d{2}\/\d{4}$/;
+            return pattern.test(value);
+            }
+
+            function formatDate(value) {
+                // Reorganiza o valor para o formato "DD/MM/AAAA"
+                let parts = value.split("/");
+                let day = parts[0];
+                let month = parts[1];
+                let year = parts[2];
+
+                return `${day}/${month}/${year}`;
+            }
+
+            function showErrorModal(errorMessage) {
+                let errorText = document.getElementById("errorText");
+                errorText.innerText = errorMessage;
+                $('#errorModal').modal('show');
+            }
 
     script(type="text/javascript" src="/public/js/myScript.js")
 

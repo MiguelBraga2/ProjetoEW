@@ -201,5 +201,9 @@ router.post('/description/:user_id/:acordao_id', verificaToken, (req, res) => {
   
 })
 
+router.post('/acordaos/novo',verificaToken, (req, res) => {
+  console.log(req.body)
+});
+
 
 module.exports = router;
