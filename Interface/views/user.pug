@@ -36,7 +36,7 @@ block content
                         a.nav-item.nav-link(href='/pesquisas') Pesquisas
                     if user 
                         li
-                            a.nav-item.nav-link(href='/users/' + user.id) Perfil
+                            a.nav-item.nav-link(href='/users/' + user._id) Perfil
                     else
                         li 
                             a.nav-item.nav-link(href='/users/login') Iniciar Sessão
@@ -45,51 +45,57 @@ block content
                             
     .container
         .row
-            .col-md-4.m-5.card.shadow
-                .text-center.align-items-center.p-5.card-body
-                    img.rounded-circle.mt-5(width='150px' src='https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg')
-                    p= user.name + ' ' + (user.surname || '')
-                    p= user.email
-                    .mb-3
-                    a.btn.btn-primary.w-50(href='#history') Histórico
-                    #resultsList
-                    .mb-3
-                    a.btn.btn-primary.w-50(href='#favs') Favoritos
-            .col-md-6.m-5.p-5.card.shadow
-                .card-tittle.text-center 
-                    h4 Configurações do perfil
-                .text-start.align-items-center.card-body
-                    form(action='/users/' + user._id method='POST')
-                        .mb-3
-                            label.form-label Primeiro Nome
-                            input.form-control(type='text' value=user.name placeholder='Primeiro Nome' name='name')
-                        .mb-3
-                            label.form-label Apelido
-                            
-                            input.form-control(type='text' value=user.surname placeholder='Apelido' name='surname')
-                        .mb-3
-                            label.form-label Username
-                            input.form-control(type='text' value=user.username placeholder='Username' name='username' disabled)
-                        .mb-3
-                            label.form-label Email
-                            input.form-control(type='text' value=user.email placeholder='Email' name='email')
-                        .mb-3
-                            label.form-label Função
-                            input.form-control(type='text' value=user.level disabled name='level')
-                        .mb-3
-                            label.form-label Data de Criação da Conta
-                            input.form-control(type='text' disabled value=user.dateCreated name='dateCreated')
-                        .mb-3
-                            label.labels Data do Último Acesso 
-                            input.form-control(type='text' disabled value=user.dateLastAccess name='dateLastAccess')
-                        .mb-3
-                            label.labels ID do Provedor
-                            input.form-control(type='text' disabled value=user.providerId name='providerId')
-                        .mb-3
-                            label.labels Provedor
-                            input.form-control(type='text' disabled value=user.provider name='provider')
-                        .mb-3
-                        button.btn.btn-primary.profile-button(type='submit') Guardar Alterações
+          .col-md-4.m-5.card.shadow
+            .text-center.align-items-center.p-5.card-body
+              img.rounded-circle.mt-5(width='150px' src='https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg')
+              p= user.name + ' ' + (user.surname || '')
+              p= user.email
+              .mb-3
+              a.btn.btn-primary.w-50(href='#history') Histórico
+              #resultsList
+              .mb-3
+              a.btn.btn-primary.w-50(href='#favs') Favoritos
+
+            if change
+                #popup.mb-6(style="margin-bottom:55%")
+                    .alert.alert-success(role='alert')
+                        | As alterações foram guardadas com sucesso.
+
+          .col-md-6.m-5.p-5.card.shadow
+            .card-tittle.text-center
+              h4 Configurações do perfil
+            .text-start.align-items-center.card-body
+              form(action='/users/' + user._id method='POST')
+                .mb-3
+                  label.form-label Primeiro Nome
+                  input.form-control(type='text' value=user.name placeholder='Primeiro Nome' name='name')
+                .mb-3
+                  label.form-label Apelido
+                  input.form-control(type='text' value=user.surname placeholder='Apelido' name='surname')
+                .mb-3
+                  label.form-label Username
+                  input.form-control(type='text' value=user.username placeholder='Username' name='username' disabled)
+                .mb-3
+                  label.form-label Email
+                  input.form-control(type='text' value=user.email placeholder='Email' name='email')
+                .mb-3
+                  label.form-label Função
+                  input.form-control(type='text' value=user.level disabled name='level')
+                .mb-3
+                  label.form-label Data de Criação da Conta
+                  input.form-control(type='text' disabled value=user.dateCreated name='dateCreated')
+                .mb-3
+                  label.labels Data do Último Acesso
+                  input.form-control(type='text' disabled value=user.dateLastAccess name='dateLastAccess')
+                .mb-3
+                  label.labels ID do Provedor
+                  input.form-control(type='text' disabled value=user.providerId name='providerId')
+                .mb-3
+                  label.labels Provedor
+                  input.form-control(type='text' disabled value=user.provider name='provider')
+                .mb-3  
+                button#saveChangesBtn.btn.btn-primary.profile-button(type='submit') Guardar Alterações
+
     .container.py-5#history 
         h2.text-center Histórico
         ul.list-group
