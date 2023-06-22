@@ -52,6 +52,10 @@ function paginatedResults(model) {
       console.log(queries)
     }
 
+    if (req.query && req.query.producerId){
+      match.$match['producerid'] = req.query.producerId
+    }
+
     if (req.query && req.query.livre) {
       // Por fazer
     }
@@ -160,15 +164,21 @@ router.get('/currentId', (req, res) => {
 
 router.get('/postFile/:file_name', (req, res) => {
   Judgment.getCurrentId()
-  .then(data => {
-    Judgment.processFile(req.params.file_name, data._id);
-    res.status(200).json(data);
-  })
-  .catch(error => {
-    console.log(error.message)
-    res.status(524).json({error: error, message: error.message})
-  })
-})
+    .then(data => {
+      Judgment.processFile(req.params.file_name, data._id)
+        .then(data => {
+          res.status(200).json(data);
+        })
+        .catch(error => {
+          console.log(error);
+          res.status(521).json({ error: error, message: "Could not post the file" });
+        });
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(521).json({ error: error, message: error });
+    });
+});
 
 /**
  * POST a judgment
@@ -185,7 +195,7 @@ router.post('/acordaos', (req,res) => {
  * PUT a judgment
  */
 router.put('/acordaos/:id', (req,res) => {
-  Judgment.updateAcordao(req.body)
+  Judgment.updateAcordao(req.body, req.params.id)
     .then(data => res.status(200).json(data))
     .catch(error => res.status(527).json({error: error, message: "Could not update the judgment"}))
 })

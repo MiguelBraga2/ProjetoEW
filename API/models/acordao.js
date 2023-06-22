@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 
 var acordaoSchema = new mongoose.Schema({
     _id: Number,
+    producerId: String,
     Processo: String,
     url: String,
     tribunal: String,

@@ -134,7 +134,6 @@ module.exports.addAcordao = (judgment) => {
               
             })
             .catch(error => {
-              console.log(error)
               return error
             })
 }
@@ -145,10 +144,11 @@ module.exports.addAcordao = (judgment) => {
  * @param {judgment} judgment 
  * @returns the updated judgment(Verificar) or an error
  */
-module.exports.updateAcordao = judgment => {
+module.exports.updateAcordao = (judgment, id) => {
   return Judgment
-                 .updateOne({_id: judgment._id}, judgment)
+                 .updateOne({_id: id}, judgment)
                  .then(resp => {
+                  judgment._id = id
                    Algolia.update(judgment)
                     .then(response => {
                       return resp
@@ -315,35 +315,35 @@ let synonyms = {
 }
 
 exports.processFile = (file_name, current_id) => {
-  const inputStream = fs.createReadStream('../Interface/fileProcessing/raw_files/' + file_name, 'utf8');
-  const parser = JSONStream.parse('*'); // Parse each JSON object
-  inputStream.pipe(parser);
-  let batch = [];
+  const StreamArray = require('stream-json/streamers/StreamArray');
+  const stream = fs.createReadStream('../Interface/fileProcessing/raw_files/' + file_name).pipe(StreamArray.withParser());
+  let chunks = [];
 
-  parser.on('data', async document => {
-    processDocument(document);
-    let release = await lock.acquire();
-    document['_id'] = current_id++; // Increment the ID
-    batch.push(document);
-    if (batch.length == 500) {
-      postDocuments(batch);
-      batch = [];
-    }
-    release();
-  });
-
-  parser.on('end', async () => {
-    // Send the remaining documents in the batch
-    let release = await lock.acquire();
-    if (batch.length > 0) {
-      postDocuments(batch);
-    }
-    release();
-  });
-
-  parser.on('error', err => {
-    console.error('Error parsing JSON:', err);
-  });
+  stream
+    .on('data', ({ value }) => {
+      processDocument(value)
+      value._id = current_id;
+      current_id++;
+      chunks.push(value);
+      if (chunks.length === 10000) {
+        stream.pause();
+        postDocuments(chunks)
+          .then(() => {
+            chunks = [];
+            stream.resume();
+          })
+          .catch(error => {
+            console.log(error);
+            stream.resume();
+          });
+      }
+    })
+    .on('end', () => {
+      if (chunks.length) {
+        postDocuments(chunks)
+          .catch(error => console.log(error));
+      }
+    });
 };
 
 
