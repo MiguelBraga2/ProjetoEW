@@ -146,11 +146,15 @@ block content
             }
 
             function handleButtonSend() {
-
                 console.log(selectedValues);
 
-                //Fazer Post para o serviço
-
+                fetch("http://localhost:8003/acordaos/novo", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(selectedValues),
+                })
             }
 
             // Atualiza o texto selecionado ao trocar a opção selecionada

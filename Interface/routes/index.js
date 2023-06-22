@@ -181,5 +181,9 @@ router.post('/files', verificaToken, upload.single('myFile'), (req, res) => {
 
 })
 
+router.post('/acordaos/novo',verificaToken, (req, res) => {
+  console.log(req.body)
+});
+
 
 module.exports = router;
