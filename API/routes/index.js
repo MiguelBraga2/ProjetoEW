@@ -159,7 +159,7 @@ router.get('/currentId', (req, res) => {
   .then(data => {
     res.status(200).json(data)
   })
-  .catch(error => res.status(521).json({error: error, message: "Could not obtain the current id"}))
+  .catch(error => res.status(522).json({error: error, message: "Could not obtain the current id"}))
 })
 
 router.get('/postFile/:file_name', (req, res) => {
@@ -188,7 +188,7 @@ router.post('/acordaos', (req,res) => {
     .then(data => {
       res.status(201).json(data)
     })
-    .catch(error => res.status(522).json({error: error, message: "Could not insert the judgment"}))
+    .catch(error => res.status(526).json({error: error, message: "Could not insert the judgment"}))
 })
 
 /**
@@ -197,7 +197,7 @@ router.post('/acordaos', (req,res) => {
 router.put('/acordaos/:id', (req,res) => {
   Judgment.updateAcordao(req.body, req.params.id)
     .then(data => res.status(200).json(data))
-    .catch(error => res.status(523).json({error: error, message: "Could not update the judgment"}))
+    .catch(error => res.status(527).json({error: error, message: "Could not update the judgment"}))
 })
 
 /**
@@ -206,7 +206,7 @@ router.put('/acordaos/:id', (req,res) => {
 router.delete('/acordaos/:id', (req,res) => {
   Judgment.deleteAcordao(req.params.id)
     .then(data => res.status(200).json(data))
-    .catch(error => res.status(524).json({error: error, message: "Could not delete the judgment"}))
+    .catch(error => res.status(528).json({error: error, message: "Could not delete the judgment"}))
 })
 
 module.exports = router;

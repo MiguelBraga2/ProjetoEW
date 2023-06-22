@@ -1,5 +1,9 @@
 var Judgment = require('../models/acordao')
 var Algolia = require('./algolia.js')
+const fs = require('fs');
+const JSONStream = require('JSONStream');
+const { Mutex } = require('async-mutex');
+let lock = new Mutex();
 
 /**
  * Retrieve all judgment from the BD
@@ -103,6 +107,7 @@ module.exports.getCurrentId = () => {
           }
         })
         .catch(error => {
+          console.log(error.message)
           return error
         })
 }
@@ -123,7 +128,7 @@ module.exports.addAcordao = (judgment) => {
                 return resp
               })
               .catch(error => {
-                //console.log(error)
+                console.log(error)
                 return error
               })
               
@@ -183,25 +188,26 @@ module.exports.deleteAcordao = id => {
         })
 } 
 
-const fs = require('fs')
-
 var postDocuments = (documents) => {
-  return Judgment.insertMany(documents)
-    .then(resp => {
-      return Algolia.add(documents)
-        .then(response => {
-          return resp;
-        })
-        .catch(error => {
-          console.log(error);
-          throw error;
-        });
+  return Judgment
+  .insertMany(documents)
+  .then(resp => {   
+    // Se correu bem, enviar para a base de dados da algolia              
+    Algolia.add(documents)
+    .then(response => {
+      return resp
     })
     .catch(error => {
-      console.log(error);
-      throw error;
-    });
-};
+      console.log(error)
+      return error
+    })
+    
+  })
+  .catch(error => {
+    console.log(error)
+    return error
+  })
+}
 
 let synonyms = {
   'Processo': 'Processo',

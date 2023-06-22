@@ -1,0 +1,145 @@
+extends layout
+
+block content
+
+    script. 
+        var url = '#{url}';
+    div(style="display:block; content:''; height: 60px;")#topo
+    // Modal
+    #docModal.modal.fade(tabindex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h1#exampleModalLabel.modal-title.fs-5 Insira Documento
+                    button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
+                form(action='/files' method="POST" enctype="multipart/form-data")
+                    .modal-body
+                        input(type="file" name="myFile")
+                    .modal-footer
+                        button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Fechar
+                        button.btn.btn-primary(value='send' type='submit') Submeter Documento
+    // Navbar
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.py-3.shadow.fixed-top
+        .container
+            a.navbar-brand(href='/') Inserção de Acordão
+
+            button.navbar-toggler(type='button' data-bs-toggle='collapse' data-bs-target='#navmenu')
+                span.navbar-toggler-icon
+
+            .navbar-collapse.collapse#navmenu
+                ul.navbar-nav.ms-auto
+                    if user && user.level === 'admin' || user.level === 'producer'
+                        li  
+                            a.nav-item.nav-link(href="/acordaos/novo") Criar Acordão
+                    if user && user.level === 'admin'
+                        li 
+                            // Button trigger modal 
+                            a.nav-item.nav-link(type='button' data-bs-toggle='modal' data-bs-target='#docModal') Inserir Documento
+                    li
+                        a.nav-item.nav-link(href='/pesquisas') Pesquisas
+                    if user 
+                        li
+                            a.nav-item.nav-link(href='/users/' + user.id) Perfil
+                    else
+                        li 
+                            a.nav-item.nav-link(href='/users/login') Iniciar Sessão
+                        li 
+                            a.nav-item.nav-link(href='/users/register') Criar Conta
+    section.py-5
+
+        form.form-lg(action='/acordaos/novo' method='POST')
+            .container-fluid.d-flex.align-items-center.justify-content-center(style="min-height: 60vh")
+              .row
+                .col-md-8
+                  h4.label(for="inlineFormCustomSelectPref") Escolha o campo que pretende editar...
+                  form.form-inline
+                    .form-row
+                      .col-auto
+                        select.custom-select.my-4.mr-sm-2.mx-4#inlineFormCustomSelectPref(onchange="showTextBox(this.value)")
+                          option(selected) Escolher...
+                          - let list = ["Data do Acordão", "Data de Entrada", "Ano da Publicação", "Data", "Data do Apêndice", "Data Dec. Recorrida", "Data do Diário da Republica", "Data da Decisão", "Data da Decisão Sumária", "Data da Reclamação", "Data da Decisão Singular", "Nº do Documento", "Nº Convencional", "Nº do Volume", "Nº Processo/TAF", "Nº do Diário da Republica", "Nº do Boletim do M.J.", "Nº Único do Processo", "1ª Pág. de Publicação do Acordão", "Página", "Página do Diário da República", "Página do Volume", "Página do Boletim do M.J.", "tribunal", "Tribunal", "Tribunal Recurso", "Tribunal Recorrido", "Processo no Tribunal Recurso", "Processo no Tribunal Recorrido", "Tribunal 1ª Instância", "Processo", "Texto Integral", "Decisão", "Sumário", "Decisão Texto Integral", "Reclamações", "Indicações Eventuais", "Juízo ou Seccção", "Apêndice", "Texto Parcial", "Parecer Ministério Publico", "Referência a Pareceres", "Legislação Comunitária", "Referências Internacionais", "Normas Declaradas Inconst.", "Normas Suscitadas", "Texto das Cláusulas Abusivas", "Jurisprudência Constitucional", "Observações", "Jurisprudência Estrangeira", "Referência Processo", "Outra Jurisprudência", "Referência a Doutrina", "Referências de Publicação", "Jurisprudência Internacional", "Legislação Estrangeira", "Outra Jurisprudência", "url", "Descritores", "Relator", "Votação", "Meio Processual", "Privacidade", "Legislação Nacional", "Áreas Temáticas", "Recorrente", "Recorridos", "Jurisprudência Nacional", "Objeto", "Espécie", "Acordão", "Requerente", "Requerido", "Magistrado", "Contencioso", "Sub-Seccção", "Normas Apreciadas", "Constituição", "Série do Diário da República", "Disponível na JTCA", "Voto Vencido", "Apenso", "Recusa Aplicação", "Declaração de Voto", "Recurso", "Autor", "Réu", "Tipo de Contrato", "Tipo de Ação", "Volume dos Acordãos do T.C.", "Outras Publicações", "Peça Processual", "Tema"].sort();
+                          each elem in list
+                            option(value=String(i)) #{elem}
+                            - i++;
+                      .col-auto
+                        #textBoxContainer(style="display: none; margin-top:10px; margin-bottom:30px")
+                          input#textBox.form-control.custom-input(type="text" oninput="updateSelectionResult()")
+                      .col-auto
+                        button.btn.btn-primary(type="button" onclick="handleButtonClick()") Submit
+                .col-md-4.text-left
+                  #selectionResult(style="text-align: left; padding-top: 10px;")
+                  //#previousSelections(style="text-align: center; border-style: double")
+
+        script.
+          let selectedValues = {}; // Armazena os valores selecionados
+        
+          function showTextBox(value) {
+            let textBoxContainer = document.getElementById("textBoxContainer");
+        
+            if (value !== "") {
+              textBoxContainer.style.display = "block";
+            } else {
+              textBoxContainer.style.display = "none";
+            }
+          }
+        
+          function handleButtonClick() {
+            let selectBox = document.getElementById("inlineFormCustomSelectPref");
+            let selectedOption = selectBox.options[selectBox.selectedIndex].text;
+            let textBox = document.getElementById("textBox");
+            let selectionResult = document.getElementById("selectionResult");
+        
+            selectedValues[selectedOption] = textBox.value;
+        
+            let selectedText = JSON.stringify(selectedValues, null, 2);
+        
+            selectionResult.innerText = selectedText;
+
+            console.log(selectedText)
+        
+            textBox.value = "";
+            document.getElementById("textBoxContainer").style.display = "none";
+          }
+        
+          // Atualiza o texto selecionado ao trocar a opção selecionada
+          document.getElementById("inlineFormCustomSelectPref").addEventListener("change", function() {
+            let selectBox = document.getElementById("inlineFormCustomSelectPref");
+            let selectedOption = selectBox.options[selectBox.selectedIndex].text;
+            let selectionResult = document.getElementById("selectionResult");
+            let valueOption = document.getElementById("textBox").value;
+        
+            selectedValues[selectedOption] = valueOption;
+        
+            let selectedText = JSON.stringify(selectedValues, null, 2);
+        
+            selectionResult.innerText = selectedText;
+          });
+        
+          // Atualiza o texto selecionado ao modificar o campo de entrada
+          function updateSelectionResult() {
+            let selectBox = document.getElementById("inlineFormCustomSelectPref");
+            let selectedOption = selectBox.options[selectBox.selectedIndex].text;
+            let selectionResult = document.getElementById("selectionResult");
+            let valueOption = document.getElementById("textBox").value;
+        
+            selectedValues[selectedOption] = valueOption;
+        
+            let selectedText = JSON.stringify(selectedValues, null, 2);
+        
+            selectionResult.innerText = selectedText;
+          }
+
+    script(type="text/javascript" src="/public/js/myScript.js")
+
+    // Footer              
+    footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow
+        .container 
+            p.lead Copyright &copy; 2023 EngWeb, Acordãos
+            a.position-absolute.bottom-0.end-0.p-3(href="#")
+                i.fa-solid.fa-circle-arrow-up.h3(style="color: grey;")
+
+    style.
+      .custom-input {
+        max-width: 300px;
+        width: 100%;
+      }
