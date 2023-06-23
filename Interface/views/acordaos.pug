@@ -3,6 +3,10 @@ extends layout
 block content
     script. 
         let editable = !{editable}
+        let user = !{JSON.stringify(user)}
+        if (user && user.level === 'admin'){
+            editable = true
+        }
         let favoritos
         var url = '#{url}';
     div(style="display:block; content:''; height: 60px;")#topo
