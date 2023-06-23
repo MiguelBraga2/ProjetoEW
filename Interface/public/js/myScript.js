@@ -28,7 +28,7 @@ function solicitation(str, page, limit) {
 
             data.results.forEach(result => {
                 // Criar o HTML para cada resultado
-                const listItemHTML = `<li class="list-group-item">
+                let listItemHTML = `<li class="list-group-item">
                 <div class="card mb -2"> <div class="card-body">
                 <h5 class="text-start text-primary"><a href="/acordaos/${result._id}">${result.Processo || 'N/A'}</a></h1>
                 <div class="row pb-2">
@@ -66,7 +66,13 @@ function solicitation(str, page, limit) {
                     </div>
                 </div>
                 </div>
-                </div></li>`;
+                </div>`;
+                if (favoritos && favoritos[result._id]){
+                    let description = favoritos[result._id]
+                    listItemHTML += `<div class="card mb -2"><p>${description}</p></div>`
+                }
+
+                listItemHTML += '</li>';
 
                 // Adicionar o HTML à lista de resultados
                 resultsList.innerHTML += listItemHTML;

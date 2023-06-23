@@ -53,10 +53,9 @@ block content
               p= user.name + ' ' + (user.surname || '')
               p= user.email
               .mb-3
-              a.btn.btn-primary.w-50(href='#history') Histórico
-              #resultsList
+              a.btn.btn-primary.w-50(href='/users/history/'+user._id) Histórico
               .mb-3
-              a.btn.btn-primary.w-50(href='#favs') Favoritos
+              a.btn.btn-primary.w-50(href='/users/favorites/'+user._id) Favoritos
 
             if change
                 #popup.mb-6(style="margin-bottom:55%")
