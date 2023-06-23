@@ -219,7 +219,13 @@ router.post('/description/:user_id/:acordao_id', verificaToken, (req, res) => {
 })
 
 router.post('/acordaos/novo',verificaToken, (req, res) => {
-  console.log(req.body)
+  axios.post(env.apiAccessPoint + '/acordaos', req.body)
+  .then(resp => {
+    res.redirect('/acordaos/'+req.body._id)
+  })
+  .catch(error => {
+    res.render('error', {error : error , message : "Erro a inserir um novo acordão"});
+  })
 });
 
 
