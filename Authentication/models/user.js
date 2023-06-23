@@ -14,7 +14,10 @@ const userSchema = new mongoose.Schema({
   providerId: String,
   provider: String,
   history: [Number],
-  favorites: [Number]
+  favorites: [{
+    id: Number,
+    description: String
+  }]
 });
 
 userSchema.plugin(passportLocalMongoose);

@@ -31,6 +31,11 @@ function paginatedResults(model) {
     }
     queries.push(match)
 
+    if (req.query && req.query.ids){
+      const processIds = req.query.ids.split(',').map(id => parseInt(id));
+      queries.push({ $match: { _id: { $in: processIds } } });
+    }
+
     if (req.query && req.query.tribunal) {
       match.$match['tribunal'] = req.query.tribunal
     }
@@ -53,7 +58,7 @@ function paginatedResults(model) {
     }
 
     if (req.query && req.query.producerId){
-      match.$match['producerid'] = req.query.producerId
+      match.$match['producerId'] = req.query.producerId
     }
 
     if (req.query && req.query.livre) {

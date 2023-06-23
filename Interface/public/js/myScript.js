@@ -1,9 +1,8 @@
 
-document.getElementById('searchLivre').addEventListener('input', search);
-document.getElementById('searchProcesso').addEventListener('input', search);
-document.getElementById('searchRelator').addEventListener('input', search);
-document.getElementById('searchDescritores').addEventListener('input', search);
-
+if (document.getElementById('searchLivre')) document.getElementById('searchLivre').addEventListener('input', search);
+if (document.getElementById('searchProcesso')) document.getElementById('searchProcesso').addEventListener('input', search);
+if (document.getElementById('searchRelator')) document.getElementById('searchRelator').addEventListener('input', search);
+if (document.getElementById('searchDescritores')) document.getElementById('searchDescritores').addEventListener('input', search);
 
 function truncateText(text, maxLength) {
     if (text) {
@@ -29,7 +28,7 @@ function solicitation(str, page, limit) {
 
             data.results.forEach(result => {
                 // Criar o HTML para cada resultado
-                const listItemHTML = `<li class="list-group-item">
+                let listItemHTML = `<li class="list-group-item">
                 <div class="card mb -2"> <div class="card-body">
                 <h5 class="text-start text-primary"><a href="/acordaos/${result._id}">${result.Processo || 'N/A'}</a></h1>
                 <div class="row pb-2">
@@ -67,7 +66,21 @@ function solicitation(str, page, limit) {
                     </div>
                 </div>
                 </div>
-                </div></li>`;
+                </div>`;
+
+                console.log(favoritos)
+                
+                if (favoritos && favoritos[result._id]){
+                    let description = favoritos[result._id]
+                    listItemHTML += `<div class="card mb -2"><p>${description}</p></div>`
+                }
+
+                if (editable){
+                    listItemHTML += `<i class="fa-solid fa-trash"></i>`
+                    listItemHTML += `<i class="fa-solid fa-pen-to-square"></i>`
+                }
+
+                listItemHTML += '</li>';
 
                 // Adicionar o HTML à lista de resultados
                 resultsList.innerHTML += listItemHTML;

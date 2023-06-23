@@ -23,6 +23,26 @@ module.exports.getUser = id => {
         })
 }
 
+module.exports.getUserHistory = id => {
+    return User.findOne({ _id: id }, {history: 1})
+        .then(resposta => {
+            return resposta
+        })
+        .catch(erro => {
+            return erro
+        })
+}
+
+module.exports.getUserFavorites = id => {
+    return User.findOne({ _id: id }, {favorites: 1})
+        .then(resposta => {
+            return resposta
+        })
+        .catch(erro => {
+            return erro
+        })
+}
+
 module.exports.addUser = u => {
     return User.create(u)
         .then(resposta => {
@@ -44,13 +64,67 @@ module.exports.updateUser = (id, info) => {
 }
 
 module.exports.updateFavs = (id, fav) => {
-    return User.updateOne({ _id: id }, { $push: { favorites: fav } })
-        .then(resposta => {
-            return resposta
+    return this.getUser(id)
+    .then(response => {
+        let user = response
+        let existingFavorite = null;
+        for(let i=0; i<user.favorites.length; i++) {
+            if (user.favorites[i].id == fav.id) { // Dois iguais porque o id vem como string
+                existingFavorite = user.favorites[i]
+            }
+        }
+
+        if (existingFavorite) {
+          // Update the description of the existing favorite
+          existingFavorite.description = fav.description;
+        } else {
+          // Add a new favorite object
+          user.favorites.push({ id: fav.id, description: fav.description });
+        }
+
+        this.updateUser(id, user)
+        .then(response => {
+            return response
         })
-        .catch(erro => {
-            return erro
+        .catch(error => {
+            console.log("Erro: " + error.message);
+            return error 
         })
+    })
+    .catch(err => {
+        console.log("Erro2: " + err.message);
+        return err
+    })
+}
+
+module.exports.removeFavs = (id, fav) => {
+    return this.getUser(id)
+    .then(response => {
+        let user = response
+        let existingFavorite = null;
+        let updated = false;
+        for(let i=0; i<user.favorites.length; i++) {
+            if (user.favorites[i].id == fav.id) { // Dois iguais porque o id vem como string
+                user.favorites.splice(i, 1)
+                updated = true
+            }
+        }
+        if (updated){
+            this.updateUser(id, user)
+            .then(response => {
+                return response
+            })
+            .catch(error => {
+                console.log("Erro: " + error.message);
+                return error 
+            })
+        }
+        
+    })
+    .catch(err => {
+        console.log("Erro2: " + err.message);
+        return err
+    })
 }
 
 module.exports.updateHistory = (id, process) => {

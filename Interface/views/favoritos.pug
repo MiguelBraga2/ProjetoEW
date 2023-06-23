@@ -2,13 +2,13 @@ extends layout
 
 block content
     script. 
-        let editable = !{editable}
-        let user = !{JSON.stringify(user)}
-        if (user && user.level === 'admin'){
-            editable = true
+        let url = '#{url}';
+        let favoritosList = !{JSON.stringify(user.favorites)};
+        let favoritos = {}
+        for (let i = 0; i < favoritosList.length; i++) {
+            favoritos[favoritosList[i].id] = favoritosList[i].description;
         }
-        let favoritos
-        var url = '#{url}';
+
     div(style="display:block; content:''; height: 60px;")#topo
     // Modal
     #docModal.modal.fade(tabindex='-1', aria-labelledby='exampleModalLabel', aria-hidden='true')
@@ -44,7 +44,7 @@ block content
                         a.nav-item.nav-link(href='/pesquisas') Pesquisas
                     if user 
                         li
-                            a.nav-item.nav-link(href='/users/' + user.id) Perfil
+                            a.nav-item.nav-link(href='/users/' + user._id) Perfil
                         li
                             a.nav-item.nav-link(href='/users/logout') Terminar Sessão
                     else
@@ -55,17 +55,8 @@ block content
     // Acordãos
     section.py-5.text-center
         .container
-            h1.py-5 Acordãos
+            h1.py-5 Favoritos
             .row
-                  .col-md-3.py-5 
-                    .d-flex.justify-content-center
-                        input.mt-2.mb-3.form-control(type='search' placeholder="Pesquisa Livre..." id="searchLivre")
-                    .d-flex.justify-content-center
-                        input.mb-3.form-control(type='search' placeholder="Número do Processo..." id="searchProcesso")
-                    .d-flex.justify-content-center
-                        input.mb-3.form-control(type='search' placeholder="Pesquise por Relator..." id="searchRelator")
-                    .d-flex.justify-content-center
-                        input.mb-3.form-control(type='search' placeholder="Pesquise por Descritores..." id="searchDescritores")
                   .col-md-9.py-5
                     .d-flex.justify-content-center    
                         ul.list-group.list-group-flush#resultsList 
