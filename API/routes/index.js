@@ -58,7 +58,7 @@ function paginatedResults(model) {
     }
 
     if (req.query && req.query.producerId){
-      match.$match['producerid'] = req.query.producerId
+      match.$match['producerId'] = req.query.producerId
     }
 
     if (req.query && req.query.livre) {

@@ -67,9 +67,17 @@ function solicitation(str, page, limit) {
                 </div>
                 </div>
                 </div>`;
+
+                console.log(favoritos)
+                
                 if (favoritos && favoritos[result._id]){
                     let description = favoritos[result._id]
                     listItemHTML += `<div class="card mb -2"><p>${description}</p></div>`
+                }
+
+                if (editable){
+                    listItemHTML += `<i class="fa-solid fa-trash"></i>`
+                    listItemHTML += `<i class="fa-solid fa-pen-to-square"></i>`
                 }
 
                 listItemHTML += '</li>';

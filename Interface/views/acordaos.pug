@@ -2,6 +2,8 @@ extends layout
 
 block content
     script. 
+        let editable = !{editable}
+        let favoritos
         var url = '#{url}';
     div(style="display:block; content:''; height: 60px;")#topo
     // Modal

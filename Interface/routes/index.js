@@ -135,6 +135,23 @@ router.get('/acordaos/:id', verificaToken, (req, res) => {
     })
 })
 
+/**
+ * GET acordãos produzidos por um produces
+ */
+router.get('/acordaosProducer/:id', verificaToken, (req, res)=>{
+  jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+    if (err) {
+      res.render('error', {error: err, message: "Não possui acesso a este conteúdo..."});
+    } else if (payload.level === 'producer') {
+      const queryParams = `?producerId=${req.params.id}`;
+      var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
+      res.render('acordaos', {user: payload, url: apiUrl, editable: true});
+    } else {
+      res.render('error', {error : {} , message : "Não possui acesso a este conteúdo..."});
+    }
+  }); 
+  
+})
 
 /**
  * GET página com os acordãos
@@ -151,7 +168,7 @@ router.get('/acordaos', verificaToken, (req, res) => {
     if (err) {
       res.render('Error', {error : err, message : err.message})
     } else {
-      res.render('acordaos', {user: payload, url: apiUrl});
+      res.render('acordaos', {user: payload, url: apiUrl, editable: false});
     }
   });
   
