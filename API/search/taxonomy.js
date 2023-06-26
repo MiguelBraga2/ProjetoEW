@@ -1,20 +1,67 @@
 const fs = require('fs');
+var Judgment = require('../controllers/acordao')
 
-module.exports.lerFicheiro = (nomeFicheiro) => {
+module.exports.createDescriptorMap = async () => {
+  let descriptorMap = {}
+  let fullTextObject = {}
+  return Judgment.list()
+  .then(acordaos => {
+    for(const acordao of acordaos) {
+      const descritores = acordao.Descritores;
+      const relator = acordao.Relator;
+      if (relator){
+        const relatorWords = relator.split(/\s+/);
+        for(const word of relatorWords){
+          const treatedWord = word.trim().toLowerCase();
+
+          if (fullTextObject[treatedWord]) {
+            fullTextObject[treatedWord].push(acordao._id)
+          } else {
+            fullTextObject[treatedWord] = [acordao._id]
+          }
+        }
+      }
+      /*const filePath = 'reverse.json'; // Specify the file path where you want to write the object
+
+// Convert the object to a JSON string
+const jsonData = JSON.stringify(fullTextObject, null, 2);
+
+// Write the JSON string to a file
+fs.writeFile(filePath, jsonData, (err) => {
+  if (err) {
+    console.error('Error writing to file:', err);
+  } else {
+    console.log('Object written to file successfully.');
+  }
+});*/
+      
+      for (const descritor of descritores) {
+        if (descritor in descriptorMap) {
+          descriptorMap[descritor].push(acordao._id)
+        } else {
+          descriptorMap[descritor] = [acordao._id]
+        }
+      }
+    }
+    return [descriptorMap, fullTextObject]
+  })
+  .catch(error => {
+    console.log("Erro a obter os acordãos para a taxonomia: " + error.message)
+  })
+}
+
+module.exports.createTaxonomyTree = (descriptorMap) => {
+  let taxonomyTree = {}
   try {
-    const conteudo = fs.readFileSync(nomeFicheiro, 'utf8');
-    const linhas = conteudo.split('\n');
-    const tree = {};
-
-    for (const linha of linhas) {
+    for (const descritor of Object.keys(descriptorMap)) {
+      let linha = descritor;
       if (linha.trim() !== '') {
-        const [chave, valor] = linha.split(' - ');
-        const valores = valor.slice(1, -1).split(',').map(Number);
+        const [chave, valores] = [linha, descriptorMap[linha]]
 
         const trimmedLine = chave.trim();
         const words = trimmedLine.split(/\s+/);
 
-        let currentLevel = tree;
+        let currentLevel = taxonomyTree;
 
         for (let i = 0; i < words.length; i++) {
           const word = words[i];
@@ -47,7 +94,21 @@ module.exports.lerFicheiro = (nomeFicheiro) => {
       }
     }
 
-    return tree;
+    /*const filePath = 'output.json'; // Specify the file path where you want to write the object
+
+// Convert the object to a JSON string
+const jsonData = JSON.stringify(taxonomyTree, null, 2);
+
+// Write the JSON string to a file
+fs.writeFile(filePath, jsonData, (err) => {
+  if (err) {
+    console.error('Error writing to file:', err);
+  } else {
+    console.log('Object written to file successfully.');
+  }
+});*/
+
+    return taxonomyTree;
   } catch (error) {
     console.error(`Erro ao ler o ficheiro: ${error}`);
     return null;
@@ -83,6 +144,7 @@ module.exports.getProcessos = (termo, tree) => {
     }
   }
 
+  console.log(processos)
   return processos
 }
 

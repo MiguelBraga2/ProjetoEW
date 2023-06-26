@@ -5,9 +5,24 @@ var Acordao = require('../models/acordao.js')
 
 var Taxonomy = require('../search/taxonomy')
 
-const nomeFicheiro = './search/descriptors.txt';
 
-var tree = Taxonomy.lerFicheiro(nomeFicheiro);
+
+let taxonomyTree;
+let fullTextObject;
+let response
+
+async function getTaxonomyTree() {
+  try {
+    [response, fullTextObject] = await Taxonomy.createDescriptorMap();
+    taxonomyTree = await Taxonomy.createTaxonomyTree(response);
+    console.log("Tree set up")
+
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+getTaxonomyTree();
 
 var fullTextObjects = require('../search/full-text').fullTextObjects;
 
@@ -49,12 +64,10 @@ function paginatedResults(model) {
     }
 
     if (req.query && req.query.descritor) {
-      const processosComDescritor = Taxonomy.getProcessos(req.query.descritor, tree);
-
-      console.log(processosComDescritor)
-
-      queries.push({ $match: { _id: { $in: processosComDescritor } } });
-      console.log(queries)
+      //console.log("Descritor: " + req.query.descritor)
+        const processosComDescritor = Taxonomy.getProcessos(req.query.descritor, taxonomyTree);
+        queries.push({ $match: { _id: { $in: processosComDescritor } } });
+      
     }
 
     if (req.query && req.query.producerId){
@@ -62,7 +75,8 @@ function paginatedResults(model) {
     }
 
     if (req.query && req.query.livre) {
-      // Por fazer
+      console.log(fullTextObject[req.query.livre])
+      queries.push({ $match: { _id: { $in: fullTextObject[req.query.livre] } } });
     }
   
     const page = parseInt(req.query.page, 10) || 1;
