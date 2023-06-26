@@ -93,8 +93,8 @@ router.get('/pesquisas', verificaToken, (req, res)=>{
 router.get('/acordaos/novo', verificaToken, (req, res) => {
   jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
     if (err) {
-      res.render('error', {error: err, message: "Não possui acesso a este conteúdo..."});
-    } else if (payload.level === 'producer') {
+      res.render('error', {error: err, message: err.message});
+    } else if (payload.level === 'producer' || payload.level === 'admin') {
       res.render('novoAcordao', {user: payload});
     } else {
       res.render('error', {error : {} , message : "Não possui acesso a este conteúdo..."});
@@ -219,7 +219,13 @@ router.post('/description/:user_id/:acordao_id', verificaToken, (req, res) => {
 })
 
 router.post('/acordaos/novo',verificaToken, (req, res) => {
-  console.log(req.body)
+  axios.post(env.apiAccessPoint + '/acordaos', req.body)
+  .then(resp => {
+    res.redirect('/acordaos/'+req.body._id)
+  })
+  .catch(error => {
+    res.render('error', {error : error , message : "Erro a inserir um novo acordão"});
+  })
 });
 
 
