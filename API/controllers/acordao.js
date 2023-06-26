@@ -2,6 +2,7 @@ var Judgment = require('../models/acordao')
 var Algolia = require('./algolia.js')
 const fs = require('fs');
 const JSONStream = require('JSONStream');
+const { addToTaxonomyTree } = require('../search/taxonomy');
 
 /**
  * Retrieve all judgment from the BD
@@ -116,8 +117,15 @@ module.exports.getCurrentId = () => {
  * @param {judgment} judgment 
  * @returns the created judgment or an error
  */
-module.exports.addAcordao = (judgment) => {
-  return Judgment
+module.exports.addAcordao = (judgment, taxonomyTree) => {
+  if (!judgment._id){
+    this.getCurrentId()
+    .then(data => {
+      judgment['_id'] = data._id
+      for(let descritor of judgment.Descritores){
+        addToTaxonomyTree(taxonomyTree, descritor, [judgment._id])
+      }
+      return Judgment
             .create(judgment)
             .then(resp => {   
               // Se correu bem, enviar para a base de dados da algolia              
@@ -134,6 +142,30 @@ module.exports.addAcordao = (judgment) => {
             .catch(error => {
               return error
             })
+    })
+    .catch(error => {
+      return error
+    })
+  }
+  else{
+    return Judgment
+            .create(judgment)
+            .then(resp => {   
+              // Se correu bem, enviar para a base de dados da algolia              
+              Algolia.add(judgment)
+              .then(response => {
+                return resp
+              })
+              .catch(error => {
+                console.log(error)
+                return error
+              })
+              
+            })
+            .catch(error => {
+              return error
+            })
+  }
 }
 
 /**
@@ -312,16 +344,19 @@ let synonyms = {
   'Data da Decisão Singular': 'Data da Decisão Singular',
 }
 
-exports.processFile = (file_name, current_id) => {
+exports.processFile = (taxonomyTree, file_name, current_id) => {
   const StreamArray = require('stream-json/streamers/StreamArray');
   const stream = fs.createReadStream('../Interface/fileProcessing/raw_files/' + file_name).pipe(StreamArray.withParser());
   let chunks = [];
-
   stream
     .on('data', ({ value }) => {
       processDocument(value)
       value._id = current_id;
       current_id++;
+      for(let descritor of value.Descritores){
+        addToTaxonomyTree(taxonomyTree, descritor, [value._id])
+      }
+      
       chunks.push(value);
       if (chunks.length === 10000) {
         stream.pause();

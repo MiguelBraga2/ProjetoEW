@@ -55,43 +55,7 @@ module.exports.createTaxonomyTree = (descriptorMap) => {
   try {
     for (const descritor of Object.keys(descriptorMap)) {
       let linha = descritor;
-      if (linha.trim() !== '') {
-        const [chave, valores] = [linha, descriptorMap[linha]]
-
-        const trimmedLine = chave.trim();
-        const words = trimmedLine.split(/\s+/);
-
-        let currentLevel = taxonomyTree;
-
-        for (let i = 0; i < words.length; i++) {
-          const word = words[i];
-
-          // Verificar palavras a serem ignoradas
-          if (
-            word === '-' ||
-            /^([Àà]s?|[aAoO]s|[Aa]nte|[Aa]pós|[Aa]té|[Cc]om|[Cc]ontra|[Dd][eoa]s?|[Dd]esde|[Ee]m?|[Nn][oa]s?|[Ee]ntre|[Pp]ara|[Pp]erante|[Pp](or|el[oa])|[Ss]egundo|[Ss]em|[Ss]ob|[Ss]obre|[Tt]rás)$/.test(word)
-          ) {
-            continue;
-          }
-
-          const pretext = words.slice(0, i + 1).join(' ');
-
-          if (!currentLevel[pretext]) {
-            currentLevel[pretext] = {};
-          }
-
-          if (i === words.length - 1) {
-            // Folha
-            currentLevel[pretext]['processos'] = [...valores];
-          } else {
-            // Nodo intermédio
-            if (!currentLevel[pretext].subarvores) {
-              currentLevel[pretext].subarvores = {};
-            }
-            currentLevel = currentLevel[pretext].subarvores;
-          }
-        }
-      }
+      this.addToTaxonomyTree(taxonomyTree, linha, descriptorMap[descritor])
     }
 
     /*const filePath = 'output.json'; // Specify the file path where you want to write the object
@@ -115,6 +79,46 @@ fs.writeFile(filePath, jsonData, (err) => {
   }
 }
 
+module.exports.addToTaxonomyTree = (taxonomyTree, descritor, processos) => {
+  if (descritor.trim() !== '') {
+    const [chave, valores] = [descritor, processos]
+
+    const trimmedLine = chave.trim();
+    const words = trimmedLine.split(/\s+/);
+
+    let currentLevel = taxonomyTree;
+
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+
+      // Verificar palavras a serem ignoradas
+      if (
+        word === '-' ||
+        /^([Àà]s?|[aAoO]s|[Aa]nte|[Aa]pós|[Aa]té|[Cc]om|[Cc]ontra|[Dd][eoa]s?|[Dd]esde|[Ee]m?|[Nn][oa]s?|[Ee]ntre|[Pp]ara|[Pp]erante|[Pp](or|el[oa])|[Ss]egundo|[Ss]em|[Ss]ob|[Ss]obre|[Tt]rás)$/.test(word)
+      ) {
+        continue;
+      }
+
+      const pretext = words.slice(0, i + 1).join(' ').trim().toLowerCase();
+
+      if (!currentLevel[pretext]) {
+        currentLevel[pretext] = {};
+      }
+
+      if (i === words.length - 1) {
+        // Folha
+        currentLevel[pretext]['processos'] = [...valores];
+      } else {
+        // Nodo intermédio
+        if (!currentLevel[pretext].subarvores) {
+          currentLevel[pretext].subarvores = {};
+        }
+        currentLevel = currentLevel[pretext].subarvores;
+      }
+    }
+  }
+}
+
 module.exports.getProcessos = (termo, tree) => {
   const trimmedLine = termo.trim();
   const words = trimmedLine.split(/\s+/);
@@ -125,10 +129,16 @@ module.exports.getProcessos = (termo, tree) => {
   for (let i = 0; i < words.length; i++) {
     const pretext = words.slice(0, i + 1).join(' ');
     if (currentLevel[pretext]){
-      if(currentLevel[pretext].subarvores) 
+      if(currentLevel[pretext].subarvores){
+        if (currentLevel[pretext].processos){
+          for(let novoProcesso of currentLevel[pretext].processos){
+            processos.push(novoProcesso)
+          }
+        }
         currentLevel = currentLevel[pretext].subarvores;
+      }
       else if (currentLevel[pretext].processos) 
-      currentLevel = currentLevel[pretext].processos;
+        currentLevel = currentLevel[pretext].processos;
     }
     else{
       return []
@@ -144,7 +154,6 @@ module.exports.getProcessos = (termo, tree) => {
     }
   }
 
-  console.log(processos)
   return processos
 }
 

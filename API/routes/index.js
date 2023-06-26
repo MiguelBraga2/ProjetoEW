@@ -64,8 +64,9 @@ function paginatedResults(model) {
     }
 
     if (req.query && req.query.descritor) {
+      console.log(req.query.descritor.trim().toLowerCase())  
       //console.log("Descritor: " + req.query.descritor)
-        const processosComDescritor = Taxonomy.getProcessos(req.query.descritor, taxonomyTree);
+        const processosComDescritor = Taxonomy.getProcessos(req.query.descritor.trim().toLowerCase(), taxonomyTree);
         queries.push({ $match: { _id: { $in: processosComDescritor } } });
       
     }
@@ -75,8 +76,7 @@ function paginatedResults(model) {
     }
 
     if (req.query && req.query.livre) {
-      console.log(fullTextObject[req.query.livre])
-      queries.push({ $match: { _id: { $in: fullTextObject[req.query.livre] } } });
+      queries.push({ $match: { _id: { $in: fullTextObject[req.query.livre.trim().toLowerCase()] } } });
     }
   
     const page = parseInt(req.query.page, 10) || 1;
@@ -184,14 +184,14 @@ router.get('/currentId', (req, res) => {
 router.get('/postFile/:file_name', (req, res) => {
   Judgment.getCurrentId()
     .then(data => {
-      Judgment.processFile(req.params.file_name, data._id)
-        .then(data => {
+      Judgment.processFile(taxonomyTree, req.params.file_name, data._id)
+        /*.then(data => {
           res.status(200).json(data);
         })
         .catch(error => {
           console.log(error);
           res.status(521).json({ error: error, message: "Could not post the file" });
-        });
+        });*/
     })
     .catch(error => {
       console.log(error);
@@ -203,7 +203,7 @@ router.get('/postFile/:file_name', (req, res) => {
  * POST a judgment
  */
 router.post('/acordaos', (req,res) => {
-  Judgment.addAcordao(req.body)
+  Judgment.addAcordao(req.body, taxonomyTree)
     .then(data => {
       res.status(201).json(data)
     })
