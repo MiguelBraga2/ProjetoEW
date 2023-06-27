@@ -55,10 +55,10 @@ block content
             h1.py-5 Acordão
                 button.btn#fav-button
                     i#fav-icon(style="color: #e8e117")
-                .description
-                    form(action='/description/'+user.id+'/'+processo._id method="POST")
-                        input.description-input#description(name="description" type="text" placeholder="Adicione uma descrição")
-                        button.add-description-button(value='send' type='submit') Adicionar Descrição
+            .description
+                form.input-group.mb-3(action='/description/'+user.id+'/'+processo._id method="POST")
+                    textarea.form-control.description-input#description(name="description" type="text" placeholder="Adicione uma descrição")
+                    button.btn.btn-secondary.add-description-button(value='send' type='submit') Adicionar Descrição
             .row
                   .col-md-3.py-5.text-start
                         .d-flex.justify-content-center.mb-3
