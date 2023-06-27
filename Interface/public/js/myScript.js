@@ -79,11 +79,6 @@ function solicitation(str, page, limit) {
                 </div>
                 </div>`;
 
-                if (favoritos && favoritos[result._id]){
-                    let description = favoritos[result._id]
-                    listItemHTML += `<div class="card mb -2"><p>${description}</p></div>`
-                }
-
                 // Adicionar o HTML à lista de resultados
                 resultsList.innerHTML += listItemHTML;
             });
