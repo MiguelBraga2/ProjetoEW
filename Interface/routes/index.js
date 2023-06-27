@@ -108,7 +108,7 @@ router.get('/acordaos/novo', verificaToken, (req, res) => {
 router.get('/acordaos/:id', verificaToken, (req, res) => {
   const token = '?token=' + req.cookies.token;
   axios.get(env.apiAccessPoint + '/acordaos/' + req.params.id)
-    .then(response => {
+    .then(response => { 
       jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
         if (err) {
           res.render('error', {error: err, message: "Error verifying the token."});
@@ -117,8 +117,13 @@ router.get('/acordaos/:id', verificaToken, (req, res) => {
             .then(responseAuth => {
               axios.get(env.authAcessPoint + '/' + payload.id + '/favorites' + token)
               .then(response2 => {
-                console.log(response2.data.dados.favorites)
-                res.render('processo', {processo: response.data[0], user: payload, favoritos: response2.data.dados.favorites});
+                axios.get(env.apiAccessPoint + '/acordaos/apensos/' + response.data[0].Processo.replace('/', ','))
+                .then(response3 => {
+                  res.render('processo', {processo: response.data[0], user: payload, favoritos: response2.data.dados.favorites, apendices: response3.data});
+                })
+                .catch(err => {
+                  res.render('error', {error: err, message: "Erro a buscar os apendices."});
+                })
               })
               .catch(err => {
                 res.render('error', {error: err, message: "Erro a receber os favoritos."});
@@ -219,9 +224,11 @@ router.post('/files', verificaToken, upload.single('myFile'), (req, res) => {
       })
       axios.get(env.apiAccessPoint + '/postFile/' + req.file.originalname)
       .then(response => {
+        console.log(response)
         res.redirect('/')
       })
       .catch(err => {
+        console.log(err)
         res.status(500).render('error', {error: err, message: err.message});
       })
     

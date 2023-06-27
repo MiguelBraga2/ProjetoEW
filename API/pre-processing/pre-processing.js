@@ -1,3 +1,8 @@
+const fs = require('fs')
+
+const Search = require('../search/search')
+const Judgment = require('../controllers/acordao')
+
 /**
  * Synonyms for the fields of the documents
  * There are repeated fields
@@ -118,22 +123,21 @@ exports.processFile = (taxonomyTree, file_name, current_id) => {
     const StreamArray = require('stream-json/streamers/StreamArray');
     const stream = fs.createReadStream('../Interface/fileProcessing/raw_files/' + file_name).pipe(StreamArray.withParser());
     let chunks = [];
-    stream
+    return stream
       // When a chunk is read
       .on('data', ({ value }) => {
         processDocument(value) // Process that document
         value._id = current_id; // Add the id
         current_id++; // Increment the id
-        
         for(let descritor of value.Descritores){ // Add the descriptor to the taxonomy tree
-          addToTaxonomyTree(taxonomyTree, descritor, [value._id])
+          Search.addToTaxonomyTree(taxonomyTree, descritor, [value._id])
         }
         chunks.push(value);
 
         // If the chunk is big enough, send it to the database
-        if (chunks.length === 10000) {
+        if (chunks.length === 5) {
           stream.pause();
-          postDocuments(chunks)
+          Judgment.postDocuments(chunks)
             .then(() => {
               chunks = [];
               stream.resume();
@@ -146,12 +150,15 @@ exports.processFile = (taxonomyTree, file_name, current_id) => {
     })
     // When the file is completely read
     .on('end', () => {
+        console.log('All done!')
         if (chunks.length) {
           // Send the last chunk to the database
-          postDocuments(chunks)
+          Judgment.postDocuments(chunks)
             .catch(error => console.log(error));
         }
-    });
+    })
+    .on('error', err => console.error(err));
+    console.log(chunks)
   };
   
   
@@ -166,6 +173,10 @@ exports.processFile = (taxonomyTree, file_name, current_id) => {
     document['Áreas Temáticas'] = []
     document['Referências de Publicação'] = []
     let descritores = []
+
+    if (!document['Descritores']){
+      document['Descritores'] = []
+    }
   
     for (let [key, value] of entries){
       // Quando há unificação de um campo para outro

@@ -71,6 +71,12 @@ block content
                             a.list-group-item.list-group-item-action(href="#integral") Decisão Integral
                         .d-flex.justify-content-center.mb-3
                             a.list-group-item.list-group-item-action(href="#topo") Voltar ao topo
+                        .d-flex.justify-content-center.mb-3
+                            a.list-group-item.list-group-item-action(href="#topo") Apêndices
+                        
+                        each processo in apendices
+                            .d-flex.justify-content-center.mb-3
+                                a.list-group-item.list-group-item-action(href="/acordaos/"+processo._id) #{processo['Data do Acordão']}
                   .col-md-9.py-5
                     section.text-start#descritores 
                         h1.text-warning= processo.Processo
