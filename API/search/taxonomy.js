@@ -4,23 +4,30 @@ var Judgment = require('../controllers/acordao')
 module.exports.createDescriptorMap = async () => {
   let descriptorMap = {}
   let fullTextObject = {}
+  let fullTextFields = ['Relator', 'tribunal']
+  for(let field of fullTextFields){
+    fullTextObject[field] = {}
+  }
   return Judgment.list()
   .then(acordaos => {
     for(const acordao of acordaos) {
       const descritores = acordao.Descritores;
-      const relator = acordao.Relator;
-      if (relator){
-        const relatorWords = relator.split(/\s+/);
-        for(const word of relatorWords){
-          const treatedWord = word.trim().toLowerCase();
-
-          if (fullTextObject[treatedWord]) {
-            fullTextObject[treatedWord].push(acordao._id)
-          } else {
-            fullTextObject[treatedWord] = [acordao._id]
+      for(let field of fullTextFields){
+        const fieldText = acordao[field];
+        if(fieldText){
+          const fieldWords = fieldText.split(/\s+/);
+          for(const word of fieldWords){
+            const treatedWord = word.trim().toLowerCase();
+  
+            if (fullTextObject[field][treatedWord]) {
+              fullTextObject[field][treatedWord].push(acordao._id)
+            } else {
+              fullTextObject[field][treatedWord] = [acordao._id]
+            }
           }
         }
       }
+
       /*const filePath = 'reverse.json'; // Specify the file path where you want to write the object
 
 // Convert the object to a JSON string

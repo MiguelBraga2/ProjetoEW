@@ -24,8 +24,6 @@ async function getTaxonomyTree() {
 
 getTaxonomyTree();
 
-var fullTextObjects = require('../search/full-text').fullTextObjects;
-
 function convertStrLowerCaseMinusFristChar(str) {
   // Extrai o primeiro caractere em maiúscula
   const firstChar = str.charAt(0).toUpperCase();
@@ -76,7 +74,12 @@ function paginatedResults(model) {
     }
 
     if (req.query && req.query.livre) {
-      queries.push({ $match: { _id: { $in: fullTextObject[req.query.livre.trim().toLowerCase()] } } });
+      let matchedProcessos = []
+      for(key in fullTextObject){
+        matchedProcessos = matchedProcessos.concat(fullTextObject[key][req.query.livre.trim().toLowerCase()])
+      }
+      console.log(matchedProcessos)
+      queries.push({ $match: { _id: { $in: matchedProcessos } } });
     }
   
     const page = parseInt(req.query.page, 10) || 1;
