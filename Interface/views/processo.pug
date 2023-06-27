@@ -81,35 +81,35 @@ block content
                     section.text-start#descritores 
                         h1.text-warning= processo.Processo
                         hr.text-warning
-                        p #[b Relator:] #{processo.Relator}
-                        p #[b Descritores:] #{processo.Descritores}
-                        p #[b Processo:] #{processo.Processo}
-                        p #[b Nº Convencional:] #{processo['Nº Convencional']}
-                        p #[b Data do Acordão:] #{processo['Data do Acordão']}
-                        p #[b Votação:] #{processo['Votação']}
-                        p #[b Texto Integral:] #{processo['Texto Integral']}
-                        p #[b Nível de acesso:] #{processo['Nível de acesso']}
-                        p #[b Meio Processual:] #{processo['Meio Processual']}
-                        p #[b Decisão:] #{processo['Decisão']}
-                        p #[b Indicações eventuais:] #{processo['Indicações eventuais']}  
+                        p #[b Relator:] #{processo.Relator ? processo.Relator : 'N/A'}
+                        p #[b Descritores:] #{processo.Descritores ? processo.Descritores : 'N/A'}
+                        p #[b Processo:] #{processo.Processo ? processo.Processo : 'N/A'}
+                        p #[b Nº Convencional:] #{processo['Nº Convencional'] ? processo['Nº Convencional'] : 'N/A'}
+                        p #[b Data do Acordão:] #{processo['Data do Acordão'] ? processo['Data do Acordão'] : 'N/A'}
+                        p #[b Votação:] #{processo['Votação'] ? processo['Votação'] : 'N/A'}
+                        p #[b Texto Integral:] #{processo['Texto Integral'] ? processo['Texto Integral'] : 'N/A'}
+                        p #[b Nível de acesso:] #{processo['Nível de acesso'] ? processo['Nível de acesso'] : 'N/A'}
+                        p #[b Meio Processual:] #{processo['Meio Processual'] ? processo['Meio Processual'] : 'N/A'}
+                        p #[b Decisão:] #{processo['Decisão'] ? processo['Decisão'] : 'N/A'}
+                        p #[b Indicações eventuais:] #{processo['Indicações eventuais'] ? processo['Indicações eventuais'] : 'N/A'}  
                         p #[b Url:] 
-                            a(href='http://www.dgsi.pt' + processo['url']) #{processo['url']}  
+                            a(href='http://www.dgsi.pt' + processo['url']) #{processo['url'] ? processo['url'] : 'N/A'}  
                                
                         each val in Object.entries(processo).filter(([key]) => !['url', '_id', 'Relator', 'Descritores', 'Processo', 'Nº Convencional', 'Data do Acordão', 'Votação', 'Texto Integral', 'Nível de acesso', 'Meio Processual', 'Decisão', 'Indicações eventuais', 'Sumário', 'Decisão Texto Parcial', 'Decisão Texto Integral' ].includes(key))  
-                                p #[b #{val[0]}:]  #{val[1]}
+                                p #[b #{val[0]}:]  #{val[1] ? val[1] : 'N/A'}
 
                     section.text-start#sumario.mt-2 
                         h1.text-warning Sumário
                         hr.text-warning
-                        p #{processo['Sumário']}
+                        p #{processo['Sumário'] ? processo['Sumário'] : 'N/A'}
                     section.text-start#parcial.mt-2 
                         h1.text-warning Decisão Texto Parcial 
                         hr.text-warning
-                        p #{processo['Decisão Texto Parcial']}
+                        p #{processo['Decisão Texto Parcial'] ? processo['Decisão Texto Parcial'] : 'N/A'}
                     section.text-start#integral.mt-2 
                         h1.text-warning Decisão Texto Integral
                         hr.text-warning
-                        p #{processo['Decisão Texto Integral']}
+                        p #{processo['Decisão Texto Integral'] ? processo['Decisão Texto Integral'] : 'N/A'}
     script(type="text/javascript" src="/public/js/favoritos.js")
     // Footer
     footer.p-3.bg-light.text-center.mt-auto.position-relative.shadow

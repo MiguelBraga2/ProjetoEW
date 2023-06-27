@@ -223,15 +223,13 @@ router.post('/files', verificaToken, upload.single('myFile'), (req, res) => {
         }
       })
       axios.get(env.apiAccessPoint + '/postFile/' + req.file.originalname)
-      .then(response => {
-        console.log(response)
-        res.redirect('/')
+      .then(response => {        
       })
       .catch(err => {
         console.log(err)
         res.status(500).render('error', {error: err, message: err.message});
       })
-    
+      res.redirect('/')
     } else {
       res.render('error', {error : {} , message : "Não tem acesso a este conteúdo"});
     }
