@@ -50,7 +50,7 @@ function solicitation(str, page, limit) {
                         <div class="text-start"> <b>Relator:</b> ${result.Relator || 'N/A'}</div>
                     </div>
                     <div class="col-md-4"> 
-                        <div class="text-start"> <b>Data do Acordão:</b> ${result['Data do Acordão'] || 'N/A'}</div>
+                        <div class="text-start"> <b>Data do Acordão:</b> ${result['Data do Acordão'].slice(0,10) || 'N/A'}</div>
                     </div>
                 </div>
                 <div class="text-start pb-2"> <b>Área Temática:</b> ${result['Área Temática'] || 'N/A'}</div>
