@@ -30,7 +30,18 @@ function solicitation(str, page, limit) {
                 // Criar o HTML para cada resultado
                 let listItemHTML = `<li class="list-group-item">
                 <div class="card mb -2"> <div class="card-body">
+                <div class="row pb-2">
+                <div class="col-md-6">
                 <h5 class="text-start text-primary"><a href="/acordaos/${result._id}">${result.Processo || 'N/A'}</a></h1>
+                </div>
+                <div class="col-md-6">`
+                if (editable){
+                    listItemHTML += `<div class="text-end h5"><a class="mx-1" href="/acordaos/delete/${result._id}"><i class="fa-solid fa-trash"></i></a>    `
+                    listItemHTML += `<a class="mx-1" href="/acordaos/edit/${result._id}"><i class="fa-solid fa-pen-to-square"></i></a></div>`
+                }
+
+
+                listItemHTML +=`</div></div>
                 <div class="row pb-2">
                     <div class="col-md-4"> 
                         <div class="text-start"> <b>Tribunal:</b> ${result.tribunal || 'N/A'}</div>
@@ -68,19 +79,10 @@ function solicitation(str, page, limit) {
                 </div>
                 </div>`;
 
-                console.log(favoritos)
-                
                 if (favoritos && favoritos[result._id]){
                     let description = favoritos[result._id]
                     listItemHTML += `<div class="card mb -2"><p>${description}</p></div>`
                 }
-
-                if (editable){
-                    listItemHTML += `<a href="/acordaos/delete/${result._id}"><i class="fa-solid fa-trash"></i></a>`
-                    listItemHTML += `<a href="/acordaos/edit/${result._id}"><i class="fa-solid fa-pen-to-square"></i></a>`
-                }
-
-                listItemHTML += '</li>';
 
                 // Adicionar o HTML à lista de resultados
                 resultsList.innerHTML += listItemHTML;
