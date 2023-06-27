@@ -1,53 +1,22 @@
+/**
+ * Module to add and update documents in the databases
+ */
+
+// Model that makes the connection with the mongoDB database
 var Judgment = require('../models/acordao')
+
+// Controller that provides functionality to connect with the algolia database
 var Algolia = require('./algolia.js')
+
+// Module fs - for I/O operations
 const fs = require('fs');
-const JSONStream = require('JSONStream');
-const { addToTaxonomyTree } = require('../search/taxonomy');
+
+// Function from the search used used to update the search structures
+const { addToTaxonomyTree } = require('../search/search');
 
 /**
- * Retrieve all judgment from the BD
- * RETRIEVE
- * @returns The judgments or an error
+ * Mapping the court acronyms to their names
  */
-module.exports.list = () => {
-    return Judgment
-                   .find()
-                   .then(resp => {
-                     return resp
-                   })
-                   .catch(error => {
-                     return error
-                   })
-}
-
-module.exports.getAcordaos = (filter, projection) => {
-  return Judgment
-                 .find(filter, projection)
-                 .then(resp => {
-                   return resp
-                 })
-                 .catch(error => {
-                   return error
-                 })
-}
-
-/**
- * Retrieve a judgment from the BD given its id
- * RETRIEVE
- * @param {id} id the id of the judgment
- * @returns The judgment or an error
- */
-module.exports.getAcordao = id => {
-    return Judgment
-                   .find({_id: id})
-                   .then(resp => {
-                     return resp
-                   })
-                   .catch(error => {
-                     return error
-                   })
-}
-
 var nomesTribunais = {
   'atco1': 'Tribunal Constitucional',
   'jcon': 'Tribunal dos Conflitos',
@@ -65,393 +34,185 @@ var nomesTribunais = {
   'jtrp': 'Tribunal da Relação do Porto'
 }
 
+/**
+ * Retrieve all judgments from the BD
+ * RETRIEVE
+ * @returns The judgments or an error
+ */
+module.exports.list = () => {
+  return Judgment
+          .find() // No filters
+          .then(resp => {
+            return resp
+          })
+          .catch(error => {
+            console.log("Controller mongoDB: " + error)
+            return error
+          })
+}
+
+/**
+ * Retrieve a judgment from the BD given its id
+ * RETRIEVE
+ * @param {*} id - the id of the judgment
+ * @returns The judgment or an error
+ */
+module.exports.getAcordao = id => {
+  return Judgment
+          .find({_id: id})
+          .then(resp => {
+            return resp
+          })
+          .catch(error => {
+            console.log("Controller mongoDB: " + error)
+            return error
+          })
+}
+/**
+ * Retrieve all distinct courts
+ * @returns an object that relates each acronym in the db to its name
+ */
 module.exports.getTribunais = () => {
   return Judgment
         .distinct('tribunal')
         .then(resp => {
           var tribunais = {}    
-
+          
+          // Foreach court acronym, add their complete name
           for(var i = 0; i < resp.length; i++) {
             tribunais[resp[i]] = nomesTribunais[resp[i]]
           }
           return tribunais
         })
         .catch(error => {
-          return error
-        })
-}
-
-module.exports.getAcordaosDoTribunal = tribunal => {
-  return Judgment
-        .find({tribunal: tribunal})
-        .then(resp => {
-          return resp
-        })
-        .catch(error => {
-          return error
-        })
-}
-
-module.exports.getCurrentId = () => {
-  return Judgment
-        .find({}, {_id: 1})
-        .sort({_id: -1})
-        .limit(1)
-        .then(resp => {
-          if (resp.length == 0){
-            return {_id: 0}
-          }
-          else{
-            return {_id: resp[0]._id+1}
-          }
-        })
-        .catch(error => {
-          console.log(error.message)
+          console.log("Controller mongoDB: " + error)
           return error
         })
 }
 
 /**
- * Creates a new judgment in the BD
+ * Retrieve all judgments from a specific court
+ * @param {*} tribunal - the acronym of the court
+ * @returns a list of ids of the judgments from that court
+ */
+module.exports.getAcordaosDoTribunal = tribunal => {
+  return Judgment
+          .find({tribunal: tribunal})
+          .then(resp => {
+            return resp
+          })
+          .catch(error => {
+            console.log("Controller mongoDB: " + error)
+            return error
+          })
+}
+
+/**
+ * Get the next id to be used in the database
+ * @returns the next id to be used
+ */
+module.exports.getCurrentId = () => {
+  return Judgment
+          .find({}, {_id: 1})
+          .sort({_id: -1}) // Sort descending
+          .limit(1) // Only the maximum
+          .then(resp => {
+            // If there are no judgments in the database, start in 0
+            if (resp.length == 0){
+              return {_id: 0}
+            }
+            else{
+              // Else return the maximum id +1
+              return {_id: resp[0]._id+1}
+            }
+          })
+          .catch(error => {
+            console.log("Controller mongoDB: " + error)
+            return error
+          })
+}
+
+// For PUT, POST and DELETE operations, we must update also in the algolia database
+
+/**
+ * Creates a new judgment in the BDs
  * CREATE
  * @param {judgment} judgment 
  * @returns the created judgment or an error
  */
-module.exports.addAcordao = (judgment, taxonomyTree) => {
-  if (!judgment._id){
-    this.getCurrentId()
-    .then(data => {
-      judgment['_id'] = data._id
-      for(let descritor of judgment.Descritores){
-        addToTaxonomyTree(taxonomyTree, descritor, [judgment._id])
-      }
-      return Judgment
-            .create(judgment)
-            .then(resp => {   
-              // Se correu bem, enviar para a base de dados da algolia              
-              Algolia.add(judgment)
-              .then(response => {
-                return resp
-              })
-              .catch(error => {
-                console.log(error)
-                return error
-              })
-              
-            })
-            .catch(error => {
-              return error
-            })
-    })
-    .catch(error => {
-      return error
-    })
+module.exports.addAcordao = async (judgment, taxonomyTree) => {
+  try {
+    // If the judgment does not have an id, get the next id to be used
+    if (!judgment._id) {
+      const data = await this.getCurrentId();
+      judgment._id = data._id;
+      
+    }
+
+    // Insert it in the database
+    const resp = await Judgment.create(judgment);
+    await Algolia.add([judgment]);
+
+    // Update the taxonomy tree
+    for (let descritor of judgment.Descritores) {
+      addToTaxonomyTree(taxonomyTree, descritor, [judgment._id]);
+    }
+
+    return resp;
+  } catch (error) {
+    console.log("Controller mongoDB: " + error);
+    return error;
   }
-  else{
-    return Judgment
-            .create(judgment)
-            .then(resp => {   
-              // Se correu bem, enviar para a base de dados da algolia              
-              Algolia.add(judgment)
-              .then(response => {
-                return resp
-              })
-              .catch(error => {
-                console.log(error)
-                return error
-              })
-              
-            })
-            .catch(error => {
-              return error
-            })
-  }
-}
+};
+
 
 /**
  * Updates a judgment in the BD
  * UPDATE
  * @param {judgment} judgment 
- * @returns the updated judgment(Verificar) or an error
+ * @returns the updated judgment or an error
  */
-module.exports.updateAcordao = (judgment, id) => {
-  return Judgment
-                 .updateOne({_id: id}, judgment)
-                 .then(resp => {
-                  judgment._id = id
-                   Algolia.update(judgment)
-                    .then(response => {
-                      return resp
-                    })
-                    .catch(error => {
-                      return error
-                    })
-                 })
-                  .catch(error => {
-                   return error
-                 })
-                
-}
-
-/**
- * Deletes a judgment from the BD
- * DELETE
- * @param {id} id 
- * @returns the deleted judgment(Verificar) or an error
- */
-module.exports.deleteAcordao = id => {
-  return Judgment
-        .deleteOne({_id: id})
-        .then(resp => {
-          // Se correu bem, remover da base de dados do algolia
-          Algolia.remove(id)
-          .then(response => {
-            return resp
-          })
-          .catch(error => {
-            return error
-          })
-          
-        })
-        .catch(error => {
-          return error
-        })
-} 
-
-var postDocuments = (documents) => {
-  return Judgment
-  .insertMany(documents)
-  .then(resp => {   
-    // Se correu bem, enviar para a base de dados da algolia              
-    Algolia.add(documents)
-    .then(response => {
-      return resp
-    })
-    .catch(error => {
-      console.log(error)
-      return error
-    })
-    
-  })
-  .catch(error => {
-    console.log(error)
-    return error
-  })
-}
-
-let synonyms = {
-  'Processo': 'Processo',
-  'url': 'url',
-  'tribunal': 'tribunal',
-  'Data do Acordão': 'Data do Acordão',
-  'Descritores': 'Descritores',
-  'Relator': 'Relator',
-  'Votação': 'Votação',
-  'Texto Integral': 'Texto Integral',
-  'Decisão': 'Decisão',
-  'Meio Processual': 'Meio Processual',
-  'Nº do Documento': 'Nº do Documento',
-  'Nº Convencional': 'Nº Convencional',
-  'Sumário': 'Sumário',
-  'Privacidade': 'Privacidade',
-  'Legislação Nacional': 'Legislação Nacional',
-  'Decisão Texto Integral': 'Decisão Texto Integral',
-  'Área Temática': 'Área Temática',
-  'Tribunal': 'Tribunal',
-  'Recorrente': 'Recorrente',
-  'Recorrido 1': 'Recorrido 1',
-  'Data de Entrada': 'Data de Entrada',
-  'Jurisprudência Nacional': 'Jurisprudência Nacional',
-  'Área Temática 1': 'Área Temática 1',
-  'Objecto': 'Objecto',
-  'Reclamações': 'Reclamações',
-  'Ano da Publicação': 'Ano da Publicação',
-  'Indicações Eventuais': 'Indicações Eventuais',
-  'Tribunal Recurso': 'Tribunal Recurso',
-  'Data': 'Data',
-  'Secção': 'Juízo ou Secção',
-  'Tribunal Recorrido': 'Tribunal Recorrido',
-  'Processo no Tribunal Recurso': 'Processo no Tribunal Recurso',
-  '1ª Pág. de Publicação do Acordão': '1ª Pág. de Publicação do Acordão',
-  'Apêndice': 'Apêndice',
-  'Data do Apêndice': 'Data do Apêndice',
-  'Processo no Tribunal Recorrido': 'Processo no Tribunal Recorrido',
-  'Referência a Doutrina': 'Referência a Doutrina',
-  'Área Temática 2': 'Área Temática 2',
-  'Data Dec. Recorrida': 'Data Dec. Recorrida',
-  'Página': 'Página',
-  'Referência de Publicação': 'Referência de Publicação',
-  'Texto Parcial': 'Texto Parcial',
-  'Parecer Ministério Público': 'Parecer Ministério Público',
-  'Referência Publicação 1': 'Referência Publicação 1',
-  'Doutrina': 'Referência a Doutrina',
-  'Espécie': 'Espécie',
-  'Acordão': 'Acordão',
-  'Requerente': 'Requerente',
-  'Requerido': 'Requerido',
-  'Nº do Volume': 'Nº do Volume',
-  'Magistrado': 'Magistrado',
-  'Contencioso': 'Contencioso',
-  'Nº Processo/TAF': 'Nº Processo/TAF',
-  'Sub-Secção': 'Sub-Secção',
-  'Normas Apreciadas': 'Normas Apreciadas',
-  'Constituição': 'Constituição',
-  'Nº do Diário da República': 'Nº do Diário da República',
-  'Série do Diário da República': 'Série do Diário da República',
-  'Data do Diário da República': 'Data do Diário da República',
-  'Página do Diário da República': 'Página do Diário da República',
-  'Referência a Pareceres': 'Referência a Pareceres',
-  'Disponível na JTCA': 'Disponível na JTCA',
-  'Legislação Comunitária': 'Legislação Comunitária',
-  'Referências Internacionais': 'Referências Internacionais',
-  'Normas Julgadas Inconst.': 'Normas Declaradas Inconst.',
-  'Recorrido 2': 'Recorrido 2',
-  'Normas Suscitadas': 'Normas Suscitadas',
-  'Voto Vencido': 'Voto Vencido',
-  'Apenso': 'Apenso',
-  'Jurisprudência Internacional': 'Jurisprudência Internacional',
-  'Legislação Estrangeira': 'Legislação Estrangeira',
-  'Recusa Aplicação': 'Recusa Aplicação',
-  'Declaração de Voto': 'Declaração de Voto',
-  'Tribunal 1ª Instância': 'Tribunal 1ª Instância',
-  'Data da Decisão': 'Data da Decisão',
-  'Texto das Cláusulas Abusivas': 'Texto das Cláusulas Abusivas',
-  'Recursos': 'Recurso',
-  'Autor': 'Autor',
-  'Réu': 'Réu',
-  'Juízo ou Secção': 'Juízo ou Secção',
-  'Tipo de Contrato': 'Tipo de Contrato',
-  'Tipo de Ação': 'Tipo de Ação',
-  'Volume dos Acordãos do T.C.': 'Volume dos Acordãos do T.C.',
-  'Página do Volume': 'Página do Volume',
-  'Página do Boletim do M.J.': 'Página do Boletim do M.J.',
-  'Nº do Boletim do M.J.': 'Nº do Boletim do M.J.',
-  'Jurisprudência Constitucional': 'Jurisprudência Constitucional',
-  'Normas Declaradas Inconst.': 'Normas Declaradas Inconst.',
-  'Nº Único do Processo': 'Nº Único do Processo',
-  'Data do Acórdão': 'Data do Acordão',
-  'Recurso': 'Recurso',
-  'Observações': 'Observações',
-  'Data da Decisão Sumária': 'Data da Decisão Sumária',
-  'Jurisprudência Estrangeira': 'Jurisprudência Estrangeira',
-  'Outras Publicações': 'Outras Publicações',
-  'Referência Processo': 'Referência Processo',
-  'Outra Jurisprudência': 'Outra Jurisprudência',
-  'Referência Publicação 2': 'Referência Publicação 2',
-  'Data da Reclamação': 'Data da Reclamação',
-  'Peça Processual': 'Peça Processual',
-  'Tema': 'Tema',
-  'Data da Decisão Singular': 'Data da Decisão Singular',
-}
-
-exports.processFile = (taxonomyTree, file_name, current_id) => {
-  const StreamArray = require('stream-json/streamers/StreamArray');
-  const stream = fs.createReadStream('../Interface/fileProcessing/raw_files/' + file_name).pipe(StreamArray.withParser());
-  let chunks = [];
-  stream
-    .on('data', ({ value }) => {
-      processDocument(value)
-      value._id = current_id;
-      current_id++;
-      for(let descritor of value.Descritores){
-        addToTaxonomyTree(taxonomyTree, descritor, [value._id])
-      }
-      
-      chunks.push(value);
-      if (chunks.length === 10000) {
-        stream.pause();
-        postDocuments(chunks)
-          .then(() => {
-            chunks = [];
-            stream.resume();
-          })
-          .catch(error => {
-            console.log(error);
-            stream.resume();
-          });
-      }
-    })
-    .on('end', () => {
-      if (chunks.length) {
-        postDocuments(chunks)
-          .catch(error => console.log(error));
-      }
-    });
+module.exports.updateAcordao = async (judgment, id) => {
+  try {
+    await Judgment.updateOne({ _id: id }, judgment);
+    judgment._id = id;
+    await Algolia.update(judgment);
+    return judgment;
+  } catch (error) {
+    console.log("Controller mongoDB: " + error)
+    return error;
+  }
 };
 
+/**
+ * Deletes a judgment from the BDs
+ * DELETE
+ * @param {int} id 
+ * @returns the deleted judgment or an error
+ */
+module.exports.deleteAcordao = async (id) => {
+  try {
+    await Judgment.deleteOne({ _id: id });
+    await Algolia.remove(id);
+    return { success: true };
+  } catch (error) {
+    return error;
+  }
+};
 
 /**
- * Processes a document, adding new fields, removing other, formatting, etc
+ * Add a list of documents to the databases
+ * For efficiency purposes and to be used after processing uploaded files
+ * @param {*} documents 
+ * @returns an acknowledgment or an error
  */
-let processDocument = (document) => {
-  // Iterate over the keys of the document
-  const entries = Object.entries(document);
-  // Campos unificados para listas
-  document['Recorridos'] = []
-  document['Áreas Temáticas'] = []
-  document['Referências de Publicação'] = []
-  let descritores = []
-
-  for (let [key, value] of entries){
-    // Quando há unificação de um campo para outro
-    if (key in synonyms){
-      if (key != synonyms[key]){
-        document[synonyms[key]] = value
-        delete document[key]
-      }
-      if (value == ""){ // Remover os valores nulos
-        delete document[key]
-        continue;
-      }
-      if (key.startsWith('Data')){
-        const d = new Date(value)
-        try{
-          document[key] = d.toISOString();
-        }
-        catch(err){
-          delete document[key]
-        }
-      }
-      // Parsing de cada descritor (Separar por ;)
-      if (key === 'Descritores'){
-        for(desc in document['Descritores']){
-          let novosDescritores = document['Descritores'][desc].split(';')
-          for(descritor in novosDescritores){
-            descritores.push(novosDescritores[descritor].trim())
-          }
-        }
-        document['Descritores'] = descritores
-      }
-      if (key.startsWith('Recorrido')){
-        document['Recorridos'].push(value)
-        delete document[key]
-      }
-      if (key.startsWith('Área Temática') && typeof document[key] === 'string'){
-        let novasAreasTematicas = document[key].split(';')
-        for(novaAreaTematica in novasAreasTematicas){
-          document['Áreas Temáticas'].push(novasAreasTematicas[novaAreaTematica].trim())
-        }
-        delete document[key]
-      }
-      if (key.startsWith('Referência de Publicação') || key.startsWith('Referência Publicação')){
-        document['Referências de Publicação'].push(value)
-        delete document[key]
-      }
-      // Casos em que a "Data da Decisão Sumária" é igual à "Data do Acordão" e o "Nº Único do Processo" é igual ao "Processo
-      if (key === 'Data da Decisão Sumária'){
-        if (value === document['Data do Acordão']){
-          delete document[key]
-        }
-      }
-      // Casos em que o "Nº Único do Processo" é igual ao "Processo"
-      if (key === 'Nº Único do Processo'){
-        if (value === document['Processo']){
-          delete document[key]
-        }
-      }
-    } // Caso essa chave não conste da lista
-    else {
-      delete document[key]
-    }
+const postDocuments = async (documents) => {
+  try {
+    const resp = await Judgment.insertMany(documents);
+    await Algolia.add([documents]);
+    return resp;
+  } catch (error) {
+    console.log(error);
+    return error;
   }
-}
+};

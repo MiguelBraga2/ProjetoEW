@@ -1,16 +1,20 @@
 var express = require('express');
 var router = express.Router();
+
+// Controller to the dbs
 var Judgment = require('../controllers/acordao')
-var Acordao = require('../models/acordao.js')
 
-var Taxonomy = require('../search/taxonomy')
+var Acordao = require('../models/acordao')
 
-
+// Functionality related to search
+var Taxonomy = require('../search/search')
 
 let taxonomyTree;
 let fullTextObject;
 let response
 
+// To be executed asynchronously in the start of the program
+// Creates the taxonomy tree and the full text object
 async function getTaxonomyTree() {
   try {
     [response, fullTextObject] = await Taxonomy.createDescriptorMap();
@@ -24,17 +28,8 @@ async function getTaxonomyTree() {
 
 getTaxonomyTree();
 
-function convertStrLowerCaseMinusFristChar(str) {
-  // Extrai o primeiro caractere em maiúscula
-  const firstChar = str.charAt(0).toUpperCase();
-  // Converte o restante da string para minúsculas
-  const restOfString = str.substring(1).toLowerCase();
-  // Retorna a string resultante com o primeiro caractere em minúscula
-  return firstChar + restOfString;
-}
-
 /**
- * Function for getting the results for a simgle page. 
+ * Function for getting the results for a single page. 
  */
 function paginatedResults(model) {
   return async (req, res, next) => {
@@ -63,9 +58,8 @@ function paginatedResults(model) {
 
     if (req.query && req.query.descritor) {
       console.log(req.query.descritor.trim().toLowerCase())  
-      //console.log("Descritor: " + req.query.descritor)
-        const processosComDescritor = Taxonomy.getProcessos(req.query.descritor.trim().toLowerCase(), taxonomyTree);
-        queries.push({ $match: { _id: { $in: processosComDescritor } } });
+      const processosComDescritor = Taxonomy.getProcessos(req.query.descritor.trim().toLowerCase(), taxonomyTree);
+      queries.push({ $match: { _id: { $in: processosComDescritor } } });
       
     }
 
@@ -87,7 +81,6 @@ function paginatedResults(model) {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
     const results = {};
-    
     
     try {
       res.paginatedResults = results;
@@ -127,38 +120,6 @@ router.get('/acordaos', paginatedResults(Acordao), function(req, res) {
 });
 
 /**
- * GET the judgments with a spcecific term in certain fields 
- */
-router.get('/acordaos/search/full-text/:termo/params', (req,res) => {
-  var termo = req.params.termo
-  console.log(termo)
-  var processos = []
-  var finalObject = {}
-  for(key in req.query){
-    var field = req.query[key]
-    //console.log(fullTextObjects[field][termo])
-
-    for(key in fullTextObjects[field][termo]){
-      if (key in finalObject){
-        finalObject[key] += fullTextObjects[field][termo][key]
-      }
-      else{
-        finalObject[key] = fullTextObjects[field][termo][key]
-      }
-    }
-  }
-
-  // Convert the object to an array of key-value pairs
-  const entries = Object.entries(finalObject);
-
-  // Sort the array based on the values
-  entries.sort((a, b) => b[1] - a[1]);
-
-  res.json(entries);
-})
-
-
-/**
  * GET all the courts
  */
 router.get('/acordaos/tribunais', (req, res) => {
@@ -176,14 +137,18 @@ router.get('/acordaos/:id', (req,res) => {
     .catch(error => res.status(521).json({error: error, message: "Could not obtain the judgment"}))
 })
 
+/**
+ * GET the current maximum ID
+ */
 router.get('/currentId', (req, res) => {
   Judgment.getCurrentId()
-  .then(data => {
-    res.status(200).json(data)
-  })
+  .then(data => res.status(200).json(data))
   .catch(error => res.status(522).json({error: error, message: "Could not obtain the current id"}))
 })
 
+/**
+ * Route for posting a file
+ */
 router.get('/postFile/:file_name', (req, res) => {
   Judgment.getCurrentId()
     .then(data => {
@@ -207,9 +172,7 @@ router.get('/postFile/:file_name', (req, res) => {
  */
 router.post('/acordaos', (req,res) => {
   Judgment.addAcordao(req.body, taxonomyTree)
-    .then(data => {
-      res.status(201).json(data)
-    })
+    .then(data => res.status(201).json(data))
     .catch(error => res.status(526).json({error: error, message: "Could not insert the judgment"}))
 })
 

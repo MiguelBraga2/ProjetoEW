@@ -169,7 +169,7 @@ block content
                         <h5 class="text-start text-primary"><a href="/acordaos/${hit._id}">${components.Highlight({ hit, attribute: 'Processo' })}</a></h1>
                         <div class="row pb-2">
                             <div class="col-md-4"> 
-                                <div class="text-start"> <b>Tribunal:</b> ${components.Highlight({ hit, attribute: 'Tribunal' })}</div>
+                                <div class="text-start"> <b>Tribunal:</b> ${components.Highlight({ hit, attribute: 'tribunal' })}</div>
                             </div>
                             <div class="col-md-4"> 
                                 <div class="text-start"> <b>Relator:</b> ${components.Highlight({ hit, attribute: 'Relator' })}</div>
@@ -178,7 +178,7 @@ block content
                                 <div class="text-start"> <b>Data do Acordão:</b> ${components.Highlight({ hit, attribute: 'Data do Acordão' })}</div>
                             </div>
                         </div>
-                        <div class="text-start pb-2"> <b>Área Temática:</b> ${components.Highlight({ hit, attribute: 'Área Temática' })}</div>
+                        <div class="text-start pb-2"> <b>Áreas Temáticas:</b> ${components.Highlight({ hit, attribute: 'Áreas Temáticas' })}</div>
                         <div class="text-start pb-2"> <b>Descritores:</b> ${components.Highlight({ hit, attribute: 'Descritores' })}</div>
                         <div class="text-start pb-2">
                             <b>Sumário:</b> ${components.Highlight({ hit, attribute: 'Sumário' })}
@@ -280,8 +280,8 @@ block content
         
         const searchBox4 = instantsearch.widgets.searchBox({
                 container: '#searchboxDescritores',  
-                placeholder: 'Pesquisar por Descrtitores...',
-                restrictSearchableAttributes: ['Decritores'],
+                placeholder: 'Pesquisar por Descritores...',
+                restrictSearchableAttributes: ['Descritores'],
                 showSubmit: false,
                 showReset: false,
                 cssClasses: {
