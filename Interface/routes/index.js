@@ -166,7 +166,7 @@ router.get('/acordaos', verificaToken, (req, res) => {
   
   jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
     if (err) {
-      res.render('Error', {error : err, message : err.message})
+      res.render('error', {error : err, message : err.message})
     } else {
       res.render('acordaos', {user: payload, url: apiUrl, editable: false});
     }
@@ -183,6 +183,24 @@ router.get('/acordaos/delete/:id', verificaToken, (req, res) => {
       res.render('error', {error: err, message: err.message});
     })
 })
+
+router.get('/acordaos/edit/:id', verificaToken, (req, res) => {
+  let id = req.params.id
+  axios.get(env.apiAccessPoint + '/acordaos/' + id)
+    .then(response => {
+      jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+        if (err) {
+          res.render('error', {error: err, message: "Error verifying the token."});
+        } else {
+          res.render('editProcesso', {processo: response.data[0], user: payload});
+        }
+      })
+    })
+    .catch(err => {
+      res.render('error', {error: err, message: err.message});
+    })
+})
+
 
 
 /*--POST's---------------------------------------------------------------------------------------------------------------------------------------------- */
@@ -237,5 +255,16 @@ router.post('/acordaos/novo',verificaToken, (req, res) => {
   })
 });
 
+router.post('/acordaos/edit', verificaToken, (req, res) => {
+  console.log(req.body.Processo)
+  axios.put(env.apiAccessPoint + '/acordaos/' + req.body._id, req.body)
+  .then(resp => {
+    console.log(resp)
+    res.redirect('/')
+  })
+  .catch(error => {
+    res.render('error', {error : error , message : "Erro a atualizar o acordão"});
+  })
+})
 
 module.exports = router;

@@ -77,7 +77,7 @@ function solicitation(str, page, limit) {
 
                 if (editable){
                     listItemHTML += `<a href="/acordaos/delete/${result._id}"><i class="fa-solid fa-trash"></i></a>`
-                    listItemHTML += `<i class="fa-solid fa-pen-to-square"></i>`
+                    listItemHTML += `<a href="/acordaos/edit/${result._id}"><i class="fa-solid fa-pen-to-square"></i></a>`
                 }
 
                 listItemHTML += '</li>';
