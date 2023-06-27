@@ -174,10 +174,18 @@ router.get('/acordaos', verificaToken, (req, res) => {
   
 })
 
+router.get('/acordaos/delete/:id', verificaToken, (req, res) => {
+  axios.delete(env.apiAccessPoint + '/acordaos/' + req.params.id)
+    .then(response => {
+      res.redirect('/acordaos')
+    })
+    .catch(err => {
+      res.render('error', {error: err, message: err.message});
+    })
+})
+
 
 /*--POST's---------------------------------------------------------------------------------------------------------------------------------------------- */
-
-const fileProcessing = require('../fileProcessing/fileProcessing.js')
 
 router.post('/files', verificaToken, upload.single('myFile'), (req, res) => {
   jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
