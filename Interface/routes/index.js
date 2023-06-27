@@ -244,15 +244,27 @@ router.post('/description/:user_id/:acordao_id', verificaToken, (req, res) => {
   
 })
 
-router.post('/acordaos/novo',verificaToken, (req, res) => {
-  axios.post(env.apiAccessPoint + '/acordaos', req.body)
-  .then(resp => {
-    console.log(resp)
-    res.redirect('/acordaos/'+resp.body._id)
-  })
-  .catch(error => {
-    res.render('error', {error : error , message : "Erro a inserir um novo acordão"});
-  })
+router.post('/acordaos/novo', verificaToken, (req, res) => {
+  // Modifique o corpo (req.body) para acomodar arrays de strings
+  const modifiedBody = {
+    ...req.body,
+    selectedValues: {
+      ...req.body.selectedValues,
+      Descritores: req.body.selectedValues.Descritores.split(',').map(item => item.trim()),
+      'Áreas Temáticas': req.body.selectedValues['Áreas Temáticas'].split(',').map(item => item.trim()),
+      Recorridos: req.body.selectedValues.Recorridos.split(',').map(item => item.trim()),
+      'Referências de Publicação': req.body.selectedValues['Referências de Publicação'].split(',').map(item => item.trim())
+    }
+  };
+
+  axios.post(env.apiAccessPoint + '/acordaos', modifiedBody)
+    .then(resp => {
+      console.log(resp);
+      res.redirect('/acordaos/' + resp.data._id);
+    })
+    .catch(error => {
+      res.render('error', { error: error, message: "Erro ao inserir um novo acordão" });
+    });
 });
 
 router.post('/acordaos/edit', verificaToken, (req, res) => {
