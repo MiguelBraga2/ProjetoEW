@@ -6,6 +6,8 @@ var Judgment = require('../controllers/acordao')
 
 var Acordao = require('../models/acordao')
 
+var PreProcessing = require('../pre-processing/pre-processing')
+
 // Functionality related to search
 var Taxonomy = require('../search/search')
 
@@ -138,6 +140,15 @@ router.get('/acordaos/:id', (req,res) => {
 })
 
 /**
+ * Get all the judgments with the same process id
+ */
+router.get('/acordaos/apensos/:n_processo', (req,res) => {
+  Judgment.getDoMesmoProcesso(req.params.n_processo.replace(',', '/'))
+  .then(data => res.status(200).json(data))
+  .catch(error => res.status(521).json({error: error, message: "Could not obtain the judgments with same process id"}))
+})
+
+/**
  * GET the current maximum ID
  */
 router.get('/currentId', (req, res) => {
@@ -152,14 +163,8 @@ router.get('/currentId', (req, res) => {
 router.get('/postFile/:file_name', (req, res) => {
   Judgment.getCurrentId()
     .then(data => {
-      Judgment.processFile(taxonomyTree, req.params.file_name, data._id)
-        /*.then(data => {
-          res.status(200).json(data);
-        })
-        .catch(error => {
-          console.log(error);
-          res.status(521).json({ error: error, message: "Could not post the file" });
-        });*/
+      PreProcessing.processFile(taxonomyTree, req.params.file_name, data._id)
+      res.status(200).json({sucess: true})
     })
     .catch(error => {
       console.log(error);

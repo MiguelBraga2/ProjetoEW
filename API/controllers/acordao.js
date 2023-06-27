@@ -68,6 +68,25 @@ module.exports.getAcordao = id => {
             return error
           })
 }
+
+/**
+ * Retrieve a list of judgments from the BD given its process 
+ * RETRIEVE
+ * @param {*} process - the process id of the judgments
+ * @returns The judgments or an error
+ */
+module.exports.getDoMesmoProcesso = process => {
+  return Judgment
+          .find({Processo: process})
+          .then(resp => {
+            return resp
+          })
+          .catch(error => {
+            console.log("Controller mongoDB: " + error)
+            return error
+          })
+}
+
 /**
  * Retrieve all distinct courts
  * @returns an object that relates each acronym in the db to its name
@@ -206,10 +225,10 @@ module.exports.deleteAcordao = async (id) => {
  * @param {*} documents 
  * @returns an acknowledgment or an error
  */
-const postDocuments = async (documents) => {
+module.exports.postDocuments = async (documents) => {
   try {
     const resp = await Judgment.insertMany(documents);
-    await Algolia.add([documents]);
+    await Algolia.add(documents);
     return resp;
   } catch (error) {
     console.log(error);
