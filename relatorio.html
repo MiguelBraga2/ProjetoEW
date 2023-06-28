@@ -36,6 +36,7 @@
         <ul>
             <li>Consultar os acordãos disponíveis na BD, agrupados por tribunal;</li>
             <li>Filtrar e realizar pesquisas nos acordãos disponibilizados quer globalmente quer por tribunal;</li>
+            <li>Ordenar os resultados com base em diferentes critérios;</li>
             <li>Adicionar e remover acordãos aos favoritos, adicionando descrições, se pretendido;</li>
             <li>Consultar o histórico recente de consultas;</li>
         </ul>
@@ -93,7 +94,11 @@
             <p>De notar que alguns campos que, à primeira vista, pareciam unificáveis (como 'Data do Acordão' e 'Data da Decisão Singular'), não o
                o foram por apresentarem significado ligeiramente diferente. Um acordão implica um acordo entre pelo menos 2 juízes, enquanto que uma decisão Singular
                é tomada por apenas um magistrado. 
-
+            </p>
+            <p>Para além dos campos identificados, foram adicionados outros campos no modelo de um acordão do <i>mongoose</i>. 
+               O campo _id é um campo obrigatório, que identifica cada acordão de forma única. Este campo é autoincrementado sempre que inserimos um novo registo na BD.
+               Numa retrospetiva do projeto, este campo poderia ter sido substituído um id criado pelo próprio mongoDB, uma vez que este é mais eficiente e não requer controlo por parte do programador.
+               Por fim, o campo <i>ProducerId</i> tem como finalidade mapear cada registo ao produtor que eventualmente o criou.     
             </p>
         <h3>Autenticação</h3>
             <p>Paralelamente ao processo de tratamento dos dados, foi elaborado o serviço de autenticação. 
@@ -101,19 +106,19 @@
                diferentes níveis de acesso. A coleção dos utilizadores é formada por documentos com os seguintes campos:
             </p>
             <ul>
-               <li>username</li>
-               <li>password</li>
-               <li>name</li>
-               <li>surname</li>
-               <li>email</li>
-               <li>level</li>
-               <li>active</li>
-               <li>dateCreated</li>
-               <li>dateLastAccess</li>
+               <li>username - Nome do utilizador na aplicação;</li>
+               <li>password - Password do utilizador;</li>
+               <li>name - Primeiro nome do utilizador;</li>
+               <li>surname - Apelido do utilizador;</li>
+               <li>email - Email do utilizador;</li>
+               <li>level - Nível de acesso (Consumidor, Produtor ou Administrador);</li>
+               <li>active - Indica se o utilizador está ativo ou não;</li>
+               <li>dateCreated - Data de criação do utilizador;</li>
+               <li>dateLastAccess - Data do último acesso;</li>
                <li>providerId</li>
                <li>provider</li>
-               <li>history</li>
-               <li>favorites</li>
+               <li>history - Lista de ids de processos visitados recentemente;</li>
+               <li>favorites - Lista de pares (processo, descrição) que constituem os favoritos.</li>
             </ul>
             <p>Conceptualmente, este serviço é uma API para a coleção <i>users</i> da base de dados. Assim, deverá fornecer
                as seguintes rotas:
@@ -124,42 +129,75 @@
                     <th>Descrição</th>
                 </tr>
                 <tr>
-                    <td>GET /api/acordaos</td>
-                    <td>Devolve todos os acordãos da BD, com base na <i>querystring</i></td>
+                    <td>GET /users</td>
+                    <td>Devolve todos os utilizadores da BD</td>
                 </tr>
                 <tr>
-                    <td>GET /api/acordaos/tribunais</td>
-                    <td>Devolve todos os tribunais da BD, juntamente com a designação para a sua sigla</td>
+                    <td>GET /users/facebook</td>
+                    <td>Inicia o processo de autenticação com o facebook</td>
                 </tr>
                 <tr>
-                    <td>GET /api/acordaos/:id</td>
-                    <td>Devolve o acordão com o id passado por parâmetro</td>
+                    <td>GET /users/google/</td>
+                    <td>Inicia o processo de autenticação com o google</td>
                 </tr>
                 <tr>
-                    <td>GET /api/acordaos/apensos/:n_processo</td>
-                    <td>Devolve os acordãos com o respetivo número de processo</td>
+                    <td>GET /users/:id/history</td>
+                    <td>Devolve o histórico do utilizador passado por parâmetro</td>
                 </tr>
                 <tr>
-                    <td>GET /api/currentId</td>
-                    <td>Devolve o próximo id a ser usado na BD</td>
+                    <td>GET /users/:id/favorites</td>
+                    <td>Devolve os favoritos do utilizador passado por parâmetro</td>
                 </tr>
                 <tr>
-                    <td>GET /postFile/:file_name</td>
-                    <td>Ordena o envio de um ficheiro JSON para a BD</td>
+                    <td>GET /users/:id</td>
+                    <td>Devolve um utilizador</td>
                 </tr>
                 <tr>
-                    <td>POST /api/acordaos</td>
-                    <td>Adiciona um novo acordão à BD</td>
+                    <td>POST /users</td>
+                    <td>Adiciona um utilizador à BD (requer autenticação)</td>
                 </tr>
                 <tr>
-                    <td>PUT /api/acordaos/:id</td>
-                    <td>Atualiza um acordão na BD</td>
+                    <td>POST /users/register</td>
+                    <td>Adiciona um utilizador à BD (não requer autenticação) </td>
                 </tr>
                 <tr>
-                    <td>DELETE /api/acordaos/:id</td>
-                    <td>Elimina um acordão da BD</td>
+                    <td>POST /users/login</td>
+                    <td>Autentica um utilizador</td>
+                </tr>
+                <tr>
+                    <td>PUT /users/:id</td>
+                    <td>Altera um utilizador na BD</td>
+                </tr>
+                <tr>
+                    <td>PUT /users/:id/desativar</td>
+                    <td>Desativa a conta de um utilizador</td>
+                </tr>
+                <tr>
+                    <td>PUT /users/:id/ativar</td>
+                    <td>Reativa a conta de um utilizador</td>
+                </tr>
+                <tr>
+                    <td>PUT /users/:id/password</td>
+                    <td>Altera a password de um utilizador</td>
+                </tr>
+                <tr>
+                    <td>PUT /users/:id/history</td>
+                    <td>Adiciona um processo ao histórico do utilizador</td>
+                </tr>
+                <tr>
+                    <td>PUT /users/:id/favorites</td>
+                    <td>Adicionar um processo aos favoritos, juntamente com a descrição</td>
+                </tr>
+                <tr>
+                    <td>PUT /users/:id/removeFavorite</td>
+                    <td>Remove um processo dos favoritos</td>
+                </tr>
+                <tr>
+                    <td>DELETE /users/:id</td>
+                    <td>Remove um utilizador da BD</td>
                 </tr>
             </table>
+            <p>Tal como acontecerá na API, várias destas rotas deverão estar protegidas.</p>
         <h3>API</h3>
             <p>Genericamente, uma API é uma peça de software que fornece funcionalidade sobre um serviço. Na nossa aplicação, a API REST permite-nos aceder à(s) base(s) de dados,
                fornecendo métodos para a realização de operações CRUD na coleção dos acordãos da BD. A seguir listam-se algumas das rotas disponíveis:
@@ -206,6 +244,22 @@
                     <td>Elimina um acordão da BD</td>
                 </tr>
             </table>
+            <p>Relativamente à primeira rota (/api/acordaos) esta pode ser complementada com uma query string
+               com os seguintes parâmetros: 
+            </p>
+            <ul>
+                <li>page=`valor` - indica que página de resultados pretendemos obter;</li>
+                <li>limit=`valor` - indica o limite de acordãos em cada página;</li>
+                <li>livre=`termo` - indica a pesquisa livre pelo termo indicado;</li>
+                <li>descritor=`termo` - indica a pesquisa por um termo na taxonomia de descritores;</li>
+                <li>campo=`valor` - indica que pretendemos filtrar os acordãos com um determinado valor em certo campo.</li>
+            </ul>
+            <p>Relativamente à paginação, importa referir que o resultado da rota /api/acordaos devolve um object JSON com os seguintes campos:</p>
+            <ul> 
+                <li>results - a lista de resultados obtida;</li>
+                <li>previous - número e limites da página anterior;</li>
+                <li>next - número e limites da página seguinte.</li>
+            </ul>
         <h4>Pesquisas</h4>
             <p>Uma primeira abordagem ao problema das pesquisas consistiu na nossa própria implementação da pesquisa em formato
                "Texto Livre" e da pesquisa na taxonomia de descritores. 
@@ -256,6 +310,92 @@ Abuso do poder económico - 2
             <p>A estrutura das páginas e o seu conteúdo foi realizada em <i>pug</i> e estilizada com templates <i>bootstrap</i>. Finalmente, foi adicionada alguma funcionalidade adicional com o uso
                de código Javascript.
             </p>
+            <p>Para cada página foi adicionada uma rota específica, tal como podemos ver na tabela seguinte: </p>
+            <table>
+                <tr>
+                    <th>Rota</th>
+                    <th>Página</th>
+                </tr>
+                <tr>
+                    <td>GET /</td>
+                    <td>Página principal/Tribunais</td>
+                </tr>
+                <tr>
+                    <td>GET /pesquisas</td>
+                    <td>Página de pesquisas geral</td>
+                </tr>
+                <tr>
+                    <td>GET /acordaos</td>
+                    <td>Página com os acordãos (pode conter querystring)</td>
+                </tr>
+                <tr>
+                    <td>GET /acordaos/:id</td>
+                    <td>Página do acordão</td>
+                </tr>
+                <tr>
+                    <td>GET /acordaos/novo</td>
+                    <td>Formulário de inserção de um novo acordão</td>
+                </tr>
+                <tr>
+                    <td>GET /acordaosProducer/:id</td>
+                    <td>Página com os acordãos de um certo produtor</td>
+                </tr>
+                <tr>
+                    <td>GET /acordaos/edit/:id</td>
+                    <td>Página de edição de um acordão</td>
+                </tr>
+                <tr>
+                    <td>GET /users/login</td>
+                    <td>Formulário de autenticação</td>
+                </tr>
+                <tr>
+                    <td>GET /users/register</td>
+                    <td>Página de registo</td>
+                </tr>
+                <tr>
+                    <td>GET /users/resetPassword</td>
+                    <td>Página de reposição de password</td>
+                </tr>
+                <tr>
+                    <td>GET /users/:id</td>
+                    <td>Página do Perfil do utilizador</td>
+                </tr>
+                <tr>
+                    <td>GET /users/history/:id</td>
+                    <td>Página com o histórico do utilizador</td>
+                </tr>
+                <tr>
+                    <td>GET /users/favourites/:id</td>
+                    <td>Página com os favoritos do utilizador</td>
+                </tr>
+            </table>
+            <p>De notar que, para além destas rotas, foram adicionadas rotas para sinalização da execução de operações, como remoção de um acordão: </p>
+            <table>
+                <tr>
+                    <th>Rota</th>
+                    <th>Descrição</th>
+                </tr>
+                <tr>
+                    <td>GET /acordaos/delete/:id</td>
+                    <td>Remoção de um acordão</td>
+                </tr>
+                <tr>
+                    <td>POST /files</td>
+                    <td>Envio de um ficheiro JSON</td>
+                </tr>
+                <tr>
+                    <td>POST /description/:user_id/:acordao_id</td>
+                    <td>Consumidor adicionou uma descrição a um acordão</th>
+                </tr>
+                <tr>
+                    <td>POST /acordaos/novo</td>
+                    <td>Envio de um novo acordão</td>
+                </tr>
+                <tr>
+                    <td>POST /acordaos/edit</td>
+                    <td>Envio da edição de um acordão</td>
+                </tr>
+            </table>
     <h2>Manual de utilização da aplicação</h2>
         <p>Como forma de facilitar o arranque da aplicação, foi elaborado um ficheiro <i>docker-compose.yml</i> responsável por criar e orquestrar os serviços
         que suportam a aplicação em diferentes <i>docker containers</i>. As portas de funciomento de cada serviço são as seguintes:        
