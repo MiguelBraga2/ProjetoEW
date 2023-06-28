@@ -12,16 +12,6 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
-const transporter = nodemailer.createTransport({
-    host: 'acordaos2023@gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: 'acordaos2023@gmail.com',
-      pass: 'acordaosportugal',
-    },
-});
-
 function verificaToken(req, res, next){
   if(req.cookies && req.cookies.token){
     next()
@@ -166,13 +156,22 @@ router.post('/register', (req, res)=>{
     })
 })
 
-
 /**
  * POST /resetPassword 
  * Envia pedido ao serviço de autenticação para mudar palavra passe
  */
 router.post('/resetPassword', verificaToken, (req, res)=>{
     const email = req.body.email;
+
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: 'acordaos2023@gmail.com',
+        pass: 'dpqrymxgctzvvmvh',
+      },
+    });
   
     // Gerar o token de reposição de senha (pode ser um UUID ou qualquer outro método de sua escolha)
     const token = uuidv4();
