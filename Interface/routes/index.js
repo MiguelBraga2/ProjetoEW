@@ -250,21 +250,19 @@ router.post('/description/:user_id/:acordao_id', verificaToken, (req, res) => {
 })
 
 router.post('/acordaos/novo', verificaToken, (req, res) => {
-  // Modifique o corpo (req.body) para acomodar arrays de strings
-  const modifiedBody = {
-    ...req.body,
-    selectedValues: {
-      ...req.body.selectedValues,
-      Descritores: req.body.selectedValues.Descritores.split(',').map(item => item.trim()),
-      'Áreas Temáticas': req.body.selectedValues['Áreas Temáticas'].split(',').map(item => item.trim()),
-      Recorridos: req.body.selectedValues.Recorridos.split(',').map(item => item.trim()),
-      'Referências de Publicação': req.body.selectedValues['Referências de Publicação'].split(',').map(item => item.trim())
+  let modifiedBody = req.body;
+  if (req.body) {
+    modifiedBody = {
+      ...req.body,
+      Descritores: req.body.Descritores ? req.body.Descritores.split(',').map(item => item.trim()) : [],
+      'Áreas Temáticas': req.body['Áreas Temáticas'] ? req.body['Áreas Temáticas'].split(',').map(item => item.trim()) : [],
+      Recorridos: req.body.Recorridos ? req.body.Recorridos.split(',').map(item => item.trim()) : [],
+      'Referências de Publicação': req.body['Referências de Publicação'] ? req.body['Referências de Publicação'].split(',').map(item => item.trim()) : [],
     }
-  };
-
+  }
+  
   axios.post(env.apiAccessPoint + '/acordaos', modifiedBody)
     .then(resp => {
-      console.log(resp);
       res.redirect('/acordaos/' + resp.data._id);
     })
     .catch(error => {
