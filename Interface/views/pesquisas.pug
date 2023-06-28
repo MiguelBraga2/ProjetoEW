@@ -60,6 +60,8 @@ block content
                         #searchboxRelator
                     .d-flex.justify-content-center.mb-3  
                         #searchboxDescritores
+                    .d-flex.justify-content-center.mb-3  
+                        #sort-by
                     .accordion.w-100#refAccordion
                             .accordion-item 
                                 h2.accordion-header#headingOne 
@@ -290,10 +292,19 @@ block content
                 }
         });
 
-        search1.addWidgets([searchBox1, refinementList1, refinementList2, refinementList3, hits, pagination]);
-        search2.addWidgets([searchBox2, refinementList1, refinementList2, refinementList3, hits, pagination]);
-        search3.addWidgets([searchBox3, refinementList1, refinementList2, refinementList3, hits, pagination]);
-        search4.addWidgets([searchBox4, refinementList1, refinementList2, refinementList3, hits, pagination]);
+        const sort = instantsearch.widgets.sortBy({
+            container: '#sort-by',
+            items: [
+                { label: 'Featured', value: 'Acordaos' },
+                { label: 'Relator (asc)', value: 'Acordaos_Relator_asc' },
+                { label: 'Relator (desc)', value: 'Acordaos_Relator_desc' },
+            ],
+        });
+
+        search1.addWidgets([searchBox1, refinementList1, refinementList2, refinementList3, hits, pagination, sort]);
+        search2.addWidgets([searchBox2, refinementList1, refinementList2, refinementList3, hits, pagination, sort]);
+        search3.addWidgets([searchBox3, refinementList1, refinementList2, refinementList3, hits, pagination, sort]);
+        search4.addWidgets([searchBox4, refinementList1, refinementList2, refinementList3, hits, pagination, sort]);
         
         search1.start();     
         search2.start();     
