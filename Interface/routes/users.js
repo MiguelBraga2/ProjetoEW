@@ -6,6 +6,22 @@ var jwt = require('jsonwebtoken');
 const { query } = require('express');
 require('dotenv').config();
 
+const nodemailer = require('nodemailer');
+const { v4: uuidv4 } = require('uuid');
+
+const app = express();
+app.use(express.urlencoded({ extended: true }));
+
+const transporter = nodemailer.createTransport({
+    host: 'acordaos2023@gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: 'acordaos2023@gmail.com',
+      pass: 'acordaosportugal',
+    },
+});
+
 function verificaToken(req, res, next){
   if(req.cookies && req.cookies.token){
     next()
@@ -156,13 +172,29 @@ router.post('/register', (req, res)=>{
  * Envia pedido ao serviço de autenticação para mudar palavra passe
  */
 router.post('/resetPassword', verificaToken, (req, res)=>{
-  axios.put(env.authAcessPoint + '/' + req.body._id + '/password', req.body)
-    .then(response => { 
-      res.redirect('/')
-    })
-    .catch(err => {
-      res.render('error', {error: err, message: err.message})
-    })
+    const email = req.body.email;
+  
+    // Gerar o token de reposição de senha (pode ser um UUID ou qualquer outro método de sua escolha)
+    const token = uuidv4();
+  
+    // Configurar o e-mail a ser enviado
+    const mailOptions = {
+      from: 'acordaos2023@gmail.com',
+      to: email,
+      subject: 'Redefinição de senha',
+      text: `\n\nRecentemente, houve uma solicitação para alterar a senha da sua conta.\nSe solicitou essa alteração, defina uma nova senha aqui: http://localhost:8003/users/resetPassword=${token} \nSe não fez essa solicitação, pode ignorar este e-mail e a sua senha permanecerá a mesma.`,
+    };
+  
+    // Enviar o e-mail
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log('Erro ao enviar e-mail:', error);
+        res.send('Ocorreu um erro ao enviar o e-mail. Por favor, tente novamente.');
+      } else {
+        console.log('E-mail enviado com sucesso:', info.response);
+        res.send('Um e-mail com o link de reposição de senha foi enviado para o seu endereço de e-mail.');
+      }
+    });
 
 })
 
