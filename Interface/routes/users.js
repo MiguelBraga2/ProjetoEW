@@ -3,6 +3,7 @@ var router = express.Router();
 var env = require('../config/env');
 var axios = require('axios');
 var jwt = require('jsonwebtoken');
+const Swal = require('sweetalert2');
 const { query } = require('express');
 require('dotenv').config();
 
@@ -60,6 +61,15 @@ router.get('/logout', verificaToken, (req, res)=>{
 router.get('/register', (req, res)=>{
   res.render('register')
 })
+
+/**
+ * GET página para definir nova password
+ */
+
+router.get('/resetPassword=:token', (req, res) => {
+  res.render('redefinePassword');
+});
+
 
 /**
  * GET página de repor palavra passe 
@@ -191,10 +201,26 @@ router.post('/resetPassword', verificaToken, (req, res)=>{
         res.send('Ocorreu um erro ao enviar o e-mail. Por favor, tente novamente.');
       } else {
         console.log('E-mail enviado com sucesso:', info.response);
-        res.send('Um e-mail com o link de reposição de senha foi enviado para o seu endereço de e-mail.');
+        res.redirect('/users/login');
       }
     });
 
+})
+
+/**
+ * POST /redefinePassword
+ * Altera a password do utilizador
+ */
+
+router.post('/redefinePassword', (req, res) => {
+  axios.put(env.apiAccessPoint + '/users/' + req.body._id, req.body.pass)
+  .then(resp => {
+    console.log(resp)
+    res.redirect('/users/login');
+  })
+  .catch(error => {
+    res.render('error', {error : error , message : "Erro a atualizar a password"});
+  })
 })
 
 /**
