@@ -39,6 +39,9 @@ function paginatedResults(model) {
     const match = {
       $match : {}
     }
+    const sort = {
+      $sort : {}
+    }
     queries.push(match)
 
     if (req.query && req.query.ids){
@@ -77,6 +80,27 @@ function paginatedResults(model) {
       console.log(matchedProcessos)
       queries.push({ $match: { _id: { $in: matchedProcessos } } });
     }
+
+    if (req.query && req.query.sortBy) {
+      if (req.query.sortBy === 'Data asc') {
+        sort.$sort['Data do Acordão'] = 1
+        queries.push(sort)
+      }
+      else if (req.query.sortBy === 'Data desc') {
+        sort.$sort['Data do Acordão'] = -1
+        queries.push(sort)
+      }
+      else if(req.query.sortBy === 'Relator asc') {
+        sort.$sort['Relator'] = 1
+        queries.push(sort)
+      }
+      else if(req.query.sortBy === 'Relator desc') {
+        sort.$sort['Relator'] = -1
+        queries.push(sort)
+      }
+    }
+
+    console.log(queries)
   
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 15;

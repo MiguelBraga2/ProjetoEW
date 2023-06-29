@@ -66,6 +66,12 @@ block content
                         input.mb-3.form-control(type='search' placeholder="Pesquise por Relator..." id="searchRelator")
                     .d-flex.justify-content-center
                         input.mb-3.form-control(type='search' placeholder="Pesquise por Descritores..." id="searchDescritores")
+                    select.form-select.mb-3#selectElement
+                        option(selected) Ordenar por...
+                        option(value="Data asc") Ordenar por data (asc)
+                        option(value="Data desc") Ordenar por data (desc)
+                        option(value="Relator asc") Ordenar por relator (asc)
+                        option(value="Relator desc") Ordenar por relator (desc)
                   .col-md-9.py-5
                     .d-flex.justify-content-center    
                         ul.list-group.list-group-flush#resultsList 
