@@ -111,18 +111,6 @@ block content
                   }
               }
 
-              /*if (selectedOption === "Descritores" || selectedOption === "Áreas Temáticas" || selectedOption === "Recorridos" || selectedOption === "Referências de Publicação") {
-                  // Verifica se o valor inserido está vazio ou não
-                  valueOption = valueOption.trim();
-                  if (valueOption !== "") {
-                      // Separa o valor em uma lista usando vírgulas como delimitador
-                      valueOption = valueOption.split(",").map(item => item.trim());
-                  } else {
-                      // Define o valor como uma lista vazia se o campo estiver vazio
-                      valueOption = [];
-                  }
-              }*/
-
               selectedValues[selectedOption] = valueOption;
               console.log(selectedValues)
               selectionResult.innerHTML = '';
