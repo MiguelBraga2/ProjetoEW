@@ -3,6 +3,9 @@ if (document.getElementById('searchLivre')) document.getElementById('searchLivre
 if (document.getElementById('searchProcesso')) document.getElementById('searchProcesso').addEventListener('input', search);
 if (document.getElementById('searchRelator')) document.getElementById('searchRelator').addEventListener('input', search);
 if (document.getElementById('searchDescritores')) document.getElementById('searchDescritores').addEventListener('input', search);
+if (document.getElementById('selectElement')) document.getElementById('selectElement').addEventListener('change', search);
+
+let l, s, p, r, d;
 
 function truncateText(text, maxLength) {
     if (text) {
@@ -50,7 +53,7 @@ function solicitation(str, page, limit) {
                         <div class="text-start"> <b>Relator:</b> ${result.Relator || 'N/A'}</div>
                     </div>
                     <div class="col-md-4"> 
-                        <div class="text-start"> <b>Data do Acordão:</b> ${result['Data do Acordão'].slice(0,10) || 'N/A'}</div>
+                        <div class="text-start"> <b>Data do Acordão:</b> ${(result['Data do Acordão']) ? result['Data do Acordão'].slice(0,10) : 'N/A'}</div>
                     </div>
                 </div>
                 <div class="text-start pb-2"> <b>Área Temática:</b> ${result['Área Temática'] || 'N/A'}</div>
@@ -130,6 +133,10 @@ document.getElementById('previous').addEventListener('click', (e) => {
     if (d !== '') {
         str += '&descritor=' + d; 
     }
+    s = document.getElementById('selectElement').value;
+    if (s !== '') {
+        str += '&sortBy=' + s; 
+    }
 
     solicitation(str,e.target.getAttribute('page'),e.target.getAttribute('limit'))
 });
@@ -151,6 +158,10 @@ document.getElementById('next').addEventListener('click', (e) => {
     d = document.getElementById('searchDescritores').value;
     if (d !== '') {
         str += '&descritor=' + d; 
+    }
+    s = document.getElementById('selectElement').value;
+    if (s !== '') {
+        str += '&sortBy=' + s; 
     }
 
     solicitation(str,e.target.getAttribute('page'),e.target.getAttribute('limit'))
@@ -177,7 +188,11 @@ function search() {
     if (d !== '') {
         str += '&descritor=' + d; 
     }
-
+    s = document.getElementById('selectElement').value;
+    console.log("S: " + s)
+    if (s !== '') {
+        str += '&sortBy=' + s; 
+    }
     solicitation(str,'1','15');
 }
 
