@@ -52,7 +52,7 @@ router.get('/google', (req, res)=>{
  */
 router.get('/logout', verificaToken, (req, res)=>{
   res.cookie('token', "revogado.revogado.revogado")
-  res.redirect('/')
+  res.redirect('/users/login')
 })
 
 /**
@@ -150,7 +150,7 @@ router.get('/disable/:id', verificaToken, (req, res)=>{
   const token = '?token=' + req.cookies.token;
   axios.put(env.authAcessPoint + '/' + req.params.id + '/desativar' + token)
     .then(response => { 
-      res.redirect('/')
+      res.redirect('/users')
     })
     .catch(err => {
       res.render('error', {error: err, message: err.message});
@@ -161,7 +161,7 @@ router.get('/enable/:id', verificaToken, (req, res)=>{
   const token = '?token=' + req.cookies.token;
   axios.put(env.authAcessPoint + '/' + req.params.id + '/ativar' + token)
     .then(response => { 
-      res.redirect('/')
+      res.redirect('/users')
     })
     .catch(err => {
       res.render('error', {error: err, message: err.message});

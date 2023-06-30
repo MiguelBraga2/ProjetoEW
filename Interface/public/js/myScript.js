@@ -18,6 +18,23 @@ function truncateText(text, maxLength) {
     }
 }
 
+function popup(link, idName){
+    return `
+<div class="modal fade" id="${idName}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p>Tem a certeza de que pretende eliminar o registo?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Não</button>
+        <button class="btn btn-primary"><a href="${link}">Sim</a></button>
+      </div>
+    </div>
+  </div>
+</div>
+    `
+}
 
 
 // Fazer uma solicitação ao servidor
@@ -28,7 +45,7 @@ function solicitation(str, page, limit) {
             // Limpar a lista de resultados
             const resultsList = document.getElementById('resultsList');
             resultsList.innerHTML = '';
-
+            let ind = 0
             data.results.forEach(result => {
                 // Criar o HTML para cada resultado
                 let listItemHTML = `<li class="list-group-item">
@@ -39,7 +56,8 @@ function solicitation(str, page, limit) {
                 </div>
                 <div class="col-md-6">`
                 if (editable){
-                    listItemHTML += `<div class="text-end h5"><a class="mx-1" href="/acordaos/delete/${result._id}"><i class="fa-solid fa-trash"></i></a>    `
+                    listItemHTML += popup('/acordaos/delete/'+result._id, `confirm${ind}`)
+                    listItemHTML += `<div class="text-end h5"><a class="mx-1" type="button" data-bs-toggle='modal', data-bs-target='#confirm${ind}'"><i class="fa-solid fa-trash"></i></a>    `
                     listItemHTML += `<a class="mx-1" href="/acordaos/edit/${result._id}"><i class="fa-solid fa-pen-to-square"></i></a></div>`
                 }
 
@@ -84,6 +102,7 @@ function solicitation(str, page, limit) {
 
                 // Adicionar o HTML à lista de resultados
                 resultsList.innerHTML += listItemHTML;
+                ind++
             });
 
 
