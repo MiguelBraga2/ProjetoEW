@@ -7,7 +7,50 @@ const User = require('../controllers/user')
 const auth = require('../auth/auth')
 require('dotenv').config();
 
+function paginatedResults(model) {
+  console.log('ola')
+  return async (req, res, next) => {
+    console.log('ole')
+    const queries = []
+    const match = {
+      $match : {}
+    }
+    queries.push(match)
+  
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 15;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const results = {};
+    
+    try {
+      res.paginatedResults = results;
 
+      const aggregation = model.aggregate(queries);
+      var total = await model.aggregate([...queries, { $count: 'count' }]).exec();
+      total = total.length > 0 ? total[0].count : 0
+      results.results = await aggregation.skip(startIndex).limit(limit).exec();
+      
+      if (endIndex < total) {
+          results.next = { 
+            page: page + 1,
+            limit: limit
+          }      
+      }
+
+      if (startIndex > 0) {
+          results.previous = { 
+            page: page - 1,
+            limit: limit
+          }
+      }
+
+      next();
+    } catch (error) {
+      res.status(500).json({error: error, message: error.message});
+    }
+  }
+}
 
 /*--GET's------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -16,10 +59,9 @@ require('dotenv').config();
  * 
  * Verificar o acesso é necessario, rota para admin
  */
-router.get('/', auth.verificaAcesso, function (req, res) {
-  User.list()
-    .then(dados => res.status(200).jsonp({ dados: dados }))
-    .catch(e => res.status(500).jsonp({ error: e }))
+router.get('/', paginatedResults(userModel), function (req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.json(res.paginatedResults);
 })
 
 /**

@@ -78,6 +78,18 @@ router.get('/resetPassword', verificaToken, (req, res)=>{
   res.render('resetPassword')
 })
 
+router.get('/', verificaToken, (req, res)=>{
+  const token = '?token=' + req.cookies.token;
+  jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+    if (err) {
+      res.render('error', {error : err, message : err.message})
+    } else {
+      var apiUrl = env.authAcessPoint + '/';
+      res.render('users', {user: payload, url: apiUrl});
+    }
+  });
+})
+
 /**
  * GET página de um utilizador
  */
@@ -128,6 +140,28 @@ router.get('/favorites/:id', verificaToken, (req, res)=>{
       var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
       //console.log(response.data.dados )
       res.render('favoritos', {user: response.data.dados, url: apiUrl});
+    })
+    .catch(err => {
+      res.render('error', {error: err, message: err.message});
+    })
+})
+
+router.get('/disable/:id', verificaToken, (req, res)=>{
+  const token = '?token=' + req.cookies.token;
+  axios.put(env.authAcessPoint + '/' + req.params.id + '/desativar' + token)
+    .then(response => { 
+      res.redirect('/')
+    })
+    .catch(err => {
+      res.render('error', {error: err, message: err.message});
+    })
+})
+
+router.get('/enable/:id', verificaToken, (req, res)=>{
+  const token = '?token=' + req.cookies.token;
+  axios.put(env.authAcessPoint + '/' + req.params.id + '/ativar' + token)
+    .then(response => { 
+      res.redirect('/')
     })
     .catch(err => {
       res.render('error', {error: err, message: err.message});
