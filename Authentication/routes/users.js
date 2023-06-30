@@ -318,7 +318,7 @@ router.put('/:id/password', auth.verificaAcesso, function (req, res) {
 /**
  * PUT adicionar um processo ao histórico, feito pelo utilizador em questão quando acessa um processo 
  */
-router.put('/:id/history', function (req, res){
+router.put('/:id/history', auth.verificaAcesso, function (req, res){
   User.updateHistory(req.params.id, req.body.process)
     .then(dados => {
       res.jsonp(dados)
@@ -331,7 +331,7 @@ router.put('/:id/history', function (req, res){
 /**
  * PUT adicionar um processo aos favoritos, feito pelo utilizador em questão quando adiciona um processo aos favoritos 
  */
-router.put('/:id/favorites',  function (req, res){
+router.put('/:id/favorites', auth.verificaAcesso, function (req, res){
   User.updateFavs(req.params.id, req.body)
     .then(dados => {
       res.jsonp(dados)
@@ -343,7 +343,7 @@ router.put('/:id/favorites',  function (req, res){
     })
 })
 
-router.put('/:id/removeFavorite', function (req, res) {
+router.put('/:id/removeFavorite', auth.verificaAcesso, function (req, res) {
   User.removeFavs(req.params.id, req.body)
     .then(dados => {
       res.jsonp(dados)

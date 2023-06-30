@@ -113,7 +113,7 @@ router.get('/acordaos/:id', verificaToken, (req, res) => {
         if (err) {
           res.render('error', {error: err, message: "Error verifying the token."});
         } else {
-          axios.put(env.authAcessPoint + '/' + payload.id + '/history', {process: req.params.id})
+          axios.put(env.authAcessPoint + '/' + payload.id + '/history' + token, {process: req.params.id} )
             .then(responseAuth => {
               axios.get(env.authAcessPoint + '/' + payload.id + '/favorites' + token)
               .then(response2 => {
@@ -228,16 +228,13 @@ router.post('/files', verificaToken, upload.single('myFile'), (req, res) => {
         if (erro){
           console.log(erro)
         }
+        else{
+          axios.get(env.apiAccessPoint + '/postFile/' + req.file.originalname)
+          res.redirect('/');
+        }
       })
-      axios.get(env.apiAccessPoint + '/postFile/' + req.file.originalname)
-      .then(response => {        
-      })
-      .catch(err => {
-        console.log(err)
-        res.status(500).render('error', {error: err, message: err.message});
-      })
-      res.redirect('/')
     } else {
+      console.log("erro")
       res.render('error', {error : {} , message : "Não tem acesso a este conteúdo"});
     }
   });
