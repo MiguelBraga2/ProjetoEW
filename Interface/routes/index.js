@@ -117,15 +117,22 @@ router.get('/acordaos/:id', verificaToken, (req, res) => {
             .then(responseAuth => {
               axios.get(env.authAcessPoint + '/' + payload.id + '/favorites' + token)
               .then(response2 => {
-                axios.get(env.apiAccessPoint + '/acordaos/apensos/' + response.data[0].Processo.replace('/', ','))
-                .then(response3 => {
-                  res.render('processo', {processo: response.data[0], user: payload, favoritos: response2.data.dados.favorites, apendices: response3.data});
-                })
-                .catch(err => {
-                  res.render('error', {error: err, message: "Erro a buscar os apendices."});
-                })
+                if (response.data[0].Processo){
+                  axios.get(env.apiAccessPoint + '/acordaos/apensos/' + response.data[0].Processo.replace('/', ','))
+                  .then(response3 => {
+                    res.render('processo', {processo: response.data[0], user: payload, favoritos: response2.data.dados.favorites, apendices: response3.data});
+                  })
+                  .catch(err => {
+                    res.render('error', {error: err, message: "Erro a buscar os apendices."});
+                  })
+                }
+                else{
+                  res.render('processo', {processo: response.data[0], user: payload, favoritos: response2.data.dados.favorites, apendices: []});
+                }
+                
               })
               .catch(err => {
+                console.log(err)
                 res.render('error', {error: err, message: "Erro a receber os favoritos."});
               })
             })
@@ -263,6 +270,7 @@ router.post('/acordaos/novo', verificaToken, (req, res) => {
   
   axios.post(env.apiAccessPoint + '/acordaos', modifiedBody)
     .then(resp => {
+      console.log(resp)
       res.redirect('/acordaos/' + resp.data._id);
     })
     .catch(error => {
