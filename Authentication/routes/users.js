@@ -354,6 +354,16 @@ router.put('/:id/removeFavorite', function (req, res) {
     })
 });
 
+router.put('/:email/redefinePassword', function (req, res) {
+  User.changePassword(req.params.email,req.body.pass)
+  .then(dados => {
+    res.jsonp(dados)
+  })
+  .catch(erro => {
+    res.jsonp('error', { error: erro, message: "Erro na alteração da password" })
+  })
+})
+
 
 /*--DELETE's------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
