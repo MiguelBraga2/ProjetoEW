@@ -57,7 +57,7 @@ block content
                                     .accordion-body
                                         #refinement-list3
                   .col-md-9.py-5
-                    .d-flex.justify-content-center    
+                    .w-100    
                         #hits
                     .d-flex.justify-content-center
                         #pagination.my-3
@@ -273,7 +273,10 @@ block content
                 { label: 'Featured', value: 'Acordaos' },
                 { label: 'Relator (asc)', value: 'Acordaos_Relator_asc' },
                 { label: 'Relator (desc)', value: 'Acordaos_Relator_desc' },
-            ],
+            ], 
+            cssClasses: {
+                    select : 'form-select'
+                }
         });
 
         search1.addWidgets([searchBox1, refinementList1, refinementList2, refinementList3, hits, pagination, sort]);
