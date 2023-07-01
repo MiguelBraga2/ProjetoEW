@@ -207,7 +207,7 @@ router.post('/register', (req, res)=>{
  * POST /resetPassword 
  * Envia pedido ao serviço de autenticação para mudar palavra passe
  */
-router.post('/resetPassword', auth.verificaToken({'admin': -1, 'consumer': -1, 'producer': -1}), (req, res)=>{
+router.post('/resetPassword', (req, res)=>{
     const email = req.body.email;
 
     const transporter = nodemailer.createTransport({

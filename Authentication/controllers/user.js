@@ -169,6 +169,7 @@ module.exports.deleteUser = id => {
 }
 
 module.exports.changePassword = (email, newPassword) => {
+    console.log('ola')
     return User.findOne({ email: email })
        .then(response => {
             if (!response) {
@@ -186,6 +187,7 @@ module.exports.changePassword = (email, newPassword) => {
                         return response
                     })
                     .catch(err => {
+                        console.log(err)
                         return err;
                     })
                 }

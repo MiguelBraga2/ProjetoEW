@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const passport = require('passport')
 const userModel = require('../models/user')
 const auth = require('../auth/auth');
+const User = require('../controllers/user')
 require('dotenv').config();
 
 function paginatedResults(model) {
