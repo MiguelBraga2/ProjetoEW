@@ -6,7 +6,7 @@ mixin includeNavBar(user)
                 span.navbar-toggler-ico 
             .navbar-collapse.collapse#navmenu
                 ul.navbar-nav.ms-auto
-                    if user && user.level === 'admin' || user.level === 'producer'
+                    if user && (user.level === 'admin' || user.level === 'producer')
                         li  
                             a.nav-item.nav-link(href="/acordaos/novo") Criar Acordão
                     if user && user.level === 'admin'
@@ -16,9 +16,9 @@ mixin includeNavBar(user)
                         li 
                             // Button trigger modal 
                             a.nav-item.nav-link(href="/users") Consultar utilizadores
-                    li
-                        a.nav-item.nav-link(href='/pesquisas') Pesquisas
-                    if user 
+                    if user
+                        li
+                            a.nav-item.nav-link(href='/pesquisas') Pesquisas 
                         li
                             a.nav-item.nav-link(href='/users/' + user.id) Perfil
                         li
