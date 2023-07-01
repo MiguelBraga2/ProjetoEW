@@ -1,5 +1,3 @@
- Relatório EW table, th, td { border: 1px solid black; border-collapse: collapse; } #tax{ float: right; } 
-
 Relatório EW
 ============
 
