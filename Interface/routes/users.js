@@ -4,6 +4,7 @@ var env = require('../config/env');
 var axios = require('axios');
 var jwt = require('jsonwebtoken');
 const Swal = require('sweetalert2');
+const auth = require('../auth/auth')
 const { query } = require('express');
 require('dotenv').config();
 
@@ -12,16 +13,6 @@ const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
-
-function verificaToken(req, res, next){
-  if(req.cookies && req.cookies.token){
-    next()
-  }
-  else{
-    res.redirect('/login')
-  }
-}
-
 
 /*--GET's---------------------------------------------------------------------------------------------------------------------------------------------- */
 
@@ -50,7 +41,7 @@ router.get('/google', (req, res)=>{
 /**
  * GET página de logout
  */
-router.get('/logout', verificaToken, (req, res)=>{
+router.get('/logout', auth.verificaToken({'admin': -1, 'producer': -1, 'consumer': -1}), (req, res)=>{
   res.cookie('token', "revogado.revogado.revogado")
   res.redirect('/users/login')
 })
@@ -63,22 +54,22 @@ router.get('/register', (req, res)=>{
 })
 
 /**
- * GET página para definir nova password
+ * GET página para definir o email para enviar link para reposição da password
  */
 
-router.get('/resetPassword=:token', (req, res) => {
+router.get('/resetPassword=:token', auth.verificaToken({'admin': -1, 'producer': -1, 'consumer': -1}), (req, res) => {
   res.render('redefinePassword');
 });
 
 
 /**
- * GET página de repor palavra passe 
+ * GET página de reposição da password
  */
-router.get('/resetPassword', verificaToken, (req, res)=>{
+router.get('/resetPassword', auth.verificaToken({'admin': -1, 'producer': -1, 'consumer': -1}), (req, res)=>{
   res.render('resetPassword')
 })
 
-router.get('/', verificaToken, (req, res)=>{
+router.get('/', auth.verificaToken({'admin': -1}), (req, res)=>{
   const token = '?token=' + req.cookies.token;
   jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
     if (err) {
@@ -93,7 +84,7 @@ router.get('/', verificaToken, (req, res)=>{
 /**
  * GET página de um utilizador
  */
-router.get('/:id', verificaToken, (req, res)=>{ 
+router.get('/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'consumer': 1}), (req, res)=>{ 
   const token = '?token=' + req.cookies.token;
 
   const changed = req.query?.changed ? req.query.changed : false;
@@ -111,7 +102,7 @@ router.get('/:id', verificaToken, (req, res)=>{
 /**
  * GET histórico de um utilizador
  */
-router.get('/history/:id', verificaToken, (req, res)=>{
+router.get('/history/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'consumer': 1}), (req, res)=>{
   const token = '?token=' + req.cookies.token;
   axios.get(env.authAcessPoint + '/' + req.params.id + '/history' + token)
     .then(response => { 
@@ -129,7 +120,7 @@ router.get('/history/:id', verificaToken, (req, res)=>{
 /**
  * GET favoritos de um utilizador
  */
-router.get('/favorites/:id', verificaToken, (req, res)=>{
+router.get('/favorites/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'consumer': 1}), (req, res)=>{
   const token = '?token=' + req.cookies.token;
   axios.get(env.authAcessPoint + '/' + req.params.id + token)
     .then(response => { 
@@ -146,7 +137,7 @@ router.get('/favorites/:id', verificaToken, (req, res)=>{
     })
 })
 
-router.get('/disable/:id', verificaToken, (req, res)=>{
+router.get('/disable/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'consumer': 1}), (req, res)=>{
   const token = '?token=' + req.cookies.token;
   axios.put(env.authAcessPoint + '/' + req.params.id + '/desativar' + token)
     .then(response => { 
@@ -157,7 +148,7 @@ router.get('/disable/:id', verificaToken, (req, res)=>{
     })
 })
 
-router.get('/enable/:id', verificaToken, (req, res)=>{
+router.get('/enable/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'consumer': 1}), (req, res)=>{
   const token = '?token=' + req.cookies.token;
   axios.put(env.authAcessPoint + '/' + req.params.id + '/ativar' + token)
     .then(response => { 
@@ -168,7 +159,7 @@ router.get('/enable/:id', verificaToken, (req, res)=>{
     })
 })
 
-router.get('/deleteUser/:id', verificaToken, (req,res)=>{
+router.get('/deleteUser/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'consumer': 1}), (req,res)=>{
   console.log('delete user')
   const token = '?token=' + req.cookies.token;
   axios.delete(env.authAcessPoint + '/' + req.params.id + token)
@@ -216,7 +207,7 @@ router.post('/register', (req, res)=>{
  * POST /resetPassword 
  * Envia pedido ao serviço de autenticação para mudar palavra passe
  */
-router.post('/resetPassword', verificaToken, (req, res)=>{
+router.post('/resetPassword', auth.verificaToken({'admin': -1, 'consumer': -1, 'producer': -1}), (req, res)=>{
     const email = req.body.email;
 
     const transporter = nodemailer.createTransport({
@@ -273,7 +264,7 @@ router.post('/redefinePassword', (req, res) => {
  * POST /:id 
  * Envia pedido ao serviço de autenticação para guardar alterações do utilizador
  */
-router.post('/:id', verificaToken, (req, res)=>{ 
+router.post('/:id', auth.verificaToken({'admin': -1, 'consumer': 1, 'producer': 1}), (req, res)=>{ 
   const token = '?token=' + req.cookies.token;
 
   axios.put(env.authAcessPoint + '/' + req.params.id + token, req.body)

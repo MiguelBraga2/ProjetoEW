@@ -135,12 +135,44 @@ block content
                     list: 'list-group list-group-flush ',
                     item: 'list-group-item'
                 },
+                transformItems(items) {
+                    return items.map(item => {
+                        if (!item['Relator']) {
+                            item['Relator'] = 'N/A'; // Substitui por 'N/A'
+                        }
+                        return item;
+                    });
+                },
                 templates: {
                     empty: '<p>Não encontramos nenhum resultado</p> ',
                     item: (hit, { html, components }) =>{
                         if (hit._highlightResult['Sumário']) 
                             hit._highlightResult['Sumário'].value = truncateText(hit._highlightResult['Sumário'].value, 500);
-                        
+                        else{
+                            if (!hit['Sumário']){
+                                hit['Sumário'] = "N/A"
+                            }
+                        }
+                        if (!hit._highlightResult['Relator']) {
+                            if (!hit['Relator']){
+                                hit['Relator'] = "N/A"
+                            }
+                        }
+                        if (!hit._highlightResult['Data do Acordão']) {
+                            if (!hit['Data do Acordão']){
+                                hit['Data do Acordão'] = "N/A"
+                            }
+                        }
+                        if (!hit._highlightResult['Áreas Temáticas']){
+                            if (hit['Áreas Temáticas'].length === 0){
+                                hit['Áreas Temáticas'] = "N/A"
+                            }
+                        }
+                        if (!hit._highlightResult['Descritores']){
+                            if (!hit['Descritores']){
+                                hit['Descritores'] = "N/A"
+                            }
+                        }
                         return html`
                         <div class="card mb -2"> <div class="card-body">
                         <h5 class="text-start text-primary"><a href="/acordaos/${hit._id}">${components.Highlight({ hit, attribute: 'Processo' })}</a></h1>
@@ -149,16 +181,16 @@ block content
                                 <div class="text-start"> <b>Tribunal:</b> ${components.Highlight({ hit, attribute: 'tribunal' })}</div>
                             </div>
                             <div class="col-md-4"> 
-                                <div class="text-start"> <b>Relator:</b> ${components.Highlight({ hit, attribute: 'Relator' })}</div>
+                                <div class="text-start"> <b>Relator:</b> ${hit._highlightResult['Relator'] ? components.Highlight({ hit, attribute: 'Relator' }) : hit['Relator']} </div>
                             </div>
                             <div class="col-md-4"> 
-                                <div class="text-start"> <b>Data do Acordão:</b> ${components.Highlight({ hit, attribute: 'Data do Acordão' })}</div>
+                                <div class="text-start"> <b>Data do Acordão:</b> ${hit._highlightResult['Data do Acordão'] ? components.Highlight({ hit, attribute: 'Data do Acordão' }) : hit['Data do Acordão']}</div>
                             </div>
                         </div>
-                        <div class="text-start pb-2"> <b>Áreas Temáticas:</b> ${components.Highlight({ hit, attribute: 'Áreas Temáticas' })}</div>
-                        <div class="text-start pb-2"> <b>Descritores:</b> ${components.Highlight({ hit, attribute: 'Descritores' })}</div>
+                        <div class="text-start pb-2"> <b>Áreas Temáticas:</b> ${hit._highlightResult['Áreas Temáticas'] ? components.Highlight({ hit, attribute: 'Áreas Temáticas' }) : hit['Áreas Temáticas']}</div>
+                        <div class="text-start pb-2"> <b>Descritores:</b> ${hit._highlightResult['Descritores'] ? components.Highlight({ hit, attribute: 'Descritores' }) : hit['Descritores']}</div>
                         <div class="text-start pb-2">
-                            <b>Sumário:</b> ${components.Highlight({ hit, attribute: 'Sumário' })}
+                            <b>Sumário:</b> ${hit._highlightResult['Sumário'] ? components.Highlight({ hit, attribute: 'Sumário' }) : hit['Sumário']} 
                         </div>
                         </div>
                         </div>
