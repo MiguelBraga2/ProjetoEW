@@ -25,18 +25,16 @@ block content
     section.py-5.text-center
         .container
             h1.py-5 Utilizadores
-            .row
-                  .col-md-9.py-5
-                    .d-flex.justify-content-center    
-                        ul.list-group.list-group-flush#resultsList 
-                    .d-flex.justify-content-center
-                        // Pagination
-                        nav
-                            ul.pagination
-                                li.page-item
-                                    a(href="#topo").page-link#previous Previous
-                                li.page-item
-                                    a(href="#topo").page-link#next Next
+            .w-100    
+                ul.list-group.list-group-flush#resultsList 
+            .d-flex.justify-content-center
+                // Pagination
+                nav
+                    ul.pagination
+                        li.page-item
+                            a(href="#topo").page-link#previous Previous
+                        li.page-item
+                            a(href="#topo").page-link#next Next
 
     script(type="text/javascript" src="/public/js/fetchUsers.js")
     // Footer              
