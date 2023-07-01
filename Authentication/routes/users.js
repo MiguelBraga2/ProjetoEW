@@ -7,7 +7,50 @@ const User = require('../controllers/user')
 const auth = require('../auth/auth')
 require('dotenv').config();
 
+function paginatedResults(model) {
+  console.log('ola')
+  return async (req, res, next) => {
+    console.log('ole')
+    const queries = []
+    const match = {
+      $match : {}
+    }
+    queries.push(match)
+  
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 15;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const results = {};
+    
+    try {
+      res.paginatedResults = results;
 
+      const aggregation = model.aggregate(queries);
+      var total = await model.aggregate([...queries, { $count: 'count' }]).exec();
+      total = total.length > 0 ? total[0].count : 0
+      results.results = await aggregation.skip(startIndex).limit(limit).exec();
+      
+      if (endIndex < total) {
+          results.next = { 
+            page: page + 1,
+            limit: limit
+          }      
+      }
+
+      if (startIndex > 0) {
+          results.previous = { 
+            page: page - 1,
+            limit: limit
+          }
+      }
+
+      next();
+    } catch (error) {
+      res.status(500).json({error: error, message: error.message});
+    }
+  }
+}
 
 /*--GET's------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -16,10 +59,9 @@ require('dotenv').config();
  * 
  * Verificar o acesso é necessario, rota para admin
  */
-router.get('/', auth.verificaAcesso, function (req, res) {
-  User.list()
-    .then(dados => res.status(200).jsonp({ dados: dados }))
-    .catch(e => res.status(500).jsonp({ error: e }))
+router.get('/', paginatedResults(userModel), function (req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.json(res.paginatedResults);
 })
 
 /**
@@ -276,7 +318,7 @@ router.put('/:id/password', auth.verificaAcesso, function (req, res) {
 /**
  * PUT adicionar um processo ao histórico, feito pelo utilizador em questão quando acessa um processo 
  */
-router.put('/:id/history', function (req, res){
+router.put('/:id/history', auth.verificaAcesso, function (req, res){
   User.updateHistory(req.params.id, req.body.process)
     .then(dados => {
       res.jsonp(dados)
@@ -289,7 +331,7 @@ router.put('/:id/history', function (req, res){
 /**
  * PUT adicionar um processo aos favoritos, feito pelo utilizador em questão quando adiciona um processo aos favoritos 
  */
-router.put('/:id/favorites',  function (req, res){
+router.put('/:id/favorites', auth.verificaAcesso, function (req, res){
   User.updateFavs(req.params.id, req.body)
     .then(dados => {
       res.jsonp(dados)
@@ -301,7 +343,7 @@ router.put('/:id/favorites',  function (req, res){
     })
 })
 
-router.put('/:id/removeFavorite', function (req, res) {
+router.put('/:id/removeFavorite', auth.verificaAcesso, function (req, res) {
   User.removeFavs(req.params.id, req.body)
     .then(dados => {
       res.jsonp(dados)
@@ -311,6 +353,16 @@ router.put('/:id/removeFavorite', function (req, res) {
       res.jsonp('error', { error: erro, message: "Erro na alteração do utilizador" })
     })
 });
+
+router.put('/:email/redefinePassword', function (req, res) {
+  User.changePassword(req.params.email,req.body.pass)
+  .then(dados => {
+    res.jsonp(dados)
+  })
+  .catch(erro => {
+    res.jsonp('error', { error: erro, message: "Erro na alteração da password" })
+  })
+})
 
 
 /*--DELETE's------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/

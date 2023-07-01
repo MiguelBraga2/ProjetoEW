@@ -167,7 +167,7 @@ module.exports.addAcordao = async (judgment, taxonomyTree) => {
       judgment._id = data._id;
       
     }
-
+    console.log(judgment)
     // Insert it in the database
     const resp = await Judgment.create(judgment);
     await Algolia.add([judgment]);

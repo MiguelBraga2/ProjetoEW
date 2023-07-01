@@ -140,7 +140,7 @@ function paginatedResults(model) {
 /**
  * GET all the judgments
  */
-router.get('/acordaos', paginatedResults(Acordao), function(req, res) {  
+router.get('/acordaos', paginatedResults(Acordao), function(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.json(res.paginatedResults);
 });
@@ -188,7 +188,6 @@ router.get('/postFile/:file_name', (req, res) => {
   Judgment.getCurrentId()
     .then(data => {
       PreProcessing.processFile(taxonomyTree, req.params.file_name, data._id)
-      res.status(200).json({sucess: true})
     })
     .catch(error => {
       console.log(error);

@@ -166,4 +166,14 @@ module.exports.deleteUser = id => {
             return erro
         })
 }
+/*
+module.exports.changePassword = email, password => {
+    return User.updateOne({email: email }, password)
+    .then(resposta => {
+        return resposta
+    })
+    .catch(erro => {
+        return erro
+    })
+}*/
 
