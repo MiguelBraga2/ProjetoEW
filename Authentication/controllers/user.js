@@ -1,3 +1,4 @@
+const { response } = require('../app')
 var User = require('../models/user')
 
 // Devolve a lista de Users
@@ -166,14 +167,36 @@ module.exports.deleteUser = id => {
             return erro
         })
 }
-/*
-module.exports.changePassword = email, password => {
-    return User.updateOne({email: email }, password)
-    .then(resposta => {
-        return resposta
-    })
-    .catch(erro => {
-        return erro
-    })
-}*/
+
+module.exports.changePassword = (email, newPassword) => {
+    return User.findOne({ email: email })
+       .then(response => {
+            if (!response) {
+                return { error: "Email not in use" }
+            } else {
+                console.log("AQUI " + response)  
+                response.setPassword(newPassword, (err, user) => {
+                if (err) {
+                    console.log(err.message)
+                  return err;
+                } else {
+                // Salve as alterações no utilizador
+                response.save()
+                    .then(response => {
+                        return response
+                    })
+                    .catch(err => {
+                        return err;
+                    })
+                }
+              });
+            
+            }
+        })   
+       .catch(err => {
+            return err;
+       }) 
+
+  };
+  
 

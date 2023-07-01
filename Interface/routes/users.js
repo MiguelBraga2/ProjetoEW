@@ -259,7 +259,7 @@ router.post('/resetPassword', verificaToken, (req, res)=>{
  */
 
 router.post('/redefinePassword', (req, res) => {
-  axios.put(env.authAcessPoint + '/users/' + req.body.email + '/redefinePassword', req.body.pass)
+  axios.put(env.authAcessPoint + '/' +req.body.email + '/redefinePassword', req.body)
   .then(resp => {
     console.log(resp)
     res.redirect('/users/login');

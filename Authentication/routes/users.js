@@ -3,8 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken')
 const passport = require('passport')
 const userModel = require('../models/user')
-const User = require('../controllers/user')
-const auth = require('../auth/auth')
+const auth = require('../auth/auth');
 require('dotenv').config();
 
 function paginatedResults(model) {
@@ -85,6 +84,9 @@ router.get('/facebook', (req, res) => {
  */
 router.get('/facebook/callback', function(req, res, next) {
   passport.authenticate('facebook', function(err, user, info) {
+    if (!err && ! user) {
+      return res.json({ error: "Email already in use"});
+    }
     if (err) {
       // Tratar o erro de autenticação
       return res.jsonp({ error: err.message });
@@ -135,6 +137,9 @@ router.get('/google', (req, res) => {
  */
 router.get('/google/callback', function(req, res, next) {
   passport.authenticate('google', function(err, user, info) {
+    if (!err && ! user) {
+      return res.json({ error: "Email already in use"});
+    }
     if (err) {
       // Tratar o erro de autenticação
       return res.jsonp({ error: err.message });
@@ -211,31 +216,43 @@ router.post('/', auth.verificaAcesso, function (req, res) {
  */
 router.post('/register', function (req, res) {
   var d = new Date().toISOString().substring(0, 19)
-  userModel.register(new userModel({
-    username: req.body.username, name: req.body.name, surname: req.body.surname,
-    email: req.body.email, level: req.body.level, 
-    active: true, dateCreated: d, dateLastAccess: d,
-    providerId: '', provider: '',history: [],
-    favorites: []
-  }),
-    req.body.password,
-    (err, user) => {
-      if (err)
-        res.jsonp({ error: err, message: "Register error: " + err })
-      else {
-        passport.authenticate("local")(req, res, () => {
-          jwt.sign({
-            username: req.user.username, level: req.user.level,
-            sub: 'New User', id: req.user._id
-          },
-            process.env.SECRET_KEY,
-            { expiresIn: "1h" },
-            function (e, token) {
-              if (e) res.status(500).jsonp({ error: "Erro na geração do token: " + e })
-              else res.status(201).jsonp({ token: token })
-            });
-        })
+  userModel.findOne({email: req.body.email})
+    .then(dados => {
+      if (dados) {
+        res.status(500).jsonp({ error: 'Email already in use'});
+
+      } else {
+        userModel.register(new userModel({
+          username: req.body.username, name: req.body.name, surname: req.body.surname,
+          email: req.body.email, level: req.body.level, 
+          active: true, dateCreated: d, dateLastAccess: d,
+          providerId: '', provider: '',history: [],
+          favorites: []
+        }),
+          req.body.password,
+          (err, user) => {
+            if (err)
+              res.jsonp({ error: err, message: "Register error: " + err })
+            else {
+              passport.authenticate("local")(req, res, () => {
+                jwt.sign({
+                  username: req.user.username, level: req.user.level,
+                  sub: 'New User', id: req.user._id
+                },
+                  process.env.SECRET_KEY,
+                  { expiresIn: "1h" },
+                  function (e, token) {
+                    if (e) res.status(500).jsonp({ error: "Erro na geração do token: " + e })
+                    else res.status(201).jsonp({ token: token })
+                  });
+              })
+            }
+          })
       }
+
+    })
+    .catch(err => {
+        res.status(500).jsonp({ error: err, message: err.message });
     })
 })
 
@@ -355,10 +372,13 @@ router.put('/:id/removeFavorite', auth.verificaAcesso, function (req, res) {
 router.put('/:email/redefinePassword', function (req, res) {
   User.changePassword(req.params.email,req.body.pass)
   .then(dados => {
+    console.log("DADOS: " + dados)
     res.jsonp(dados)
   })
   .catch(erro => {
-    res.jsonp('error', { error: erro, message: "Erro na alteração da password" })
+    console.log("ERRO " + erro)
+    console.log(erro.message);
+    res.jsonp({ error: erro, message: "Erro na alteração da password" })
   })
 })
 
@@ -374,7 +394,7 @@ router.delete('/:id', auth.verificaAcesso, function (req, res) {
       res.jsonp(dados)
     })
     .catch(erro => {
-      res.jsonp('error', { error: erro, message: "Erro na remoção do utilizador" })
+      res.jsonp({ error: erro, message: "Erro na remoção do utilizador" })
     })
 })
 

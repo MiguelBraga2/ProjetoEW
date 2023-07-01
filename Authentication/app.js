@@ -10,7 +10,6 @@ var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var session = require('express-session');
 var mongoose = require('mongoose');
 var User = require('./models/user');
-var UserController = require('./controllers/user')
 var usersRouter = require('./routes/users');
 require('dotenv').config();
 
@@ -44,29 +43,41 @@ passport.use(new FacebookStrategy({
           // O utilizador já existe
           return cb(null, resposta);
         } else {
-          // O utilizador não existe, cria um novo utilizador com as informações do Facebook
-          const email = profile.emails ? profile.emails[0].value : ''; // Extrai o primeiro email, se disponível
-          const newUser = new User({
-            providerId: profile.id,
-            provider: 'facebook',
-            name: profile.name.givenName,
-            surname: profile.name.familyName,
-            email: email,
-            level: 'consumer',
-            active: true,
-            dateCreated: new Date().toISOString().substring(0, 19),
-            dateLastAccess: new Date().toISOString().substring(0, 19),
-            history: [],
-            favorites: []
-          });  
+          const email = profile.emails ? profile.emails[0].value : '';
 
-          User.create(newUser)
-            .then(dados => {
-              return cb(null, dados);
+          User.findOne({ email: email })
+            .then(existingUser => {
+              if (existingUser) {
+                return cb(null, null);
+              } else {
+                const newUser = new User({
+                  providerId: profile.id,
+                  provider: 'facebook',
+                  name: profile.name.givenName,
+                  surname: profile.name.familyName,
+                  email: email,
+                  level: 'consumer',
+                  active: true,
+                  dateCreated: new Date().toISOString().substring(0, 19),
+                  dateLastAccess: new Date().toISOString().substring(0, 19),
+                  history: [],
+                  favorites: []
+                });
+
+                User.create(newUser)
+                  .then(dados => {
+                    return cb(null, dados);
+                  })
+                  .catch(erro => {
+                    return cb(erro, null);
+                  });
+              }
             })
             .catch(erro => {
+              // Trate o erro, se necessário
               return cb(erro, null);
-            })
+            });
+
         }
       })
       .catch(erro => {
@@ -82,35 +93,46 @@ passport.use(new GoogleStrategy({
   function (accessToken, refreshToken, profile, cb) {
     User.findOne({ providerId: profile.id, provider: 'google' })
       .then(resposta => {
-        
-        if (resposta) { 
+        if (resposta) {
           // Utilizador já existe, devolve o utilizador existente
           return cb(null, resposta);
         } else {
           // O utilizador não existe, cria um novo utilizador com as informações do Google
           const email = profile.emails ? profile.emails[0].value : ''; // Extrai o primeiro email, se disponível
-          const newUser = new User({
-            providerId: profile.id,
-            provider: 'google',
-            name: profile.name.givenName,
-            surname: profile.name.familyName,
-            email: email,
-            level: 'consumer',
-            active: true,
-            dateCreated: new Date().toISOString().substring(0, 19),
-            dateLastAccess: new Date().toISOString().substring(0, 19),
-            history: [],
-            favorites: []
-          });
-
-          User.create(newUser)
-            .then(dados => {
-              return cb(null, dados);
+          
+          User.findOne({ email: email })
+            .then(existingUser => {
+              if (existingUser) {
+                return cb(null,null);
+              } else {
+                const newUser = new User({
+                  providerId: profile.id,
+                  provider: 'google',
+                  name: profile.name.givenName,
+                  surname: profile.name.familyName,
+                  email: email,
+                  level: 'consumer',
+                  active: true,
+                  dateCreated: new Date().toISOString().substring(0, 19),
+                  dateLastAccess: new Date().toISOString().substring(0, 19),
+                  history: [],
+                  favorites: []
+                });
+          
+                User.create(newUser)
+                  .then(dados => {
+                    return cb(null, dados);
+                  })
+                  .catch(erro => {
+                    return cb(erro, null);
+                  });
+              }
             })
             .catch(erro => {
+              // Trate o erro, se necessário
               return cb(erro, null);
-            })
-        }
+            });
+        }        
       })
       .catch(erro => {
         return cb(erro, null)
