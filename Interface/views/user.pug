@@ -28,10 +28,12 @@ block content
               img.rounded-circle.mt-5(width='150px' src='https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg')
               p= user.name + ' ' + (user.surname || '')
               p= user.email
-              .mb-3
+              .mt-5
               a.btn.btn-primary.w-50(href='/users/history/'+user._id) Histórico
               .mb-3
               a.btn.btn-primary.w-50(href='/users/favorites/'+user._id) Favoritos
+              .mb-3 
+              a.btn.btn-danger.w-50(href='/users/deleteUser/'+user._id) Eliminar Conta
 
             if change
                 #popup.mb-6(style="margin-bottom:55%")
