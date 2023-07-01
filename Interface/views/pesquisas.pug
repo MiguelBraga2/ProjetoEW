@@ -273,7 +273,10 @@ block content
                 { label: 'Featured', value: 'Acordaos' },
                 { label: 'Relator (asc)', value: 'Acordaos_Relator_asc' },
                 { label: 'Relator (desc)', value: 'Acordaos_Relator_desc' },
-            ],
+            ], 
+            cssClasses: {
+                    select : 'form-select'
+                }
         });
 
         search1.addWidgets([searchBox1, refinementList1, refinementList2, refinementList3, hits, pagination, sort]);
