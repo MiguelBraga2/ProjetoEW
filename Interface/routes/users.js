@@ -159,7 +159,7 @@ router.get('/enable/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'consu
     })
 })
 
-router.get('/deleteUser/:id', verificaToken, (req,res)=>{
+router.get('/deleteUser/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'consumer': 1}), (req,res)=>{
   console.log('delete user')
   const token = '?token=' + req.cookies.token;
   axios.delete(env.authAcessPoint + '/' + req.params.id + token)

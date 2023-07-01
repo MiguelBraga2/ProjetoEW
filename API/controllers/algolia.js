@@ -42,6 +42,9 @@ module.exports.splitObject = (object, maxSize) => {
         }
       }
     }
+    else{
+      currentObject[key] = object[key];
+    }
   }
   // If the currentObject is not empty, add it to the list to be returned
   if (Object.keys(currentObject).length !== 0) {
