@@ -57,15 +57,15 @@ router.get('/register', (req, res)=>{
  * GET página para definir o email para enviar link para reposição da password
  */
 
-router.get('/resetPassword=:token', auth.verificaToken({'admin': -1, 'producer': -1, 'consumer': -1}), (req, res) => {
+router.get('/resetPassword=:token',  (req, res) => {
   res.render('redefinePassword');
 });
 
 
 /**
- * GET página de reposição da password
+ * GET página para definir o email para enviar link para reposição da password
  */
-router.get('/resetPassword', auth.verificaToken({'admin': -1, 'producer': -1, 'consumer': -1}), (req, res)=>{
+router.get('/resetPassword',  (req, res)=>{
   res.render('resetPassword')
 })
 
