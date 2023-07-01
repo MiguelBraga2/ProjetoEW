@@ -91,7 +91,7 @@ router.get('/pesquisas', auth.verificaToken({'admin': -1, 'producer': -1, 'consu
 /**
  * GET página de criar um acordão 
  */
-router.get('/acordaos/novo', auth.verificaToken({'admin': -1, 'consumer': -1}), (req, res) => {
+router.get('/acordaos/novo', auth.verificaToken({'admin': -1, 'producer': -1}), (req, res) => {
   jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
     if (err) {
       res.render('error', {error: err, message: err.message});
