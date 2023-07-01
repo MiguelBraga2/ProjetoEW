@@ -2,6 +2,7 @@ extends layout
 
 block content
     script. 
+        let editable = false
         var url = '#{url}';
     div(style="display:block; content:''; height: 60px;")#topo
     // Modal
@@ -27,12 +28,12 @@ block content
             h1.py-5 Histórico
             .row
                   .col-md-9.py-5
-                    .d-flex.justify-content-center    
+                    .d-flex.justify-content-center   
                         ul.list-group.list-group-flush#resultsList 
                     .d-flex.justify-content-center
                         // Pagination
                         nav
-                            ul.pagination
+                            ul.pagination.my-4
                                 li.page-item
                                     a(href="#topo").page-link#previous Previous
                                 li.page-item

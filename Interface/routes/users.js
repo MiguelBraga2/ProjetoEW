@@ -104,17 +104,24 @@ router.get('/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'consumer': 1
  */
 router.get('/history/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'consumer': 1}), (req, res)=>{
   const token = '?token=' + req.cookies.token;
-  axios.get(env.authAcessPoint + '/' + req.params.id + '/history' + token)
-    .then(response => { 
-      const processIds = response.data.dados.history;
-      // Construir a URL da API com os parâmetros da query string
-      const queryParams = `?ids=${processIds.join(',')}`;
-      var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
-      res.render('historico', {user: response.data.dados, url: apiUrl});
-    })
-    .catch(err => {
-      res.render('error', {error: err, message: err.message});
-    })
+  jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+    if (err) {
+      res.render('error', {error : err, message : err.message})
+    } else {
+      var apiUrl = env.authAcessPoint + '/';
+      axios.get(env.authAcessPoint + '/' + req.params.id + token)
+      .then(response => { 
+        const processIds = response.data.dados.history;
+        // Construir a URL da API com os parâmetros da query string
+        const queryParams = `?ids=${processIds.join(',')}`;
+        var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
+        res.render('historico', {user: payload, url: apiUrl});
+      })
+      .catch(err => {
+        res.render('error', {error: err, message: err.message});
+      })
+    }
+  });
 })
 
 /**
@@ -122,19 +129,25 @@ router.get('/history/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'cons
  */
 router.get('/favorites/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'consumer': 1}), (req, res)=>{
   const token = '?token=' + req.cookies.token;
-  axios.get(env.authAcessPoint + '/' + req.params.id + token)
-    .then(response => { 
-      const processIds = response.data.dados.favorites.map(fav => fav.id);
-      console.log(processIds)
-      // Construir a URL da API com os parâmetros da query string
-      const queryParams = `?ids=${processIds.join(',')}`;
-      var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
-      //console.log(response.data.dados )
-      res.render('favoritos', {user: response.data.dados, url: apiUrl});
-    })
-    .catch(err => {
-      res.render('error', {error: err, message: err.message});
-    })
+  jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+    if (err) {
+      res.render('error', {error : err, message : err.message})
+    } else {
+      axios.get(env.authAcessPoint + '/' + req.params.id + token)
+      .then(response => { 
+        const processIds = response.data.dados.favorites.map(fav => fav.id);
+        console.log(processIds)
+        // Construir a URL da API com os parâmetros da query string
+        const queryParams = `?ids=${processIds.join(',')}`;
+        var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
+        console.log(payload)
+        res.render('favoritos', {user: payload, url: apiUrl});
+      })
+      .catch(err => {
+        res.render('error', {error: err, message: err.message});
+      })
+    }
+  });
 })
 
 router.get('/disable/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'consumer': 1}), (req, res)=>{

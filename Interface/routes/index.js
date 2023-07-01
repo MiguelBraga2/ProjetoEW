@@ -243,14 +243,21 @@ router.post('/files', auth.verificaToken({'admin': -1}), upload.single('myFile')
 })
 
 router.post('/description/:user_id/:acordao_id', auth.verificaToken({'admin': -1, 'producer': -1, 'consumer': -1}), (req, res) => {
-  req.body.id = req.params.acordao_id
-  axios.put(env.authAcessPoint + '/' + req.params.user_id + '/favorites', req.body)
-  .then(resp => {
-    res.redirect('/acordaos/'+req.params.acordao_id)
-  })
-  .catch(error => {
-    res.render('error', {error : {} , message : "Erro a atualizar os favoritos"});
-  })
+  const token = '?token=' + req.cookies.token;
+  jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+    if (err) {
+      res.render('error', {error : err, message : err.message})
+    } else {
+      req.body.id = req.params.acordao_id
+      axios.put(env.authAcessPoint + '/' + req.params.user_id + '/favorites' + token, req.body)
+      .then(resp => {
+        res.redirect('/acordaos/'+req.params.acordao_id)
+      })
+      .catch(error => {
+        res.render('error', {error : {} , message : "Erro a atualizar os favoritos"});
+      })
+    }
+  });
   
 })
 

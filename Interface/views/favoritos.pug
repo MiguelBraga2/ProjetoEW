@@ -1,13 +1,9 @@
 extends layout
 
 block content
-    script. 
+    script.
+        let editable = false
         let url = '#{url}';
-        let favoritosList = !{JSON.stringify(user.favorites)};
-        let favoritos = {}
-        for (let i = 0; i < favoritosList.length; i++) {
-            favoritos[favoritosList[i].id] = favoritosList[i].description;
-        }
 
     div(style="display:block; content:''; height: 60px;")#topo
     // Modal
