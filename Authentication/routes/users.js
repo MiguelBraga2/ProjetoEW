@@ -8,9 +8,7 @@ const auth = require('../auth/auth')
 require('dotenv').config();
 
 function paginatedResults(model) {
-  console.log('ola')
   return async (req, res, next) => {
-    console.log('ole')
     const queries = []
     const match = {
       $match : {}

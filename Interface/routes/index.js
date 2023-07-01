@@ -3,6 +3,7 @@ var router = express.Router();
 var env = require('../config/env');
 var axios = require('axios');
 var jwt = require('jsonwebtoken');
+const auth = require('../auth/auth')
 require('dotenv').config();
 
 var multer = require('multer')
@@ -63,7 +64,7 @@ router.get('/' || '/tribunais', function(req, res){
 /**
  * GET página de pesquisa aprofundada
  */
-router.get('/pesquisas', verificaToken, (req, res)=>{
+router.get('/pesquisas', auth.verificaToken({'admin': -1, 'producer': -1, 'consumer': -1}), (req, res)=>{
   var query = ''
   if (req.query.limit) {
     if (query.length == 0) {
@@ -90,7 +91,7 @@ router.get('/pesquisas', verificaToken, (req, res)=>{
 /**
  * GET página de criar um acordão 
  */
-router.get('/acordaos/novo', verificaToken, (req, res) => {
+router.get('/acordaos/novo', auth.verificaToken({'admin': -1, 'consumer': -1}), (req, res) => {
   jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
     if (err) {
       res.render('error', {error: err, message: err.message});
@@ -105,7 +106,7 @@ router.get('/acordaos/novo', verificaToken, (req, res) => {
 /**
  * GET página de um acordão 
  */
-router.get('/acordaos/:id', verificaToken, (req, res) => {
+router.get('/acordaos/:id', auth.verificaToken({'admin': -1, 'producer': -1, 'consumer': -1}), (req, res) => {
   const token = '?token=' + req.cookies.token;
   axios.get(env.apiAccessPoint + '/acordaos/' + req.params.id)
     .then(response => { 
@@ -150,7 +151,7 @@ router.get('/acordaos/:id', verificaToken, (req, res) => {
 /**
  * GET acordãos produzidos por um produces
  */
-router.get('/acordaosProducer/:id', verificaToken, (req, res)=>{
+router.get('/acordaosProducer/:id', auth.verificaToken({'admin': -1, 'producer': -1}), (req, res)=>{
   jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
     if (err) {
       res.render('error', {error: err, message: "Não possui acesso a este conteúdo..."});
@@ -168,7 +169,7 @@ router.get('/acordaosProducer/:id', verificaToken, (req, res)=>{
 /**
  * GET página com os acordãos
  */
-router.get('/acordaos', verificaToken, (req, res) => {
+router.get('/acordaos', auth.verificaToken({'admin': -1, 'producer': -1, 'consumer': -1}), (req, res) => {
   var apiUrl = env.apiAccessPoint + '/acordaos';
 
   if (req.query && req.query.tribunal) {
@@ -186,7 +187,7 @@ router.get('/acordaos', verificaToken, (req, res) => {
   
 })
 
-router.get('/acordaos/delete/:id', verificaToken, (req, res) => {
+router.get('/acordaos/delete/:id', auth.verificaToken({'admin': -1, 'producer': -1}), (req, res) => {
   axios.delete(env.apiAccessPoint + '/acordaos/' + req.params.id)
     .then(response => {
       res.redirect('/acordaos')
@@ -196,7 +197,7 @@ router.get('/acordaos/delete/:id', verificaToken, (req, res) => {
     })
 })
 
-router.get('/acordaos/edit/:id', verificaToken, (req, res) => {
+router.get('/acordaos/edit/:id', auth.verificaToken({'admin': -1, 'producer': -1}), (req, res) => {
   let id = req.params.id
   axios.get(env.apiAccessPoint + '/acordaos/' + id)
     .then(response => {
@@ -217,7 +218,7 @@ router.get('/acordaos/edit/:id', verificaToken, (req, res) => {
 
 /*--POST's---------------------------------------------------------------------------------------------------------------------------------------------- */
 
-router.post('/files', verificaToken, upload.single('myFile'), (req, res) => {
+router.post('/files', auth.verificaToken({'admin': -1}), upload.single('myFile'), (req, res) => {
   jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
     if (err) {
       res.render('error', {error : err, message : err.message})
@@ -241,7 +242,7 @@ router.post('/files', verificaToken, upload.single('myFile'), (req, res) => {
 
 })
 
-router.post('/description/:user_id/:acordao_id', verificaToken, (req, res) => {
+router.post('/description/:user_id/:acordao_id', auth.verificaToken({'admin': -1, 'producer': -1, 'consumer': -1}), (req, res) => {
   req.body.id = req.params.acordao_id
   axios.put(env.authAcessPoint + '/' + req.params.user_id + '/favorites', req.body)
   .then(resp => {
@@ -253,7 +254,7 @@ router.post('/description/:user_id/:acordao_id', verificaToken, (req, res) => {
   
 })
 
-router.post('/acordaos/novo', verificaToken, (req, res) => {
+router.post('/acordaos/novo', auth.verificaToken({'admin': -1, 'producer': -1}), (req, res) => {
   let modifiedBody = req.body;
   if (req.body) {
     modifiedBody = {
@@ -275,7 +276,7 @@ router.post('/acordaos/novo', verificaToken, (req, res) => {
     });
 });
 
-router.post('/acordaos/edit', verificaToken, (req, res) => {
+router.post('/acordaos/edit', auth.verificaToken({'admin': -1, 'producer': -1}), (req, res) => {
   console.log(req.body.Processo)
   axios.put(env.apiAccessPoint + '/acordaos/' + req.body._id, req.body)
   .then(resp => {
