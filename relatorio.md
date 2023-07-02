@@ -64,8 +64,8 @@ Paralelamente ao processo de tratamento dos dados, foi elaborado o serviço de a
 * active - Indica se o utilizador está ativo ou não;
 * dateCreated - Data de criação do utilizador;
 * dateLastAccess - Data do último acesso;
-* providerId
-* provider
+* providerId - Identificador fornecido pelo google ou facebook; 
+* provider - Google ou facebook;
 * history - Lista de ids de processos visitados recentemente;
 * favorites - Lista de pares (processo, descrição) que constituem os favoritos.
 
@@ -75,7 +75,7 @@ Conceptualmente, este serviço é uma API para a coleção _users_ da base de da
 | --- | --- |
 | GET /users | Devolve todos os utilizadores da BD |
 | GET /users/facebook | Inicia o processo de autenticação com o facebook |
-| GET /users/google/ | Inicia o processo de autenticação com o google |
+| GET /users/google | Inicia o processo de autenticação com o google |
 | GET /users/:id/history | Devolve o histórico do utilizador passado por parâmetro |
 | GET /users/:id/favorites | Devolve os favoritos do utilizador passado por parâmetro |
 | GET /users/:id | Devolve um utilizador |
@@ -85,13 +85,23 @@ Conceptualmente, este serviço é uma API para a coleção _users_ da base de da
 | PUT /users/:id | Altera um utilizador na BD |
 | PUT /users/:id/desativar | Desativa a conta de um utilizador |
 | PUT /users/:id/ativar | Reativa a conta de um utilizador |
-| PUT /users/:id/password | Altera a password de um utilizador |
+| PUT /users/:email/redefinePassword | Altera a password de um utilizador |
 | PUT /users/:id/history | Adiciona um processo ao histórico do utilizador |
 | PUT /users/:id/favorites | Adicionar um processo aos favoritos, juntamente com a descrição |
 | PUT /users/:id/removeFavorite | Remove um processo dos favoritos |
 | DELETE /users/:id | Remove um utilizador da BD |
 
-Tal como acontecerá na API, várias destas rotas deverão estar protegidas.
+Tal como acontecerá na API, várias destas rotas deverão estar protegidas e para isso o serviço de autenticação possui dois pontos importantes:
+o momento do login e do registo. Neste serviço, no momento do registo, usamos o package 'passport' para nos auxiliar e fazer o registo na base de dados
+mongo. Já no login também utilizámos o mesmo, na qual faz autenticação com o username e password.
+Depois de iniciar sessão, o serviço responde com um json web token gerado para ser usado na nossa
+aplicação (consultas à API de dados e acesso a páginas restritas).
+
+Por outro lado, a nossa aplicação permite a autenticação com o google e com o facebook. Nos dois casos
+usamos pacotes do passport e definimos uma estratégia que se aplica aos dois métodos.
+A estratégia passa por, depois que o utilizador realizar a autenticação no site do google ou facebook, verificar 
+se o utilizador em questão já pertence à base de dados com os campos providerId e provider e se o email associado já está em uso.
+Caso não esteja inserido na base de dados, criámos um utilizador e gerámos um token para ser usado na nossa aplicação, este criado na rota de callback deste processo de autenticação.
 
 ### API
 
@@ -193,11 +203,11 @@ Manual de utilização da aplicação
 Como forma de facilitar o arranque da aplicação, foi elaborado um ficheiro _docker-compose.yml_ responsável por criar e orquestrar os serviços que suportam a aplicação em diferentes _docker containers_. As portas de funciomento de cada serviço são as seguintes:
 
 | Serviço | Porta |
-| --- | --- | --- |
-| API |     | 8001 |
-| Autenticação |     | 8002 |
-| Interface |     | 8003 |
-| MongoDB |     | 27017 |
+| --- | --- |
+| API | 8001 |
+| Autenticação | 8002 |
+| Interface | 8003 |
+| MongoDB | 27017 |
 
 Para iniciar a aplicação, basta executar o seguinte comando na pasta raiz do projeto: docker compose build
 
