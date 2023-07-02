@@ -10,7 +10,7 @@ exports.verificaToken = function(roles){
           jwt.verify(myToken, process.env.SECRET_KEY, function(e, payload){
             
             if(e){
-              res.status(401).jsonp({error: e})
+              res.redirect('/users/login')
             }
             else{
               let flag = false
