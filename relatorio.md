@@ -79,7 +79,7 @@ Conceptualmente, este serviço é uma API para a coleção _users_ da base de da
 
 Tal como acontecerá na API, várias destas rotas deverão estar protegidas e para isso o serviço de autenticação possui dois pontos importantes:
 o momento do login e do registo. Neste serviço, no momento do registo, usamos o package 'passport' para nos auxiliar e fazer o registo na base de dados
-mongo. Já no login também utilizámos o mesmo, na qual faz autenticação com o username e password.
+mongo. Já no login também utilizámos o mesmo, o qual faz autenticação com o username e password.
 Depois de iniciar sessão, o serviço responde com um json web token gerado para ser usado na nossa
 aplicação (consultas à API de dados e acesso a páginas restritas).
 
