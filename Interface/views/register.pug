@@ -24,6 +24,8 @@ block content
                 .form-group.mb-4 
                   label.form-label Email
                   input.form-control#email1(type="email" placeholder="Insira o Email" name="email" required)
+                  if (error)
+                    label.form-label.text-danger.px-2 Email já em uso
                 .form-group.mb-4 
                   label.form-label Palavra-Passe
                   input.form-control#password1(type="password" placeholder="Insira a Palavra-Passe" name="password" required)
