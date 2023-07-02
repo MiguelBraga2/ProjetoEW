@@ -202,7 +202,7 @@ router.get('/postFile/:file_name', (req, res) => {
  * POST a judgment
  */
 router.post('/acordaos', (req,res) => {
-  Judgment.addAcordao(req.body, taxonomyTree)
+  Judgment.addAcordao(req.body, taxonomyTree, fullTextObject)
     .then(data => res.status(201).json(data))
     .catch(error => res.status(526).json({error: error, message: "Could not insert the judgment"}))
 })

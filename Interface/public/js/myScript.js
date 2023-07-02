@@ -28,7 +28,7 @@ function popup(link, idName){
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Não</button>
-        <button class="btn btn-primary"><a href="${link}">Sim</a></button>
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><a href="${link}">Sim</a></button>
       </div>
     </div>
   </div>

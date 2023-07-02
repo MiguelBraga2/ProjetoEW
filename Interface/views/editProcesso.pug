@@ -43,8 +43,8 @@ block content
                                 a.list-group-item.list-group-item-action(href="#topo") Voltar ao topo
                     .col-md-9.py-5
                         section.text-start#descritores 
-                            h1.text-warning= processo.Processo
-                            hr.text-warning
+                            h1.text-primary= processo.Processo
+                            hr.text-primary
                             input(type="hidden" name="_id" value=processo._id)
                             p #[b Relator:] #[input(type="text" name="Relator" value=processo.Relator)]
                             p #[b Descritores:] #[input(type="text" name="Descritores" value=processo.Descritores)]
@@ -63,16 +63,16 @@ block content
                             each val in Object.entries(processo).filter(([key]) => !['__v', 'url', '_id', 'Relator', 'Descritores', 'Processo', 'Nº Convencional', 'Data do Acordão', 'Votação', 'Texto Integral', 'Nível de acesso', 'Meio Processual', 'Decisão', 'Indicações eventuais', 'Sumário', 'Decisão Texto Parcial', 'Decisão Texto Integral' ].includes(key))  
                                 p #[b #{val[0]}:]  #[input(type="text" name=val[0] value=val[1])]
                         section.text-start#sumario.mt-2 
-                            h1.text-warning Sumário
-                            hr.text-warning
+                            h1.text-primary Sumário
+                            hr.text-primary
                             textarea(name="Sumário", cols="60", rows="10") #{processo['Sumário']}
                         section.text-start#parcial.mt-2 
-                            h1.text-warning Decisão Texto Parcial 
-                            hr.text-warning
+                            h1.text-primary Decisão Texto Parcial 
+                            hr.text-primary
                             textarea(name="Decisão Texto Parcial", cols="60", rows="10") #{processo['Decisão Texto Parcial']}
                         section.text-start#integral.mt-2 
-                            h1.text-warning Decisão Texto Integral
-                            hr.text-warning
+                            h1.text-primary Decisão Texto Integral
+                            hr.text-primary
                             textarea(name="Decisão Texto Integral", cols="60", rows="10") #{processo['Decisão Texto Integral']}
                 input(type="submit" value="Submit")
     script(type="text/javascript" src="/public/js/favoritos.js")

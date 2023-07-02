@@ -157,7 +157,7 @@ router.get('/acordaosProducer/:id', auth.verificaToken({'admin': -1, 'producer':
       res.render('error', {error: err, message: "Não possui acesso a este conteúdo..."});
     } else if (payload.level === 'producer') {
       const queryParams = `?producerId=${req.params.id}`;
-      var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
+      var apiUrl = env.localHostAPI + '/acordaos' + queryParams;
       res.render('acordaos', {user: payload, url: apiUrl, editable: true});
     } else {
       res.render('error', {error : {} , message : "Não possui acesso a este conteúdo..."});
@@ -170,7 +170,7 @@ router.get('/acordaosProducer/:id', auth.verificaToken({'admin': -1, 'producer':
  * GET página com os acordãos
  */
 router.get('/acordaos', auth.verificaToken({'admin': -1, 'producer': -1, 'consumer': -1}), (req, res) => {
-  var apiUrl = env.apiAccessPoint + '/acordaos';
+  var apiUrl = env.localHostAPI + '/acordaos';
 
   if (req.query && req.query.tribunal) {
     apiUrl += '?tribunal=' + req.query.tribunal;
@@ -179,7 +179,7 @@ router.get('/acordaos', auth.verificaToken({'admin': -1, 'producer': -1, 'consum
   
   jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
     if (err) {
-      res.render('error', {error : err, message : err.message})
+      res.redirect('/users/login')
     } else {
       res.render('acordaos', {user: payload, url: apiUrl, editable: false});
     }
@@ -230,6 +230,7 @@ router.post('/files', auth.verificaToken({'admin': -1}), upload.single('myFile')
           console.log(erro)
         }
         else{
+          console.log('ola')
           axios.get(env.apiAccessPoint + '/postFile/' + req.file.originalname)
           res.redirect('/')
           
