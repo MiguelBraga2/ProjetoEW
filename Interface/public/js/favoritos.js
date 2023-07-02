@@ -35,10 +35,10 @@ for(let i = 0; i <favoritos.length; i++) {
         descriptionDiv.style.display = 'block';
         flag = true
     }
-    if (i == favoritos.length - 1 && flag === false){
-        favIcon.classList = 'fa-regular fa-star fa-lg';
-        descriptionDiv.style.display = 'none';
-    }
+}
+if (flag === false){
+    favIcon.classList = 'fa-regular fa-star fa-lg';
+    descriptionDiv.style.display = 'none';
 }
 
 window.addEventListener('beforeunload', event => {
