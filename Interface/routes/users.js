@@ -143,7 +143,7 @@ router.get('/favorites/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'co
         // Construir a URL da API com os parâmetros da query string
         
         var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
-        res.render('favoritos', {user: payload, url: apiUrl});
+        res.render('favoritos', {user: payload, url: apiUrl, favorites: response.data.dados.favorites});
       })
       .catch(err => {
         res.render('error', {error: err, message: err.message});

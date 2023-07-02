@@ -53,15 +53,20 @@ function solicitation(str, page, limit) {
                 <div class="row pb-2">
                 <div class="col-md-6">
                 <h5 class="text-start text-primary"><a href="/acordaos/${result._id}">${result.Processo || 'N/A'}</a></h1>
-                </div>
-                <div class="col-md-6">`
+                </div>`
+                
+                if (favorites) {
+                    listItemHTML += ` <div class="row">
+                <div class="text-start"><b>Descrição: </b>${favorites[result.id] || 'N/A'}</div>
+                </div>`
+                }
+
+                listItemHTML += `<div class="col-md-6">`
                 if (editable){
                     listItemHTML += popup('/acordaos/delete/'+result._id, `confirm${ind}`)
                     listItemHTML += `<div class="text-end h5"><a class="mx-1" type="button" data-bs-toggle='modal', data-bs-target='#confirm${ind}'"><i class="fa-solid fa-trash"></i></a>    `
                     listItemHTML += `<a class="mx-1" href="/acordaos/edit/${result._id}"><i class="fa-solid fa-pen-to-square"></i></a></div>`
                 }
-
-
                 listItemHTML +=`</div></div>
                 <div class="row pb-2">
                     <div class="col-md-4"> 
