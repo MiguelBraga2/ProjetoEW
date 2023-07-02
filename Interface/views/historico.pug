@@ -25,19 +25,16 @@ block content
     // Acordãos
     section.py-5.text-center
         .container
-            h1.py-5 Histórico
-            .row
-                  .col-md-9.py-5
-                    .d-flex.justify-content-center   
-                        ul.list-group.list-group-flush#resultsList 
-                    .d-flex.justify-content-center
-                        // Pagination
-                        nav
-                            ul.pagination.my-4
-                                li.page-item
-                                    a(href="#topo").page-link#previous Previous
-                                li.page-item
-                                    a(href="#topo").page-link#next Next
+          h1.py-5 Histórico
+          .row
+            .col-md-9.py-5.d-flex.flex-column.justify-content-center.align-items-center
+              ul.list-group.list-group-flush#resultsList
+              nav
+                ul.pagination.my-4.d-flex.justify-content-center
+                    li.page-item
+                        a(href="#topo").page-link#previous Previous
+                    li.page-item
+                        a(href="#topo").page-link#next Next
 
     script(type="text/javascript" src="/public/js/myScript.js")
     // Footer              
