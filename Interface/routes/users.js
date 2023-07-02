@@ -139,6 +139,11 @@ router.get('/favorites/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'co
         if (processIds.length === 0) {
           queryParams = `?ids=none`
         }
+        const objetoConvertido = response.data.dados.favorites.reduce((objetoResultado, objetoAtual) => {
+          objetoResultado[objetoAtual.id] = objetoAtual.description;
+          return objetoResultado;
+        }, {});
+
         // Construir a URL da API com os parâmetros da query string
         
         var apiUrl = env.localHostAPI + '/acordaos' + queryParams;

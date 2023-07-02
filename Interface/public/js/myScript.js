@@ -57,7 +57,7 @@ function solicitation(str, page, limit) {
                 
                 if (favorites) {
                     listItemHTML += ` <div class="row">
-                <div class="text-start"><b>Descrição: </b>${favorites[result.id] || 'N/A'}</div>
+                <div class="text-start"><b>Descrição: </b>${favorites[result._id] || 'N/A'}</div>
                 </div>`
                 }
 
