@@ -1,4 +1,3 @@
-const { response } = require('../app')
 var User = require('../models/user')
 
 // Devolve a lista de Users
