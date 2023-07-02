@@ -9,6 +9,7 @@ exports.verificaToken = function(roles){
         if(myToken){
           jwt.verify(myToken, process.env.SECRET_KEY, function(e, payload){
             if(e){
+              
               res.redirect('/users/login')
             }
             else{
@@ -38,7 +39,7 @@ exports.verificaToken = function(roles){
           })
         }
         else{
-          res.redirect('/login')
+          res.redirect('/users/login')
         }
       }
       else{

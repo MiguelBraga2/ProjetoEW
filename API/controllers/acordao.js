@@ -159,8 +159,9 @@ module.exports.getCurrentId = () => {
  * @param {judgment} judgment 
  * @returns the created judgment or an error
  */
-module.exports.addAcordao = async (judgment, taxonomyTree) => {
+module.exports.addAcordao = async (judgment, taxonomyTree, pesquisaLivre) => {
   try {
+    let fullTextFields = ['Relator', 'tribunal']
     // If the judgment does not have an id, get the next id to be used
     if (!judgment._id) {
       const data = await this.getCurrentId();
@@ -175,6 +176,22 @@ module.exports.addAcordao = async (judgment, taxonomyTree) => {
     // Update the taxonomy tree
     for (let descritor of judgment.Descritores) {
       addToTaxonomyTree(taxonomyTree, descritor, [judgment._id]);
+    }
+
+    for(let field of fullTextFields){
+      const fieldText = judgment[field];
+      if(fieldText){
+        const fieldWords = fieldText.split(/\s+/);
+        for(const word of fieldWords){
+          const treatedWord = word.trim().toLowerCase();
+
+          if (pesquisaLivre[field][treatedWord]) {
+            pesquisaLivre[field][treatedWord].push(judgment._id)
+          } else {
+            pesquisaLivre[field][treatedWord] = [judgment._id]
+          }
+        }
+      }
     }
 
     return resp;

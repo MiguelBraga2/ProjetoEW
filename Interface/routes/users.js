@@ -28,14 +28,14 @@ router.get('/login', (req, res)=>{
  * GET página de login/registo com facebook
  */
 router.get('/facebook', (req, res)=>{
-  res.redirect(env.authAcessPoint + '/facebook?returnUrl=http://localhost:8003/')
+  res.redirect('http://localhost:8002/users' + '/facebook?returnUrl=' + env.selfURL)
 })
 
 /**
  * GET página de login/registo com o google
  */
 router.get('/google', (req, res)=>{
-  res.redirect(env.authAcessPoint + '/google?returnUrl=http://localhost:8003/')
+  res.redirect('http://localhost:8002/users' + '/google?returnUrl=' + env.selfURL)
 })
 
 /**
@@ -75,7 +75,7 @@ router.get('/', auth.verificaToken({'admin': -1}), (req, res)=>{
     if (err) {
       res.render('error', {error : err, message : err.message})
     } else {
-      var apiUrl = env.authAcessPoint + '/';
+      var apiUrl = env.localHostAuth + '/';
       res.render('users', {user: payload, url: apiUrl});
     }
   });
@@ -108,13 +108,12 @@ router.get('/history/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'cons
     if (err) {
       res.render('error', {error : err, message : err.message})
     } else {
-      var apiUrl = env.authAcessPoint + '/';
       axios.get(env.authAcessPoint + '/' + req.params.id + token)
       .then(response => { 
         const processIds = response.data.dados.history;
         // Construir a URL da API com os parâmetros da query string
         const queryParams = `?ids=${processIds.join(',')}`;
-        var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
+        var apiUrl = env.localHostAPI + '/acordaos' + queryParams;
         res.render('historico', {user: payload, url: apiUrl});
       })
       .catch(err => {
@@ -142,7 +141,7 @@ router.get('/favorites/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'co
         }
         // Construir a URL da API com os parâmetros da query string
         
-        var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
+        var apiUrl = env.localHostAPI + '/acordaos' + queryParams;
         res.render('favoritos', {user: payload, url: apiUrl});
       })
       .catch(err => {
