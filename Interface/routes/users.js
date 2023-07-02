@@ -198,6 +198,9 @@ router.post('/login', (req, res) => {
       res.redirect('/')
     })
     .catch(err => {
+      if (err.response.data === 'Unauthorized'){
+        res.render('loginForm', {error: 1})
+      }
       res.render('error', {error: err})
     })
 })
@@ -212,6 +215,9 @@ router.post('/register', (req, res)=>{
       res.redirect('/users/login')
     })
     .catch(err => {
+      if (err.response.data.error === 'Email already in use'){
+        res.render('register', {error: 1})
+      }
       res.render('error', {error: err, message: err.message})
     })
 })
