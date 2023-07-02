@@ -40,7 +40,7 @@ Concepção e Desenvolvimento da solução
 Um dos primeiros passos dados no desenvolvimento da solução foi o da unificação dos campos de todas as bases de dados. Tendo exportado para ficheiro um objeto que relaciona-se cada campo com a contagem de registos que o possuem por meio de uma script Javascript, observamos a existência de mais de 10000 campos diferentes. Assim, foi necessário realizar uma análise cuidada de cada campo, verificando se este poderia ser unificado com outro campo ou até mesmo removido. Com a ajuda do portal [http://www.dgsi.pt/home.nsf?OpenDatabase](http://www.dgsi.pt/home.nsf?OpenDatabase), identificamos grande parte dos campos como sendo originários de tabelas existentes em textos. Descartando esses campos, uma vez que não é possível tratá-los, reduzimos a lista de campos para pouco mais de 100. A partir daqui, foi necessário analisar o significado de cada campo e verificar se este poderia ser unificado com outro campo. Foi uma tarefa morosa, uma vez que requereu a consulta dos valores de cada campo em cada base de dados. Para além disso, alguns campos foram reduzidos a listas. Por exemplo, Área Temática e Área Temática 1 foram unificados numa lista de áreas temáticas. Listam-se então algumas unificações realizadas:
 
 | Campos | Unificação |
-| --- | --- |
+| -- | -- |
 | Recorrido 1/Recorrido 2 | Recorridos |
 | Área Temática/Área Temática 1/Área Temática 2 | Áreas Temática |
 | Referência de Publicação/Referência Publicação 1/Referência Publicação 2 | Referências de Publicação |
@@ -49,30 +49,16 @@ Um dos primeiros passos dados no desenvolvimento da solução foi o da unificaç
 
 De notar que alguns campos que, à primeira vista, pareciam unificáveis (como 'Data do Acordão' e 'Data da Decisão Singular'), não o o foram por apresentarem significado ligeiramente diferente. Um acordão implica um acordo entre pelo menos 2 juízes, enquanto que uma decisão Singular é tomada por apenas um magistrado.
 
-Para além dos campos identificados, foram adicionados outros campos no modelo de um acordão do _mongoose_. O campo _id é um campo obrigatório, que identifica cada acordão de forma única. Este campo é autoincrementado sempre que inserimos um novo registo na BD. Numa retrospetiva do projeto, este campo poderia ter sido substituído um id criado pelo próprio mongoDB, uma vez que este é mais eficiente e não requer controlo por parte do programador. Por fim, o campo _ProducerId_ tem como finalidade mapear cada registo ao produtor que eventualmente o criou.
+Para além dos campos identificados, foram adicionados outros campos no modelo de um acordão do _mongoose_. O campo _id_ é um campo obrigatório, que identifica cada acordão de forma única. Este campo é autoincrementado sempre que inserimos um novo registo na BD. Numa retrospetiva do projeto, este campo poderia ter sido substituído um id criado pelo próprio mongoDB, uma vez que este é mais eficiente e não requer controlo por parte do programador. Por fim, o campo _ProducerId_ tem como finalidade mapear cada registo ao produtor que eventualmente o criou.
 
 ### Autenticação
 
-Paralelamente ao processo de tratamento dos dados, foi elaborado o serviço de autenticação. Este tem como objetivo permitir aos utilizadores autenticarem-se e registarem-se na aplicação com diferentes níveis de acesso. A coleção dos utilizadores é formada por documentos com os seguintes campos:
-
-* username - Nome do utilizador na aplicação;
-* password - Password do utilizador;
-* name - Primeiro nome do utilizador;
-* surname - Apelido do utilizador;
-* email - Email do utilizador;
-* level - Nível de acesso (Consumidor, Produtor ou Administrador);
-* active - Indica se o utilizador está ativo ou não;
-* dateCreated - Data de criação do utilizador;
-* dateLastAccess - Data do último acesso;
-* providerId - Identificador fornecido pelo google ou facebook; 
-* provider - Google ou facebook;
-* history - Lista de ids de processos visitados recentemente;
-* favorites - Lista de pares (processo, descrição) que constituem os favoritos.
+Paralelamente ao processo de tratamento dos dados, foi elaborado o serviço de autenticação. Este tem como objetivo permitir aos utilizadores autenticarem-se e registarem-se na aplicação com diferentes níveis de acesso. A coleção dos utilizadores é formada por documentos com os seguintes campos: username, password, name, surname, email, level (Nível de acesso, ou seja Consumidor, Produtor ou Administrador), active (Indica se o utilizador está ativo ou não), dateCreated, dateLastAccess, providerId (Identificador fornecido pelo google ou facebook), provider (Google ou Facebook), history (Lista de ids de processos visitados recentemente), favorites (Lista de pares (processo, descrição) que constituem os favoritos).
 
 Conceptualmente, este serviço é uma API para a coleção _users_ da base de dados. Assim, deverá fornecer as seguintes rotas:
 
 | Rota | Descrição |
-| --- | --- |
+| -- | -- |
 | GET /users | Devolve todos os utilizadores da BD |
 | GET /users/facebook | Inicia o processo de autenticação com o facebook |
 | GET /users/google | Inicia o processo de autenticação com o google |
@@ -107,8 +93,9 @@ Caso não esteja inserido na base de dados, criámos um utilizador e gerámos um
 
 Genericamente, uma API é uma peça de software que fornece funcionalidade sobre um serviço. Na nossa aplicação, a API REST permite-nos aceder à(s) base(s) de dados, fornecendo métodos para a realização de operações CRUD na coleção dos acordãos da BD. A seguir listam-se algumas das rotas disponíveis:
 
+
 | Rota | Descrição |
-| --- | --- |
+| -- | -- |
 | GET /api/acordaos | Devolve todos os acordãos da BD, com base na _querystring_ |
 | GET /api/acordaos/tribunais | Devolve todos os tribunais da BD, juntamente com a designação para a sua sigla |
 | GET /api/acordaos/:id | Devolve o acordão com o id passado por parâmetro |
@@ -163,16 +150,14 @@ Este mecanismo foi particularmente relevante aquando do envio de ficheiros JSON 
 
 ### Interface
 
-A interface é o serviço que expõe as páginas que o cliente pode aceder para interagir com o sistema. As páginas devem, por isso, facilitar o cliente nesse processo. Para tal, a interface deve ser intuitiva e de fácil utilização. O processo de desenvolvimento deste serviço começou pela elaboração de alguns mockups e pelo mapa de navegação que a seguir se apresenta:
-
-![mapa de navegação](ResourcesRelatorio/MaqEstados.png)
+A interface é o serviço que expõe as páginas que o cliente pode aceder para interagir com o sistema. As páginas devem, por isso, facilitar o cliente nesse processo. Para tal, a interface deve ser intuitiva e de fácil utilização. O processo de desenvolvimento deste serviço começou pela elaboração de alguns mockups e pelo mapa de navegação que se apresenta no repositório do projeto, na diretoría _ResourcesRelatorio_.
 
 A estrutura das páginas e o seu conteúdo foi realizada em _pug_ e estilizada com templates _bootstrap_. Finalmente, foi adicionada alguma funcionalidade adicional com o uso de código Javascript.
 
 Para cada página foi adicionada uma rota específica, tal como podemos ver na tabela seguinte:
 
 | Rota | Página |
-| --- | --- |
+| -- | -- |
 | GET / | Página principal/Tribunais |
 | GET /pesquisas | Página de pesquisas geral |
 | GET /acordaos | Página com os acordãos (pode conter querystring) |
@@ -186,11 +171,6 @@ Para cada página foi adicionada uma rota específica, tal como podemos ver na t
 | GET /users/:id | Página do Perfil do utilizador |
 | GET /users/history/:id | Página com o histórico do utilizador |
 | GET /users/favourites/:id | Página com os favoritos do utilizador |
-
-De notar que, para além destas rotas, foram adicionadas rotas para sinalização da execução de operações, como remoção de um acordão:
-
-| Rota | Descrição |
-| --- | --- |
 | GET /acordaos/delete/:id | Remoção de um acordão |
 | POST /files | Envio de um ficheiro JSON |
 | POST /description/:user\_id/:acordao\_id | Consumidor adicionou uma descrição a um acordão |
@@ -203,7 +183,7 @@ Manual de utilização da aplicação
 Como forma de facilitar o arranque da aplicação, foi elaborado um ficheiro _docker-compose.yml_ responsável por criar e orquestrar os serviços que suportam a aplicação em diferentes _docker containers_. As portas de funciomento de cada serviço são as seguintes:
 
 | Serviço | Porta |
-| --- | --- |
+| -- | -- |
 | API | 8001 |
 | Autenticação | 8002 |
 | Interface | 8003 |
@@ -211,9 +191,9 @@ Como forma de facilitar o arranque da aplicação, foi elaborado um ficheiro _do
 
 Para iniciar a aplicação, basta executar o seguinte comando na pasta raiz do projeto: docker compose build
 
-Em seguida, abrindo um _browser_ e inserindo o url 'localhost:8003 ter-se-á acesso à página principal da aplicação.
+Em seguida, abrindo um _browser_ e inserindo o url 'localhost:8003' ter-se-á acesso à página principal da aplicação.
 
 Conclusão
 ---------
 
-Em suma, neste projeto pudemos realmente aprender como se constroi uma aplicação _web_ assente em vários microserviços que se articulam entre si para fornecer um serviço único para o cliente. Durante o processo de desenvolvimento, deparámo-nos com algumas dificuldades como a necessidade de articulação entre duas bases de dados. Contudo, acreditamos que as dificuldades foram ultrapassadas com sucesso, o que contribuiu para que fossem atingidos todos os objetivos estipulados para o projeto.
+Em suma, neste projeto pudemos realmente aprender como se constrói uma aplicação _web_ assente em vários microserviços que se articulam entre si para fornecer um serviço único para o cliente. Durante o processo de desenvolvimento, deparámo-nos com algumas dificuldades como a necessidade de articulação entre duas bases de dados. Contudo, acreditamos que as dificuldades foram ultrapassadas com sucesso, o que contribuiu para que fossem atingidos todos os objetivos estipulados para o projeto.
