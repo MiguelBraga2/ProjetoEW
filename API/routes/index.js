@@ -45,7 +45,10 @@ function paginatedResults(model) {
     queries.push(match)
 
     if (req.query && req.query.ids){
-      const processIds = req.query.ids.split(',').map(id => parseInt(id));
+      let processIds = req.query.ids.split(',').map(id => parseInt(id));
+      if (req.query.ids === 'none') {
+        processIds = []
+      }
       queries.push({ $match: { _id: { $in: processIds } } });
     }
 

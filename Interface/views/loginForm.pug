@@ -15,8 +15,10 @@ block content
                 .form-group.mb-4 
                   label.form-label Palavra-Passe 
                   input.form-control(type="password" placeholder="Insira a Palavra-Passe" name="password" required)
-                  if (error)
+                  if (error === 1)
                     label.form-label.text-danger.px-2 Password errada
+                  else if (error === 2)
+                    label.form-label.text-danger.px-2 Utilizador desativado
                   p.text-center.small.my-3 
                     a.text-secondary(href="/users/resetPassword") Esqueceu-se da palavra-passe?
                 .text-center

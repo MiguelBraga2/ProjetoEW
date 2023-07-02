@@ -50,6 +50,22 @@ function paginatedResults(model) {
   }
 }
 
+function verifyActiveStatus(req, res, next) {
+  userModel.findOne({ username: req.body.username })
+  .then(response => {
+    if (response.active === false) {
+      res.status(501).jsonp({ error: "User is not active", message: "User is not active" })
+    }
+    else {
+      next()
+    }
+  })
+  .catch(err => {
+    res.status(500).jsonp({ error: err, message: "Login error: " + err })
+  })
+
+}
+
 /*--GET's------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 /**
@@ -260,7 +276,7 @@ router.post('/register', function (req, res) {
 /**
  * POST rota para iniciar sessão na aplicação 
  */
-router.post('/login', passport.authenticate('local'), function (req, res) {
+router.post('/login', verifyActiveStatus, passport.authenticate('local'), function (req, res) {
   jwt.sign({
     username: req.user.username, level: req.user.level,
     sub: 'User logged in',

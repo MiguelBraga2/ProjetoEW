@@ -136,11 +136,13 @@ router.get('/favorites/:id', auth.verificaToken({'admin': -1, 'producer': 1, 'co
       axios.get(env.authAcessPoint + '/' + req.params.id + token)
       .then(response => { 
         const processIds = response.data.dados.favorites.map(fav => fav.id);
-        console.log(processIds)
+        let queryParams = `?ids=${processIds.join(',')}`;
+        if (processIds.length === 0) {
+          queryParams = `?ids=none`
+        }
         // Construir a URL da API com os parâmetros da query string
-        const queryParams = `?ids=${processIds.join(',')}`;
+        
         var apiUrl = env.apiAccessPoint + '/acordaos' + queryParams;
-        console.log(payload)
         res.render('favoritos', {user: payload, url: apiUrl});
       })
       .catch(err => {
@@ -198,10 +200,13 @@ router.post('/login', (req, res) => {
       res.redirect('/')
     })
     .catch(err => {
+      console.log(err.response.data)
       if (err.response.data === 'Unauthorized'){
-        res.render('loginForm', {error: 1})
+        res.render('loginForm', {error: 1}) // Wrong password
+      } else if (err.response.data.error === 'User is not active'){
+        res.render('loginForm', {error: 2}) // User not active
       }
-      res.render('error', {error: err})
+      
     })
 })
 

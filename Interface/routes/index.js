@@ -231,7 +231,8 @@ router.post('/files', auth.verificaToken({'admin': -1}), upload.single('myFile')
         }
         else{
           axios.get(env.apiAccessPoint + '/postFile/' + req.file.originalname)
-          res.redirect('/');
+          res.redirect('/')
+          
         }
       })
     } else {
@@ -262,25 +263,31 @@ router.post('/description/:user_id/:acordao_id', auth.verificaToken({'admin': -1
 })
 
 router.post('/acordaos/novo', auth.verificaToken({'admin': -1, 'producer': -1}), (req, res) => {
-  let modifiedBody = req.body;
-  if (req.body) {
-    modifiedBody = {
-      ...req.body,
-      Descritores: req.body.Descritores ? req.body.Descritores.split(',').map(item => item.trim()) : [],
-      'Áreas Temáticas': req.body['Áreas Temáticas'] ? req.body['Áreas Temáticas'].split(',').map(item => item.trim()) : [],
-      Recorridos: req.body.Recorridos ? req.body.Recorridos.split(',').map(item => item.trim()) : [],
-      'Referências de Publicação': req.body['Referências de Publicação'] ? req.body['Referências de Publicação'].split(',').map(item => item.trim()) : [],
+  jwt.verify(req.cookies.token, process.env.SECRET_KEY, function(err, payload) {
+    if (err) {
+      res.render('error', {error : err, message : err.message})
+    } else {
+      let modifiedBody = req.body;
+      req.body.producerId = payload.id
+      if (req.body) {
+        modifiedBody = {
+          ...req.body,
+          Descritores: req.body.Descritores ? req.body.Descritores.split(',').map(item => item.trim()) : [],
+          'Áreas Temáticas': req.body['Áreas Temáticas'] ? req.body['Áreas Temáticas'].split(',').map(item => item.trim()) : [],
+          Recorridos: req.body.Recorridos ? req.body.Recorridos.split(',').map(item => item.trim()) : [],
+          'Referências de Publicação': req.body['Referências de Publicação'] ? req.body['Referências de Publicação'].split(',').map(item => item.trim()) : [],
+        }
+      }
+      
+      axios.post(env.apiAccessPoint + '/acordaos', modifiedBody)
+        .then(resp => {
+          res.redirect('/acordaos/' + resp.data._id);
+        })
+        .catch(error => {
+          res.render('error', { error: error, message: "Erro ao inserir um novo acordão" });
+        });
     }
-  }
-  
-  axios.post(env.apiAccessPoint + '/acordaos', modifiedBody)
-    .then(resp => {
-      console.log(resp)
-      res.redirect('/acordaos/' + resp.data._id);
-    })
-    .catch(error => {
-      res.render('error', { error: error, message: "Erro ao inserir um novo acordão" });
-    });
+  });
 });
 
 router.post('/acordaos/edit', auth.verificaToken({'admin': -1, 'producer': -1}), (req, res) => {

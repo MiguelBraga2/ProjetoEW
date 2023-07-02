@@ -9,6 +9,9 @@ mixin includeNavBar(user)
                     if user && (user.level === 'admin' || user.level === 'producer')
                         li  
                             a.nav-item.nav-link(href="/acordaos/novo") Criar Acordão
+                    if user && user.level === 'producer'
+                        //Button trigger modal 
+                        a.nav-item.nav-link(href="/acordaosProducer/" + user.id) Acordãos do produtor
                     if user && user.level === 'admin'
                         li 
                             // Button trigger modal 
