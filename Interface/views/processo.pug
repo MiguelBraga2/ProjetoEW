@@ -54,8 +54,8 @@ block content
                                 a.list-group-item.list-group-item-action(href="/acordaos/"+processo._id) #{processo['Data do Acordão']}
                   .col-md-9.py-5
                     section.text-start#descritores 
-                        h1.text-warning= processo.Processo
-                        hr.text-warning
+                        h1.text-primary= processo.Processo
+                        hr.text-primary
                         p #[b Relator:] #{processo.Relator ? processo.Relator : 'N/A'}
                         p #[b Descritores:] #{processo.Descritores ? processo.Descritores : 'N/A'}
                         p #[b Processo:] #{processo.Processo ? processo.Processo : 'N/A'}
@@ -74,16 +74,16 @@ block content
                                 p #[b #{val[0]}:]  #{val[1] ? val[1] : 'N/A'}
 
                     section.text-start#sumario.mt-2 
-                        h1.text-warning Sumário
-                        hr.text-warning
+                        h1.text-primary Sumário
+                        hr.text-primary
                         p #{processo['Sumário'] ? processo['Sumário'] : 'N/A'}
                     section.text-start#parcial.mt-2 
-                        h1.text-warning Decisão Texto Parcial 
-                        hr.text-warning
+                        h1.text-primary Decisão Texto Parcial 
+                        hr.text-primary
                         p #{processo['Decisão Texto Parcial'] ? processo['Decisão Texto Parcial'] : 'N/A'}
                     section.text-start#integral.mt-2 
-                        h1.text-warning Decisão Texto Integral
-                        hr.text-warning
+                        h1.text-primary Decisão Texto Integral
+                        hr.text-primary
                         p #{processo['Decisão Texto Integral'] ? processo['Decisão Texto Integral'] : 'N/A'}
     script(type="text/javascript" src="/public/js/favoritos.js")
     // Footer
