@@ -8,13 +8,16 @@ exports.verificaToken = function(roles){
         var myToken = req.cookies.token
         if(myToken){
           jwt.verify(myToken, process.env.SECRET_KEY, function(e, payload){
+            
             if(e){
               res.status(401).jsonp({error: e})
             }
             else{
               let flag = false
               for(const role in roles){
+                console.log(role)
                 if(payload.level === role){
+                  console.log(roles)
                   console.log(roles[role])
                   if (roles[role] === 1){
                     if (payload.id === req.params.id){
@@ -24,6 +27,7 @@ exports.verificaToken = function(roles){
                   }
                   else if (roles[role] === -1){
                     flag = true
+                    console.log('ole')
                     break
                   }
                 }
