@@ -189,7 +189,7 @@ Como forma de facilitar o arranque da aplicação, foi elaborado um ficheiro _do
 | Interface | 8003 |
 | MongoDB | 27017 |
 
-Para iniciar a aplicação, basta executar o seguinte comando na pasta raiz do projeto: docker compose build
+Para iniciar a aplicação, basta executar o seguinte comando na pasta raiz do projeto: docker compose build seguido de docker compose up.
 
 Em seguida, abrindo um _browser_ e inserindo o url 'localhost:8003' ter-se-á acesso à página principal da aplicação.
 
